@@ -1,0 +1,2 @@
+Coding agent version: 0.84.4
+Python version: Python 3.14.4
