@@ -3,6 +3,9 @@ pub fn greeting() -> String {
     "Hello, world!".to_string()
 }
 
+mod integrators;
+mod system;
+
 /// Lennard-Jones pair potential energy in reduced units (sigma = epsilon = 1):
 /// u(r) = 4[(1/r)^12 - (1/r)^6].
 pub fn lj_energy(r: f64) -> f64 {
