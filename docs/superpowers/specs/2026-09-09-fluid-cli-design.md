@@ -121,7 +121,9 @@ Printed as `value  limit  PASS|FAIL` per row plus an overall verdict line.
 - g(r): count neighbours in rings of width dr out to `min(Lx, Ly)/2`, divide by
   the uniform-density expectation `rho * pi * ((r+dr)^2 - r^2)`, average over
   atoms and frames (minimum-image distances)
-- frames rendered with `image`/`imageproc`/`font8x8`: left panel atoms as
+- frames rendered with the `image` crate for PNG encoding plus hand-rolled
+  blitters (wrap-aware disks, lines) and `font8x8` glyph data for labels —
+  fewer and stabler APIs than a full plotting crate; left panel atoms as
   wrap-aware disks coloured by speed; right panel the g(r) curve with a g = 1
   reference line and labelled axes
 - one frame per saved frame (contract: 200 frames at ~10 fps ≈ 20 s), PNG
