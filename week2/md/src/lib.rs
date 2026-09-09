@@ -10,6 +10,14 @@ pub fn lj_energy(r: f64) -> f64 {
     4.0 * (inv_r6 * inv_r6 - inv_r6)
 }
 
+/// Lennard-Jones pair force in reduced units (sigma = epsilon = 1): the
+/// scalar force along the separation, F(r) = -du/dr = 24/r [2(1/r)^12 - (1/r)^6].
+/// Positive means repulsive (pushes particles apart).
+pub fn lj_force(r: f64) -> f64 {
+    let inv_r6 = r.powi(-6);
+    24.0 / r * (2.0 * inv_r6 * inv_r6 - inv_r6)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
