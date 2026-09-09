@@ -1,3 +1,105 @@
+//! Time integrators sharing one trait, plus the shared experiment runner.
+
+use crate::system::{System, Vec2};
+
+/// A time integrator advancing a [`System`] by one step of size `dt`.
+pub trait Integrator {
+    fn step(&mut self, system: &mut System, dt: f64);
+
+    /// Human-readable name (used in reports and plot legends).
+    fn name(&self) -> &'static str;
+}
+
+/// Textbook forward Euler: y' = f(y), y <- y + dt f(y). Positions move
+/// with the *old* velocities; velocities kick with the old accelerations.
+/// One force evaluation per step.
+pub struct ForwardEuler;
+
+impl ForwardEuler {
+    pub fn new() -> Self {
+        ForwardEuler
+    }
+}
+
+impl Default for ForwardEuler {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Integrator for ForwardEuler {
+    fn step(&mut self, s: &mut System, dt: f64) {
+        let [a1, a2] = s.accelerations();
+        s.r1 = s.r1 + s.v1 * dt;
+        s.r2 = s.r2 + s.v2 * dt;
+        s.v1 = s.v1 + a1 * dt;
+        s.v2 = s.v2 + a2 * dt;
+    }
+
+    fn name(&self) -> &'static str {
+        "forward-Euler"
+    }
+}
+
+/// Velocity Verlet: half-kick, drift, recompute forces, half-kick. The
+/// acceleration is cached between steps so the step cost matches forward
+/// Euler (one force evaluation). Symplectic for Newtonian mechanics:
+/// its energy error stays bounded instead of drifting.
+pub struct VelocityVerlet {
+    a1: Vec2,
+    a2: Vec2,
+}
+
+impl VelocityVerlet {
+    /// Capture the initial acceleration to cache between steps.
+    pub fn new(system: &System) -> Self {
+        let [a1, a2] = system.accelerations();
+        VelocityVerlet { a1, a2 }
+    }
+}
+
+impl Integrator for VelocityVerlet {
+    fn step(&mut self, s: &mut System, dt: f64) {
+        let half = 0.5 * dt;
+        s.v1 = s.v1 + self.a1 * half;
+        s.v2 = s.v2 + self.a2 * half;
+        s.r1 = s.r1 + s.v1 * dt;
+        s.r2 = s.r2 + s.v2 * dt;
+        let [a1, a2] = s.accelerations();
+        s.v1 = s.v1 + a1 * half;
+        s.v2 = s.v2 + a2 * half;
+        self.a1 = a1;
+        self.a2 = a2;
+    }
+
+    fn name(&self) -> &'static str {
+        "velocity-Verlet"
+    }
+}
+
+/// The shared experiment: integrate `n_steps` of `dt` from `sys` with any
+/// [`Integrator`], sampling `(t, relative energy error)` every
+/// `sample_every` steps (plus the t = 0 point). The relative error is
+/// signed: (E(t) - E(0)) / E(0).
+pub fn run(
+    integ: &mut dyn Integrator,
+    mut sys: System,
+    dt: f64,
+    n_steps: usize,
+    sample_every: usize,
+) -> Vec<(f64, f64)> {
+    let e0 = sys.energy();
+    let mut out = Vec::with_capacity(1 + n_steps / sample_every);
+    out.push((0.0, 0.0));
+    for k in 1..=n_steps {
+        integ.step(&mut sys, dt);
+        if k % sample_every == 0 {
+            out.push((k as f64 * dt, (sys.energy() - e0) / e0));
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::{run, ForwardEuler, Integrator, VelocityVerlet};
@@ -33,7 +135,7 @@ mod tests {
         let v = Vec2::new(0.3, -0.2);
         let mut sys = System {
             r1: Vec2::new(-0.5 * r0, 0.0),
-            r2: Vec2::new(0.5 * r0, 0.1),
+            r2: Vec2::new(0.5 * r0, 0.0),
             v1: v,
             v2: v,
         };
@@ -43,8 +145,11 @@ mod tests {
             integ.step(&mut sys, DT);
         }
         let t = 100.0 * DT;
-        assert_eq!(sys.v1, start.v1);
-        assert_eq!(sys.v2, start.v2);
+        // lj_force(r_min) is ~1e-15, not bitwise zero: allow tiny drift
+        assert!((sys.v1.x - start.v1.x).abs() < 1e-9);
+        assert!((sys.v1.y - start.v1.y).abs() < 1e-9);
+        assert!((sys.v2.x - start.v2.x).abs() < 1e-9);
+        assert!((sys.v2.y - start.v2.y).abs() < 1e-9);
         assert!((sys.r1.x - (start.r1.x + 0.3 * t)).abs() < TOL);
         assert!((sys.r1.y - (start.r1.y - 0.2 * t)).abs() < TOL);
         assert!((sys.r2.x - (start.r2.x + 0.3 * t)).abs() < TOL);

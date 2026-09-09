@@ -6,6 +6,9 @@ pub fn greeting() -> String {
 mod integrators;
 mod system;
 
+pub use integrators::{run, ForwardEuler, Integrator, VelocityVerlet};
+pub use system::{System, Vec2};
+
 /// Lennard-Jones pair potential energy in reduced units (sigma = epsilon = 1):
 /// u(r) = 4[(1/r)^12 - (1/r)^6].
 pub fn lj_energy(r: f64) -> f64 {
