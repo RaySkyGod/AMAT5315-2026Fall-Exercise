@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+.pytest_cache/
+.pytest-deps/
+*.egg-info/
+
+# Rust
+target/
+
+# Course materials (large binaries)
+*.zip
