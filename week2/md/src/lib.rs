@@ -3,6 +3,13 @@ pub fn greeting() -> String {
     "Hello, world!".to_string()
 }
 
+/// Lennard-Jones pair potential energy in reduced units (sigma = epsilon = 1):
+/// u(r) = 4[(1/r)^12 - (1/r)^6].
+pub fn lj_energy(r: f64) -> f64 {
+    let inv_r6 = r.powi(-6);
+    4.0 * (inv_r6 * inv_r6 - inv_r6)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
