@@ -8,6 +8,7 @@ mod fluid;
 mod lattice;
 mod system;
 mod thermostat;
+mod traj;
 
 pub use fluid::{force_shifted, min_image, u_shifted, Fluid, RC, Verlet};
 pub use lattice::{triangular, Lattice};
@@ -15,6 +16,7 @@ pub use lattice::{triangular, Lattice};
 pub use integrators::{run, ForwardEuler, Integrator, VelocityVerlet};
 pub use system::{System, Vec2};
 pub use thermostat::{gaussian_velocities, remove_com, rescale, thermo_temp};
+pub use traj::{load, write_run, Frame, RunConfig, TrajWriter};
 
 /// Lennard-Jones pair potential energy in reduced units (sigma = epsilon = 1):
 /// u(r) = 4[(1/r)^12 - (1/r)^6].
