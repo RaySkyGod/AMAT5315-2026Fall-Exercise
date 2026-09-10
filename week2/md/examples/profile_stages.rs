@@ -77,6 +77,7 @@ fn main() -> anyhow::Result<()> {
         n, rho, box_: fluid.box_, dt, temperature: temp,
         eq_steps, steps, sample_every, seed: 2026,
         integrator: "velocity-verlet".into(), force: engine.to_string(),
+        ramp_to: None,
     };
     let out = std::path::PathBuf::from("/tmp/md-prof");
     write_run(&out, &cfg)?;

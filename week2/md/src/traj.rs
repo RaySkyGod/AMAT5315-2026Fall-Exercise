@@ -23,6 +23,9 @@ pub struct RunConfig {
     /// Which pair search produced the energies ("naive" for Part 4 files).
     #[serde(default = "default_force")]
     pub force: String,
+    /// Heating target of a ramped production run (null when unheated).
+    #[serde(default)]
+    pub ramp_to: Option<f64>,
 }
 
 fn default_force() -> String {
@@ -126,6 +129,7 @@ mod tests {
             n: 4, rho: 0.8, box_: [4.0, 3.0], dt: 0.01, temperature: 0.5,
             eq_steps: 10, steps: 50, sample_every: 25, seed: 7,
             integrator: "velocity-verlet".into(), force: "cells".into(),
+            ramp_to: None,
         }
     }
 

@@ -51,6 +51,10 @@ pub struct RunArgs {
     /// Pair search: cell list (default) or the original all-pairs loop.
     #[arg(long, default_value = "cells")]
     pub force: ForceEngine,
+    /// Heat during production: raise the thermostat target linearly from
+    /// --temperature at step 0 to this value at the last step.
+    #[arg(long)]
+    pub ramp_to: Option<f64>,
     #[arg(long, default_value = "artifacts")]
     pub out: PathBuf,
 }
@@ -73,6 +77,7 @@ pub fn do_run(args: &RunArgs) -> anyhow::Result<()> {
         sample_every: args.sample_every,
         seed: args.seed,
         force: args.force,
+        ramp_to: args.ramp_to,
     };
     let (rc, frames) = crate::run::simulate(&cfg)?;
     write_run(&args.out, &rc)?;
@@ -148,7 +153,7 @@ mod tests {
             n: 36, rho: 0.8, temperature: 0.5, dt: 0.01,
             eq_steps: 0, steps: 10, sample_every: 10, seed: 1,
             integrator: "rk4".into(), out: "/tmp/md-rk4".into(),
-            force: ForceEngine::Cells,
+            force: ForceEngine::Cells, ramp_to: None,
         };
         assert!(do_run(&args).is_err());
     }

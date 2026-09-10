@@ -143,7 +143,7 @@ mod tests {
         let cfg = SimConfig {
             n: 64, rho: 0.8, temperature: 0.5, dt: 0.01,
             eq_steps: 1000, steps: 2000, sample_every: 50, seed: 2026,
-            force: crate::fluid::ForceEngine::Cells,
+            force: crate::fluid::ForceEngine::Cells, ramp_to: None,
         };
         let (rc, frames) = simulate(&cfg).unwrap();
         assert_eq!(frames.len(), 40);
