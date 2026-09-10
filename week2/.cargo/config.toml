@@ -1,6 +1,10 @@
 # This machine has no system C compiler/linker (no `cc`, no libc6-dev),
 # so we build for the fully self-contained musl target using Rust's
 # bundled linker (rust-lld).
+#
+# Build scripts of dependencies compile for the HOST (gnu), which needs a
+# C linker: ~/.local/bin/cc is a wrapper around `zig cc` (bundled glibc
+# headers + crt), installed without sudo from ziglang.org.
 [build]
 target = "x86_64-unknown-linux-musl"
 
