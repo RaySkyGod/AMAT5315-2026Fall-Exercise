@@ -7,6 +7,7 @@ mod integrators;
 mod fluid;
 mod check;
 mod lattice;
+mod rdf;
 mod run;
 mod system;
 mod thermostat;
@@ -17,6 +18,7 @@ pub use fluid::{force_shifted, min_image, u_shifted, Fluid, RC, Verlet};
 pub use lattice::{triangular, Lattice};
 
 pub use integrators::{run, ForwardEuler, Integrator, VelocityVerlet};
+pub use rdf::g_r;
 pub use run::{simulate, SimConfig};
 pub use system::{System, Vec2};
 pub use thermostat::{gaussian_velocities, remove_com, rescale, thermo_temp};
