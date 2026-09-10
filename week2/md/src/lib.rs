@@ -4,9 +4,11 @@ pub fn greeting() -> String {
 }
 
 mod integrators;
+mod fluid;
 mod lattice;
 mod system;
 
+pub use fluid::{force_shifted, min_image, u_shifted, Fluid, RC, Verlet};
 pub use lattice::{triangular, Lattice};
 
 pub use integrators::{run, ForwardEuler, Integrator, VelocityVerlet};
