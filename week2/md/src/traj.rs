@@ -20,6 +20,13 @@ pub struct RunConfig {
     pub sample_every: usize,
     pub seed: u64,
     pub integrator: String,
+    /// Which pair search produced the energies ("naive" for Part 4 files).
+    #[serde(default = "default_force")]
+    pub force: String,
+}
+
+fn default_force() -> String {
+    "naive".into()
 }
 
 /// One saved production frame.
@@ -118,7 +125,7 @@ mod tests {
         RunConfig {
             n: 4, rho: 0.8, box_: [4.0, 3.0], dt: 0.01, temperature: 0.5,
             eq_steps: 10, steps: 50, sample_every: 25, seed: 7,
-            integrator: "velocity-verlet".into(),
+            integrator: "velocity-verlet".into(), force: "cells".into(),
         }
     }
 
@@ -149,6 +156,31 @@ mod tests {
         assert_eq!(cfg2.n, 4);
         assert_eq!(frames.len(), 2);
         assert_eq!(frames[1].step, 50);
+    }
+
+    #[test]
+    fn run_json_without_force_field_loads_as_naive() {
+        // Part 4 artifacts predate the force field; their energies were
+        // computed by the (then only) all-pairs path, so the default must
+        // be naive for check to recompute them identically.
+        let dir = tmp("legacy");
+        let raw = r#"{"n":4,"rho":0.8,"box":[4.0,3.0],"dt":0.01,"temperature":0.5,
+"eq_steps":10,"steps":50,"sample_every":25,"seed":7,
+"integrator":"velocity-verlet"}"#;
+        std::fs::write(dir.join("run.json"), raw).unwrap();
+        let mut w = TrajWriter::new(&dir).unwrap();
+        w.write_frame(&Frame {
+            step: 25, t: 0.25, pos: vec![[0.1, 0.2]; 4], vel: vec![[0.0; 2]; 4],
+            e_pot: -1.0, e_kin: 1.0,
+        }).unwrap();
+        w.write_frame(&Frame {
+            step: 50, t: 0.5, pos: vec![[3.9, 2.9]; 4], vel: vec![[0.1, 0.1]; 4],
+            e_pot: -0.9, e_kin: 1.1,
+        }).unwrap();
+        drop(w);
+        let (cfg, frames) = load(&dir).unwrap();
+        assert_eq!(cfg.force, "naive");
+        assert_eq!(frames.len(), 2);
     }
 
     #[test]

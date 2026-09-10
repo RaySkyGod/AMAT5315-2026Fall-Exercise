@@ -1,6 +1,6 @@
 //! The three physics checks recomputed from raw trajectory frames.
 
-use crate::fluid::{min_image, u_shifted};
+use crate::fluid::{Fluid, ForceEngine};
 use crate::traj::load;
 
 /// Kinetic temperature estimate from pooled speeds: <v^2>/2.
@@ -56,11 +56,17 @@ pub struct CheckRow {
 /// Recompute the physics of a saved run; errors on malformed data.
 pub fn run_check(dir: &std::path::Path) -> anyhow::Result<Vec<CheckRow>> {
     let (cfg, frames) = load(dir)?;
+    let engine: ForceEngine = cfg
+        .force
+        .parse()
+        .map_err(|e| anyhow::anyhow!("run.json: {e}"))?;
     let mut energies = Vec::with_capacity(frames.len());
     let mut speeds = Vec::new();
     for f in &frames {
-        // cross-check stored energies against recomputation
-        let recomputed_pot = potential(&f.pos, &cfg.box_);
+        // cross-check stored energies against recomputation with the
+        // run's recorded engine
+        let probe = Fluid { pos: f.pos.clone(), vel: vec![], box_: cfg.box_ };
+        let recomputed_pot = probe.e_pot(engine);
         let recomputed_kin: f64 = f
             .vel
             .iter()
@@ -92,19 +98,6 @@ pub fn run_check(dir: &std::path::Path) -> anyhow::Result<Vec<CheckRow>> {
         },
         CheckRow { name: "speed shape chi2_22", value: shape, limit: 2.0, pass: shape < 2.0 },
     ])
-}
-
-/// Shifted-cutoff potential energy of one frame's wrapped positions.
-fn potential(pos: &[[f64; 2]], box_: &[f64; 2]) -> f64 {
-    let mut u = 0.0;
-    for i in 0..pos.len() {
-        for j in (i + 1)..pos.len() {
-            let dx = min_image(pos[j][0] - pos[i][0], box_[0]);
-            let dy = min_image(pos[j][1] - pos[i][1], box_[1]);
-            u += u_shifted((dx * dx + dy * dy).sqrt());
-        }
-    }
-    u
 }
 
 #[cfg(test)]
@@ -150,6 +143,7 @@ mod tests {
         let cfg = SimConfig {
             n: 64, rho: 0.8, temperature: 0.5, dt: 0.01,
             eq_steps: 1000, steps: 2000, sample_every: 50, seed: 2026,
+            force: crate::fluid::ForceEngine::Cells,
         };
         let (rc, frames) = simulate(&cfg).unwrap();
         assert_eq!(frames.len(), 40);

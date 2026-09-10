@@ -1,6 +1,6 @@
 //! The run protocol: lattice -> thermostat equilibration -> NVE production.
 
-use crate::fluid::{Fluid, RC, Verlet};
+use crate::fluid::{Fluid, ForceEngine, RC, Verlet};
 use crate::lattice::triangular;
 use crate::thermostat::{gaussian_velocities, remove_com, rescale};
 use crate::traj::{Frame, RunConfig};
@@ -18,6 +18,7 @@ pub struct SimConfig {
     pub steps: usize,
     pub sample_every: usize,
     pub seed: u64,
+    pub force: ForceEngine,
 }
 
 /// Run the full protocol and return the metadata plus saved frames.
@@ -34,7 +35,7 @@ pub fn simulate(cfg: &SimConfig) -> anyhow::Result<(RunConfig, Vec<Frame>)> {
     remove_com(&mut fluid.vel);
     rescale(&mut fluid.vel, cfg.temperature);
 
-    let mut verlet = Verlet::new(&fluid);
+    let mut verlet = Verlet::new(&fluid, cfg.force);
     for k in 0..cfg.eq_steps {
         if k % THERMO_INTERVAL == 0 {
             rescale(&mut fluid.vel, cfg.temperature);
@@ -51,7 +52,7 @@ pub fn simulate(cfg: &SimConfig) -> anyhow::Result<(RunConfig, Vec<Frame>)> {
                 t: step as f64 * cfg.dt,
                 pos: fluid.pos.clone(),
                 vel: fluid.vel.clone(),
-                e_pot: fluid.e_pot(),
+                e_pot: fluid.e_pot(cfg.force),
                 e_kin: fluid.e_kin(),
             });
         }
@@ -67,6 +68,7 @@ pub fn simulate(cfg: &SimConfig) -> anyhow::Result<(RunConfig, Vec<Frame>)> {
         sample_every: cfg.sample_every,
         seed: cfg.seed,
         integrator: "velocity-verlet".into(),
+        force: cfg.force.to_string(),
     };
     Ok((rc, frames))
 }
@@ -80,6 +82,7 @@ mod tests {
         let cfg = SimConfig {
             n: 36, rho: 0.8, temperature: 0.5, dt: 0.005,
             eq_steps: 200, steps: 400, sample_every: 100, seed: 2026,
+            force: ForceEngine::Cells,
         };
         let (rc, frames) = simulate(&cfg).unwrap();
         assert_eq!(rc.n, 36);
@@ -98,6 +101,7 @@ mod tests {
         let cfg = SimConfig {
             n: 36, rho: 0.8, temperature: 0.5, dt: 0.005,
             eq_steps: 200, steps: 1000, sample_every: 100, seed: 2026,
+            force: ForceEngine::Cells,
         };
         let (_, frames) = simulate(&cfg).unwrap();
         let e0 = frames[0].e_pot + frames[0].e_kin;
@@ -113,6 +117,7 @@ mod tests {
         let cfg = SimConfig {
             n: 16, rho: 0.8, temperature: 0.5, dt: 0.01,
             eq_steps: 0, steps: 10, sample_every: 10, seed: 1,
+            force: ForceEngine::Cells,
         };
         assert!(simulate(&cfg).is_err());
     }

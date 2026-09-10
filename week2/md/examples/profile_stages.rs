@@ -12,7 +12,8 @@
 
 use std::time::Instant;
 
-use md::{triangular, Fluid, Frame, RunConfig, TrajWriter, gaussian_velocities, remove_com, rescale, write_run};
+use md::{triangular, Fluid, ForceEngine, Frame, RunConfig, TrajWriter,
+         gaussian_velocities, remove_com, rescale, write_run};
 
 /// One velocity-Verlet step split into integration vs force stages.
 /// Mirrors md::fluid::Verlet::step; keep the two in sync.
@@ -20,6 +21,7 @@ fn timed_step(
     f: &mut Fluid,
     accel: &mut Vec<[f64; 2]>,
     dt: f64,
+    engine: ForceEngine,
     t_force: &mut f64,
     t_integ: &mut f64,
 ) {
@@ -35,7 +37,7 @@ fn timed_step(
     *t_integ += t.elapsed().as_secs_f64();
 
     let t = Instant::now();
-    *accel = f.forces();
+    *accel = f.forces(engine);
     *t_force += t.elapsed().as_secs_f64();
 
     let t = Instant::now();
@@ -50,6 +52,13 @@ fn timed_step(
 fn main() -> anyhow::Result<()> {
     let (n, rho, temp, dt) = (400_usize, 0.8_f64, 0.5_f64, 0.01_f64);
     let (eq_steps, steps, sample_every) = (200_usize, 1000_usize, 50_usize);
+    let engine: ForceEngine = std::env::args()
+        .nth(1)
+        .map(|s| s.parse())
+        .transpose()
+        .expect("engine must be naive or cells")
+        .unwrap_or(ForceEngine::Naive);
+    eprintln!("engine: {engine}");
     let (mut t_force, mut t_integ, mut t_io, mut t_measure, mut t_else) =
         (0.0_f64, 0.0_f64, 0.0_f64, 0.0_f64, 0.0_f64);
 
@@ -67,7 +76,7 @@ fn main() -> anyhow::Result<()> {
     let cfg = RunConfig {
         n, rho, box_: fluid.box_, dt, temperature: temp,
         eq_steps, steps, sample_every, seed: 2026,
-        integrator: "velocity-verlet".into(),
+        integrator: "velocity-verlet".into(), force: engine.to_string(),
     };
     let out = std::path::PathBuf::from("/tmp/md-prof");
     write_run(&out, &cfg)?;
@@ -76,7 +85,7 @@ fn main() -> anyhow::Result<()> {
 
     let mut accel = {
         let t = Instant::now();
-        let a = fluid.forces();
+        let a = fluid.forces(engine);
         t_force += t.elapsed().as_secs_f64();
         a
     };
@@ -87,13 +96,13 @@ fn main() -> anyhow::Result<()> {
             rescale(&mut fluid.vel, temp);
             t_else += t.elapsed().as_secs_f64();
         }
-        timed_step(&mut fluid, &mut accel, dt, &mut t_force, &mut t_integ);
+        timed_step(&mut fluid, &mut accel, dt, engine, &mut t_force, &mut t_integ);
     }
     for step in 1..=steps {
-        timed_step(&mut fluid, &mut accel, dt, &mut t_force, &mut t_integ);
+        timed_step(&mut fluid, &mut accel, dt, engine, &mut t_force, &mut t_integ);
         if step % sample_every == 0 {
             let t = Instant::now();
-            let (e_pot, e_kin) = (fluid.e_pot(), fluid.e_kin());
+            let (e_pot, e_kin) = (fluid.e_pot(engine), fluid.e_kin());
             t_measure += t.elapsed().as_secs_f64();
             let t = Instant::now();
             writer.write_frame(&Frame {

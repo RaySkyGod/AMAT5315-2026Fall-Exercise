@@ -2,6 +2,7 @@
 
 use crate::run::SimConfig;
 use crate::traj::{write_run, TrajWriter};
+use crate::ForceEngine;
 use anyhow::Context;
 use clap::{Args, Parser, Subcommand};
 use std::path::{Path, PathBuf};
@@ -47,6 +48,9 @@ pub struct RunArgs {
     pub seed: u64,
     #[arg(long, default_value = "velocity-verlet")]
     pub integrator: String,
+    /// Pair search: cell list (default) or the original all-pairs loop.
+    #[arg(long, default_value = "cells")]
+    pub force: ForceEngine,
     #[arg(long, default_value = "artifacts")]
     pub out: PathBuf,
 }
@@ -68,6 +72,7 @@ pub fn do_run(args: &RunArgs) -> anyhow::Result<()> {
         steps: args.steps,
         sample_every: args.sample_every,
         seed: args.seed,
+        force: args.force,
     };
     let (rc, frames) = crate::run::simulate(&cfg)?;
     write_run(&args.out, &rc)?;
@@ -143,6 +148,7 @@ mod tests {
             n: 36, rho: 0.8, temperature: 0.5, dt: 0.01,
             eq_steps: 0, steps: 10, sample_every: 10, seed: 1,
             integrator: "rk4".into(), out: "/tmp/md-rk4".into(),
+            force: ForceEngine::Cells,
         };
         assert!(do_run(&args).is_err());
     }
@@ -153,5 +159,16 @@ mod tests {
         assert!(matches!(c.command, Command::Check { .. }));
         let c = Cli::try_parse_from(["md", "video", "artifacts", "--out", "o.mp4"]).unwrap();
         assert!(matches!(c.command, Command::Video { .. }));
+    }
+
+    #[test]
+    fn force_flag_defaults_to_cells_and_rejects_unknown() {
+        let c = Cli::try_parse_from(["md", "run", "--out", "X"]).unwrap();
+        let Command::Run(a) = c.command else { panic!() };
+        assert_eq!(a.force, ForceEngine::Cells);
+        let c = Cli::try_parse_from(["md", "run", "--force", "naive"]).unwrap();
+        let Command::Run(a) = c.command else { panic!() };
+        assert_eq!(a.force, ForceEngine::Naive);
+        assert!(Cli::try_parse_from(["md", "run", "--force", "magic"]).is_err());
     }
 }

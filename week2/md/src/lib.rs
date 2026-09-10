@@ -6,6 +6,7 @@ pub fn greeting() -> String {
 mod integrators;
 mod fluid;
 pub mod cli;
+mod cells;
 mod check;
 mod lattice;
 mod rdf;
@@ -15,7 +16,7 @@ mod thermostat;
 mod traj;
 
 pub use check::{chi_square, run_check, secular_drift, t_speed, CheckRow};
-pub use fluid::{force_shifted, min_image, u_shifted, Fluid, RC, Verlet};
+pub use fluid::{force_shifted, min_image, u_shifted, Fluid, ForceEngine, RC, Verlet};
 pub use lattice::{triangular, Lattice};
 
 pub use integrators::{run, ForwardEuler, Integrator, VelocityVerlet};
