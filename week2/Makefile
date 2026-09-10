@@ -9,4 +9,13 @@
 reproduce:
 	cargo run --manifest-path md/Cargo.toml --release -- run --out artifacts
 
-.PHONY: reproduce
+check:
+	cargo run --manifest-path md/Cargo.toml --release -- check artifacts
+
+video:
+	cargo run --manifest-path md/Cargo.toml --release -- video artifacts --out fluid.mp4
+
+test:
+	cargo test --manifest-path md/Cargo.toml
+
+.PHONY: reproduce check video test
