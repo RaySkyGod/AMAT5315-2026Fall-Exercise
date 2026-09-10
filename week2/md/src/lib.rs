@@ -4,7 +4,10 @@ pub fn greeting() -> String {
 }
 
 mod integrators;
+mod lattice;
 mod system;
+
+pub use lattice::{triangular, Lattice};
 
 pub use integrators::{run, ForwardEuler, Integrator, VelocityVerlet};
 pub use system::{System, Vec2};
