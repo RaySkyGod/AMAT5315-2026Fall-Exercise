@@ -6,6 +6,7 @@ pub fn greeting() -> String {
 mod integrators;
 mod fluid;
 mod lattice;
+mod run;
 mod system;
 mod thermostat;
 mod traj;
@@ -14,6 +15,7 @@ pub use fluid::{force_shifted, min_image, u_shifted, Fluid, RC, Verlet};
 pub use lattice::{triangular, Lattice};
 
 pub use integrators::{run, ForwardEuler, Integrator, VelocityVerlet};
+pub use run::{simulate, SimConfig};
 pub use system::{System, Vec2};
 pub use thermostat::{gaussian_velocities, remove_com, rescale, thermo_temp};
 pub use traj::{load, write_run, Frame, RunConfig, TrajWriter};
