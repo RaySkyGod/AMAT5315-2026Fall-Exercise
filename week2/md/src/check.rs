@@ -141,4 +141,29 @@ mod tests {
         let e = vec![1.5_f64; 200];
         assert_eq!(secular_drift(&e), 0.0);
     }
+
+    /// End-to-end: the acceptance path (`md check`) on a real simulation.
+    #[test]
+    fn check_passes_on_a_real_run() {
+        use crate::run::{simulate, SimConfig};
+        use crate::traj::{write_run, TrajWriter};
+        let cfg = SimConfig {
+            n: 64, rho: 0.8, temperature: 0.5, dt: 0.01,
+            eq_steps: 1000, steps: 2000, sample_every: 50, seed: 2026,
+        };
+        let (rc, frames) = simulate(&cfg).unwrap();
+        assert_eq!(frames.len(), 40);
+        let dir = std::env::temp_dir().join(format!("md-check-it-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        write_run(&dir, &rc).unwrap();
+        let mut w = TrajWriter::new(&dir).unwrap();
+        for f in &frames {
+            w.write_frame(f).unwrap();
+        }
+        drop(w);
+        let rows = run_check(&dir).unwrap();
+        for r in &rows {
+            assert!(r.pass, "{} = {} limit {}", r.name, r.value, r.limit);
+        }
+    }
 }
