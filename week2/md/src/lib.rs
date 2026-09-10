@@ -5,6 +5,7 @@ pub fn greeting() -> String {
 
 mod integrators;
 mod fluid;
+pub mod cli;
 mod check;
 mod lattice;
 mod rdf;
@@ -23,6 +24,7 @@ pub use run::{simulate, SimConfig};
 pub use system::{System, Vec2};
 pub use thermostat::{gaussian_velocities, remove_com, rescale, thermo_temp};
 pub use traj::{load, write_run, Frame, RunConfig, TrajWriter};
+pub mod video;
 
 /// Lennard-Jones pair potential energy in reduced units (sigma = epsilon = 1):
 /// u(r) = 4[(1/r)^12 - (1/r)^6].
