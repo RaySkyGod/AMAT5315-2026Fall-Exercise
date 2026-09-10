@@ -63,6 +63,20 @@ slope follows N^2 (every pair visited), the cells slope flattens toward N
 (each atom only searches the nine surrounding cells of width >= rc, so
 visited-pairs-per-atom stays bounded as N grows).
 
+## Pages
+
+The published page (GitHub Pages, `docs/` folder):
+
+<https://rayskygod.github.io/AMAT5315-2026Fall-Exercise/>
+
+It carries the N = 400 heating trajectory (T = 0.2 -> 1.2 over 20000 steps,
+200 frames, `ramp_to: 1.2` recorded in run.json). Long-range g(r)
+contrast (RMS of g-1 beyond r = 2): first frame 0.551 -> last frame
+0.497, the crystal order dissolving as the fluid heats. Local copies of
+the comparison videos: `cold.mp4` (T = 0.2: atoms vibrate about lattice
+sites, sharp g(r) peaks persist to long range) and `hot.mp4` (T = 1.0:
+neighbours exchange, g(r) flattens beyond the first peak), each < 2 MB.
+
 ## Reproduce
 
 From `week2/`:
@@ -95,6 +109,12 @@ python3 plot_scaling.py /tmp/bench.csv scaling.png
 
 # Physics acceptance of the Part 4 contract run
 make reproduce && make check && make video
+
+# Heating run on the published page + cold/hot comparison videos
+md run --n 400 --temperature 0.2 --ramp-to 1.2 \
+    --steps 20000 --sample-every 100 --out ../docs
+md run --temperature 0.2 --out /tmp/cold && md video /tmp/cold --out cold.mp4
+md run --temperature 1.0 --out /tmp/hot && md video /tmp/hot --out hot.mp4
 ```
 
 `samply record` itself (if your kernel allows it):
