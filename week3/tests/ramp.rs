@@ -183,15 +183,50 @@ fn acceptance_is_reported_at_a_temperature_that_accepts() {
 }
 
 #[test]
-fn wolff_update_is_rejected_until_part4() {
-    let out = tmpdir("wolff");
+fn wolff_ramp_writes_cluster_size_and_time_unit() {
+    let out = tmpdir("wolff-ok");
     let cfg = RampConfig {
         update: Update::Wolff,
-        out,
+        t_from: 2.0,
+        t_to: 2.0,
+        t_step: 0.1,
+        discard: 5,
+        measure: 4,
+        every: 2,
+        seed: 9,
+        out: out.clone(),
         ..small_cfg(tmpdir("wolff-base"), 0)
     };
-    let err = run_ramp(&cfg).unwrap_err();
-    assert!(err.to_string().contains("wolff"));
+    let summaries = run_ramp(&cfg).unwrap();
+
+    let run: Value =
+        serde_json::from_str(&fs::read_to_string(out.join("run.json")).unwrap()).unwrap();
+    assert_eq!(run["update"], "wolff");
+    assert_eq!(run["time_unit"], "cluster_flip");
+
+    let rows: Vec<Value> = fs::read_to_string(out.join("series.jsonl"))
+        .unwrap()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect();
+    assert_eq!(rows.len(), 4);
+    for (k, row) in rows.iter().enumerate() {
+        assert_eq!(row["sweep"], (k + 1) as i64);
+        assert!(row["cluster_size"].as_u64().unwrap() >= 1);
+    }
+
+    // frames count cluster moves globally, discard included
+    let frames: Vec<Value> = fs::read_to_string(out.join("spins.jsonl"))
+        .unwrap()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect();
+    let sweeps: Vec<i64> = frames.iter().map(|f| f["sweep"].as_i64().unwrap()).collect();
+    assert_eq!(sweeps, vec![7, 9]);
+
+    let s = &summaries[0];
+    assert!(s.mean_cluster_size >= 1.0);
+    assert!(s.mean_abs_m >= 0.0 && s.mean_abs_m <= 1.0);
 }
 
 #[test]
@@ -203,4 +238,50 @@ fn out_folder_may_already_exist() {
     // a second run overwrites cleanly
     run_ramp(&small_cfg(out.clone(), 0)).unwrap();
     assert!(out.join("series.jsonl").exists());
+}
+
+#[test]
+fn acceptance_is_per_temperature_not_cumulative() {
+    let out = tmpdir("accept-per-t");
+    let cfg = RampConfig {
+        t_from: 1.0,
+        t_to: 5.0,
+        t_step: 4.0,
+        discard: 10,
+        measure: 40,
+        out,
+        ..small_cfg(tmpdir("accept-base"), 0)
+    };
+    let summaries = run_ramp(&cfg).unwrap();
+    // a hot lattice accepts far more than a cold ordered one; a cumulative
+    // counter would drag the second temperature toward the first
+    assert!(
+        summaries[1].acceptance > summaries[0].acceptance + 0.2,
+        "cold {} vs hot {}",
+        summaries[0].acceptance,
+        summaries[1].acceptance
+    );
+}
+
+#[test]
+fn mean_cluster_size_is_per_temperature_not_cumulative() {
+    let out = tmpdir("csize-per-t");
+    let cfg = RampConfig {
+        update: Update::Wolff,
+        t_from: 2.0,
+        t_to: 3.5,
+        t_step: 1.5,
+        discard: 20,
+        measure: 200,
+        out,
+        ..small_cfg(tmpdir("csize-base"), 0)
+    };
+    let summaries = run_ramp(&cfg).unwrap();
+    // clusters are large near Tc and small when hot; a cumulative average
+    // would keep the hot row inflated by the critical one
+    let (cold, hot) = (summaries[0].mean_cluster_size, summaries[1].mean_cluster_size);
+    assert!(
+        cold > 2.0 * hot,
+        "T=2.0 mean cluster {cold} vs T=3.5 {hot}"
+    );
 }

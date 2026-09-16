@@ -109,17 +109,23 @@ fn unknown_update_is_rejected() {
 }
 
 #[test]
-fn wolff_reports_part4() {
+fn wolff_runs_and_reports_mean_cluster_size() {
     let out = tmpdir("wolff");
     let output = ising()
         .args([
             "--update", "wolff", "--l", "4",
-            "--t-from", "1.0", "--t-to", "1.0", "--t-step", "0.1",
-            "--discard", "2", "--measure", "3", "--seed", "3",
+            "--t-from", "2.0", "--t-to", "2.0", "--t-step", "0.1",
+            "--discard", "5", "--measure", "5", "--seed", "3",
             "--out", out.to_str().unwrap(),
         ])
         .output()
         .unwrap();
-    assert!(!output.status.success());
-    assert!(String::from_utf8_lossy(&output.stderr).contains("Part 4"));
+    assert!(output.status.success(), "stderr: {}", String::from_utf8_lossy(&output.stderr));
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let lines: Vec<&str> = stdout.lines().collect();
+    assert_eq!(lines[0], "T\tmean_abs_M\tmean_cluster_size");
+    let cols: Vec<&str> = lines[1].split('\t').collect();
+    assert_eq!(cols.len(), 3);
+    assert!(cols[2].parse::<f64>().unwrap() >= 1.0);
+    assert!(out.join("series.jsonl").exists());
 }

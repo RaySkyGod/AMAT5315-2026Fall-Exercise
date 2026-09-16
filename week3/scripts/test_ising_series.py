@@ -261,3 +261,49 @@ class TestErrorTable:
             assert r.tau > 0
         ts32 = [r.t for r in rows if r.l == 32]
         assert ts32 == sorted(ts32)
+
+
+class TestBootstrapSe:
+    def test_white_noise_matches_naive(self):
+        rng = np.random.default_rng(3)
+        x = rng.normal(size=20_000)
+        a = np.abs(x)
+        se = iser.bootstrap_se(a, block_len=100, replicates=200,
+                               rng=np.random.default_rng(4))
+        assert abs(se / iser.naive_stderr(a) - 1.0) < 0.15
+
+    def test_correlated_series_inflates_error(self):
+        rng = np.random.default_rng(5)
+        e = rng.normal(size=100_000)
+        x = np.empty_like(e)
+        x[0] = e[0]
+        for k in range(1, len(e)):
+            x[k] = 0.95 * x[k - 1] + e[k]
+        a = np.abs(x)
+        # blocks of 2000 >> tau: bootstrap error approaches sqrt(2 tau) naive
+        se = iser.bootstrap_se(a, block_len=2000, replicates=200,
+                               rng=np.random.default_rng(6))
+        expect = iser.naive_stderr(a) * np.sqrt(2 * iser.tau_int(a))
+        assert 0.5 < se / expect < 1.5
+
+
+class TestClusterRows:
+    def test_group_with_cluster_size(self, tmp_path):
+        from conftest import make_run
+
+        out = make_run(tmp_path / "w", 32, [2.0, 2.05], 1)
+        rows = [
+            {"L": 32, "T": 2.0, "sweep": 1, "M": 0.5, "E": -1.0, "cluster_size": 7},
+            {"L": 32, "T": 2.0, "sweep": 2, "M": -0.2, "E": -0.9, "cluster_size": 3},
+            {"L": 32, "T": 2.05, "sweep": 1, "M": 0.1, "E": -0.8, "cluster_size": 11},
+        ]
+        # conftest.make_run generates its own rows; write wolff-style rows here
+        (out / "run.json").write_text(json.dumps({"L": 32, "update": "wolff"}))
+        with open(out / "series.jsonl", "w") as f:
+            for r in rows:
+                f.write(json.dumps(r) + "\n")
+        grouped = iser.group_with_cluster(out)
+        assert list(grouped) == [2.0, 2.05]
+        m, c = grouped[2.0]
+        assert list(m) == [0.5, -0.2]
+        assert list(c) == [7, 3]

@@ -12,6 +12,7 @@ use crate::grid::temperature_grid;
 use crate::lattice::Lattice;
 use crate::metro::Metro;
 use crate::rng::Xoshiro256;
+use crate::wolff::Wolff;
 
 /// The update rule named by `--update`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -83,9 +84,7 @@ pub struct TempSummary {
 pub fn run_ramp(cfg: &RampConfig) -> Result<Vec<TempSummary>> {
     match cfg.update {
         Update::Metropolis => run_metropolis(cfg),
-        Update::Wolff => Err(anyhow!(
-            "--update wolff is not implemented yet (Part 4 of the learning sheet)"
-        )),
+        Update::Wolff => run_wolff(cfg),
     }
 }
 
@@ -127,6 +126,43 @@ fn run_metropolis(cfg: &RampConfig) -> Result<Vec<TempSummary>> {
     Ok(summaries)
 }
 
+fn run_wolff(cfg: &RampConfig) -> Result<Vec<TempSummary>> {
+    let t_grid = cfg.t_grid();
+    if cfg.l < 2 {
+        return Err(anyhow!("--l must be at least 2"));
+    }
+    fs::create_dir_all(&cfg.out)
+        .with_context(|| format!("creating output folder {}", cfg.out.display()))?;
+
+    let run = serde_json::json!({
+        "L": cfg.l,
+        "update": cfg.update.as_str(),
+        "t_grid": t_grid,
+        "discard": cfg.discard,
+        "measure": cfg.measure,
+        "seed": cfg.seed,
+        "sample_every": 1,
+        "time_unit": cfg.update.time_unit(),
+    });
+    fs::write(
+        cfg.out.join("run.json"),
+        serde_json::to_string_pretty(&run)? + "\n",
+    )?;
+
+    let series = BufWriter::with_capacity(1 << 20, File::create(cfg.out.join("series.jsonl"))?);
+    let frames = if cfg.every > 0 {
+        Some(BufWriter::with_capacity(
+            1 << 20,
+            File::create(cfg.out.join("spins.jsonl"))?,
+        ))
+    } else {
+        None
+    };
+
+    let summaries = wolff_chain(cfg, &t_grid, series, frames);
+    Ok(summaries)
+}
+
 fn metropolis_chain<W1: Write, W2: Write>(
     cfg: &RampConfig,
     t_grid: &[f64],
@@ -145,6 +181,7 @@ fn metropolis_chain<W1: Write, W2: Write>(
 
     for &t in t_grid {
         metro.set_temperature(t);
+        metro.reset_stats();
         for _ in 0..cfg.discard {
             metro.sweep();
             global_step += 1;
@@ -197,4 +234,60 @@ fn write_frame<W: Write>(w: &mut W, l: usize, t: f64, sweep: u64, m: f64, lattic
         "{{\"L\":{},\"T\":{},\"sweep\":{},\"m\":{:.6},\"spins\":{}}}",
         l, t, sweep, m, spins
     );
+}
+
+fn wolff_chain<W1: Write, W2: Write>(
+    cfg: &RampConfig,
+    t_grid: &[f64],
+    mut series: W1,
+    mut frames: Option<W2>,
+) -> Vec<TempSummary> {
+    // one random stream per run, carried through the ramp; one step is one
+    // cluster move, recorded every move (the observation interval must not
+    // depend on the cluster sizes just seen)
+    let mut wolff = Wolff::new(
+        Lattice::all_up(cfg.l),
+        Xoshiro256::seed_from_u64(cfg.seed),
+        t_grid[0],
+    );
+    let mut global_step: u64 = 0;
+    let mut summaries = Vec::with_capacity(t_grid.len());
+
+    for &t in t_grid {
+        wolff.set_temperature(t);
+        wolff.reset_stats();
+        for _ in 0..cfg.discard {
+            wolff.move_once();
+            global_step += 1;
+        }
+        let mut sum_abs_m = 0.0f64;
+        for k in 1..=cfg.measure {
+            let size = wolff.move_once();
+            global_step += 1;
+            let m = wolff.lattice.magnetization();
+            let e = wolff.lattice.energy_per_site();
+            sum_abs_m += m.abs();
+            let _ = writeln!(
+                series,
+                "{{\"L\":{},\"T\":{},\"sweep\":{},\"M\":{:.6},\"E\":{:.6},\"cluster_size\":{}}}",
+                cfg.l, t, k, m, e, size
+            );
+            if cfg.every > 0 && k % cfg.every == 0 {
+                if let Some(w) = frames.as_mut() {
+                    write_frame(w, cfg.l, t, global_step, m, &wolff.lattice);
+                }
+            }
+        }
+        summaries.push(TempSummary {
+            t,
+            mean_abs_m: sum_abs_m / cfg.measure as f64,
+            acceptance: 0.0,
+            mean_cluster_size: wolff.mean_cluster_size(),
+        });
+    }
+    let _ = series.flush();
+    if let Some(ref mut w) = frames {
+        let _ = w.flush();
+    }
+    summaries
 }

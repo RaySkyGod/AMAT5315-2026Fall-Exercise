@@ -1,0 +1,3 @@
+work-normalized autocorrelation times, L = 64
+at T = 2.3: metropolis tau = 742.550 sweeps, wolff tau_moves = 4.635, <c> = 942.4, tau_work = 1.066
+ratio (metropolis / wolff tau_work) = 696.4

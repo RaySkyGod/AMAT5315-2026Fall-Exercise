@@ -54,3 +54,27 @@ def make_synthetic_artifacts(root: Path, n: int = 50) -> Path:
     make_run(art / "window-l32", 32, [round(2.0 + 0.05 * k, 2) for k in range(13)], 1042, n)
     make_run(art / "window-l64", 64, [round(2.0 + 0.05 * k, 2) for k in range(13)], 42, n)
     return art
+
+
+def make_wolff_run(root: Path, l: int, temps, seed: int, n: int = 50, cluster: int = 400):
+    """Wolff-style run: same |m| pattern as the metropolis synthetic data
+    plus a cluster_size column."""
+    out = root / f"wolff-l{l}"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "run.json").write_text(
+        json.dumps({"L": l, "update": "wolff", "t_grid": list(temps), "seed": seed,
+                    "time_unit": "cluster_flip"})
+    )
+    with open(out / "series.jsonl", "w") as f:
+        for t in temps:
+            for sweep in range(1, n + 1):
+                if t < 2.0:
+                    u = ORDERED_ABS_M - 0.001 * (sweep % 3)
+                else:
+                    s = np.sqrt(t * (0.25 - 0.2 * (t - T_STAR[l]) ** 2))
+                    u = 1.0 + s * np.cos(2 * np.pi * sweep / 50)
+                m = u if sweep % 2 else -u
+                f.write(json.dumps({"L": l, "T": t, "sweep": sweep,
+                                    "M": round(m, 6), "E": -1.0,
+                                    "cluster_size": cluster}) + "\n")
+    return out

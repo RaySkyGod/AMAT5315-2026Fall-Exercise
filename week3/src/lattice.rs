@@ -8,7 +8,7 @@ pub struct Lattice {
     /// +1 or -1, row-major; site y*l + x.
     pub spins: Vec<i8>,
     /// Precomputed periodic neighbour table (right, down, left, up).
-    neighbors: Vec<[u32; 4]>,
+    pub(crate) neighbors: Vec<[u32; 4]>,
     /// Running sum of spins and total energy (sum over bonds of -s_i s_j).
     mag_sum: i64,
     energy: i64,
@@ -84,6 +84,13 @@ impl Lattice {
         let s = &mut self.spins[site];
         *s = -*s;
         self.mag_sum += 2 * *s as i64;
+        self.energy += delta_e;
+    }
+
+    /// Bookkeeping for flipping many spins at once (cluster updates): the
+    /// magnetization and energy changes of the whole cluster.
+    pub fn apply_flip_deltas(&mut self, mag_delta: i64, delta_e: i64) {
+        self.mag_sum += mag_delta;
         self.energy += delta_e;
     }
 

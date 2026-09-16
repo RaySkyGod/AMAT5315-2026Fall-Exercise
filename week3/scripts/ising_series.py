@@ -244,3 +244,31 @@ def error_table(artifacts: Path) -> list[ErrorRow]:
             )
     rows.sort(key=lambda r: (r.l, r.t))
     return rows
+
+
+def bootstrap_se(
+    x: np.ndarray, block_len: int, replicates: int, rng: np.random.Generator
+) -> float:
+    """Block-bootstrap standard error of the mean: draw whole blocks with
+    replacement, average the resampled series per replicate, and take the
+    standard deviation of the replicate means. Preserves correlations inside
+    each block."""
+    x = np.asarray(x, dtype=float)
+    nblocks = len(x) // block_len
+    blocks = x[: nblocks * block_len].reshape(nblocks, block_len).mean(axis=1)
+    reps = rng.choice(blocks, size=(replicates, nblocks), replace=True).mean(axis=1)
+    return float(np.std(reps, ddof=1))
+
+
+def group_with_cluster(run: Path) -> dict[float, tuple[np.ndarray, np.ndarray]]:
+    """Wolff series grouped by temperature: (M array, cluster_size array)."""
+    meta, rows = load_run(run)
+    by_t: dict[float, tuple[list[float], list[float]]] = {}
+    for r in rows:
+        m, c = by_t.setdefault(round(r["T"], 9), ([], []))
+        m.append(r["M"])
+        c.append(r["cluster_size"])
+    assert meta.get("update") == "wolff", "cluster_size rows come from wolff runs"
+    return {
+        t: (np.array(m), np.array(c)) for t, (m, c) in sorted(by_t.items())
+    }

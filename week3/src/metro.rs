@@ -44,9 +44,16 @@ impl Metro {
         self.accept_table[((delta_e + 8) / 4) as usize]
     }
 
-    /// Accepted flips per proposal since construction.
+    /// Accepted flips per proposal since construction (or the last reset).
     pub fn acceptance_rate(&self) -> f64 {
         self.accepted as f64 / self.proposals as f64
+    }
+
+    /// Zero the acceptance counters: the stdout table reports them per
+    /// temperature, over that temperature's discard + measure steps.
+    pub fn reset_stats(&mut self) {
+        self.accepted = 0;
+        self.proposals = 0;
     }
 
     /// One sweep: n = L² uniform proposals with replacement.
