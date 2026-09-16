@@ -31,13 +31,17 @@ SEED = 2026
 
 
 def bootstrap_errors(abs_series: dict, ts, rng) -> np.ndarray:
-    """Block-bootstrap error of mean |M| at each temperature and block length."""
-    return np.array(
-        [
-            [iser.bootstrap_se(abs_series[t], b, replicates=200, rng=rng) for b in BLOCKS]
-            for t in ts
-        ]
-    )
+    """Block-bootstrap error of mean |M| at each temperature and block length.
+    Block lengths longer than half the series are skipped (kept as NaN): too
+    few blocks remain for an error estimate."""
+    rows = []
+    for t in ts:
+        x = abs_series[t]
+        usable = [b for b in BLOCKS if b <= len(x) // 2]
+        se = [iser.bootstrap_se(x, b, replicates=200, rng=rng) for b in usable]
+        se += [float("nan")] * (len(BLOCKS) - len(usable))
+        rows.append(se)
+    return np.array(rows)
 
 
 def stable(ses_row) -> bool:
