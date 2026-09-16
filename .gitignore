@@ -9,3 +9,8 @@ target/
 
 # Course materials (large binaries)
 *.zip
+
+# week3 run outputs (regenerate with the ising CLI; see week3/README.md)
+week3/runs/
+week3/artifacts/
+week3/sheet.txt
