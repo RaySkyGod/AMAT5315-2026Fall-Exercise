@@ -1,0 +1,5 @@
+block length 2000: mean T_c = 2.2576 (sd 0.0107, 0 failed fits, 500 successful replicates)
+block length 4000: mean T_c = 2.2569 (sd 0.0150, 0 failed fits, 500 successful replicates)
+block length 8000: mean T_c = 2.2587 (sd 0.0140, 0 failed fits, 500 successful replicates)
+sampling error of T_c: 0.0107, 0.0150, 0.0140 -> unresolved (values agree within a tenth of their mean)
+central estimate 2.2578; exact Tc 2.26919

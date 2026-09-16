@@ -133,3 +133,131 @@ class TestMeanAbsM:
             }
         }
         assert iser.mean_abs_m_at_lowest_t(merged[32]) == pytest.approx(0.925)
+
+
+class TestAutocorrelation:
+    def test_rho_starts_at_one_and_matches_direct_sum(self):
+        x = np.array([1.0, -0.5, 0.25, 2.0, -1.5, 0.5, 0.75, -2.0])
+        rho = iser.autocorr(x, max_lag=3)
+        assert rho[0] == pytest.approx(1.0)
+        # direct computation of rho(1) by Equation 12
+        mean = x.mean()
+        num = np.mean((x[:-1] - mean) * (x[1:] - mean))
+        den = np.mean((x - mean) ** 2)
+        assert rho[1] == pytest.approx(num / den)
+
+    def test_tau_int_of_white_noise_is_half(self):
+        rng = np.random.default_rng(5)
+        x = rng.normal(size=100_000)
+        tau = iser.tau_int(x)
+        assert 0.3 < tau < 0.9
+
+    def test_tau_int_of_ar1_matches_analytic(self):
+        # AR(1) with phi: rho(t) = phi^t, tau_int = 1/2 + phi/(1 - phi)
+        phi = 0.9
+        rng = np.random.default_rng(6)
+        n = 500_000
+        e = rng.normal(size=n)
+        x = np.empty(n)
+        x[0] = e[0]
+        for k in range(1, n):
+            x[k] = phi * x[k - 1] + e[k]
+        tau = iser.tau_int(x)
+        assert abs(tau - 9.5) < 0.5
+
+    def test_tau_int_grows_with_persistence(self):
+        rng = np.random.default_rng(7)
+        taus = []
+        for phi in (0.0, 0.9):
+            e = rng.normal(size=200_000)
+            x = np.empty_like(e)
+            x[0] = e[0]
+            for k in range(1, len(e)):
+                x[k] = phi * x[k - 1] + e[k]
+            taus.append(iser.tau_int(x))
+        assert taus[1] > 10 * taus[0]
+
+
+class TestStandardErrors:
+    def test_naive_stderr_formula(self):
+        x = np.array([1.0, 2.0, 3.0, 4.0])
+        assert iser.naive_stderr(x) == pytest.approx(np.std(x, ddof=1) / 2.0)
+
+    def test_block_stderr_of_ideal_blocks(self):
+        # 10 values, 5 blocks of 2: block means 1.5, 3.5, 5.5, 7.5, 9.5
+        x = np.arange(1.0, 11.0)
+        want = np.std([1.5, 3.5, 5.5, 7.5, 9.5], ddof=1) / np.sqrt(5)
+        assert iser.block_stderr(x, 5) == pytest.approx(want)
+
+    def test_block_stderr_uses_whole_blocks(self):
+        x = np.arange(1.0, 11.0)  # 10 values
+        got = iser.block_stderr(x, 3)  # 3 blocks of 3, last value dropped
+        want = np.std([2.0, 5.0, 8.0], ddof=1) / np.sqrt(3)
+        assert got == pytest.approx(want)
+
+    def test_binning_curve_starts_at_naive_and_rises_for_correlations(self):
+        rng = np.random.default_rng(8)
+        e = rng.normal(size=20_000)
+        x = np.empty_like(e)
+        x[0] = e[0]
+        for k in range(1, len(e)):
+            x[k] = 0.95 * x[k - 1] + e[k]
+        lengths, errs = iser.binning_curve(x)
+        assert lengths[0] == 1
+        assert errs[0] == pytest.approx(iser.naive_stderr(x))
+        # a strongly correlated series has a rising binning curve
+        assert errs[-1] > 5 * errs[0]
+        assert all(b >= a - 1e-15 for a, b in zip(errs, errs[1:]))
+
+
+class TestStrictPeakFit:
+    def test_recovers_a_downward_parabola(self):
+        ts = np.arange(2.25, 2.51, 0.05)
+        chis = -4.0 * (ts - 2.33) ** 2 + 3.0
+        assert iser.fit_peak_strict(ts, chis) == pytest.approx(2.33, abs=1e-9)
+
+    def test_upward_parabola_is_a_failed_fit(self):
+        ts = np.arange(2.25, 2.51, 0.05)
+        chis = 4.0 * (ts - 2.33) ** 2 + 3.0
+        assert iser.fit_peak_strict(ts, chis) is None
+
+    def test_vertex_outside_window_is_a_failed_fit(self):
+        ts = np.arange(2.25, 2.51, 0.05)
+        chis = -4.0 * (ts - 2.10) ** 2 + 3.0  # vertex at 2.10, outside
+        assert iser.fit_peak_strict(ts, chis) is None
+
+
+class TestLongestSeries:
+    def test_keeps_the_run_with_most_rows(self, tmp_path):
+        short = write_run(tmp_path, "a", 32, [2.0],
+                          [{"L": 32, "T": 2.0, "sweep": k, "M": 0.1, "E": -1.0} for k in range(1, 4)])
+        long = write_run(tmp_path, "b", 32, [2.0],
+                         [{"L": 32, "T": 2.0, "sweep": k, "M": 0.2, "E": -1.0} for k in range(1, 8)])
+        got = iser.longest_series([short, long])
+        assert len(got[32][2.0]) == 7
+
+    def test_covers_union_of_temperatures(self, tmp_path):
+        a = write_run(tmp_path, "a", 32, [1.5],
+                      [{"L": 32, "T": 1.5, "sweep": 1, "M": 0.1, "E": -1.0}])
+        b = write_run(tmp_path, "b", 32, [2.0],
+                      [{"L": 32, "T": 2.0, "sweep": 1, "M": 0.2, "E": -1.0}])
+        got = iser.longest_series([a, b])
+        assert list(got[32]) == [1.5, 2.0]
+
+
+class TestErrorTable:
+    def test_rows_for_every_size_and_temperature(self, tmp_path):
+        from conftest import make_synthetic_artifacts
+
+        art = make_synthetic_artifacts(tmp_path)
+        rows = iser.error_table(art)
+        # 14 temperatures per size (1.5 plus the 13 window points), two sizes
+        assert len(rows) == 28
+        cols = ["l", "t", "n", "mean_abs_m", "naive", "block50", "ratio", "tau"]
+        assert list(rows[0]._fields) == cols
+        for r in rows:
+            assert r.n > 0
+            assert r.ratio == pytest.approx(r.block50 / r.naive)
+            assert r.tau > 0
+        ts32 = [r.t for r in rows if r.l == 32]
+        assert ts32 == sorted(ts32)

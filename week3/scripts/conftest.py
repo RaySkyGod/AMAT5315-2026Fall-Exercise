@@ -15,7 +15,7 @@ T_STAR = {32: 2.325, 64: 2.315}
 ORDERED_ABS_M = 0.95
 
 
-def make_run(out: Path, l: int, temps: list[float], seed: int):
+def make_run(out: Path, l: int, temps: list[float], seed: int, n: int = 50):
     out.mkdir(parents=True, exist_ok=True)
     (out / "run.json").write_text(
         json.dumps(
@@ -33,7 +33,7 @@ def make_run(out: Path, l: int, temps: list[float], seed: int):
     )
     with open(out / "series.jsonl", "w") as f:
         for t in temps:
-            for sweep in range(1, 51):
+            for sweep in range(1, n + 1):
                 if t < 2.0:  # ordered phase: |m| pinned near 0.95
                     u = ORDERED_ABS_M - 0.001 * (sweep % 3)
                 else:
@@ -44,12 +44,13 @@ def make_run(out: Path, l: int, temps: list[float], seed: int):
                     u = 1.0 + s * np.cos(2 * np.pi * sweep / 50)
                 m = u if sweep % 2 else -u
                 f.write(json.dumps({"L": l, "T": t, "sweep": sweep, "M": round(m, 6), "E": -1.0}) + "\n")
+    return out
 
 
-def make_synthetic_artifacts(root: Path) -> Path:
+def make_synthetic_artifacts(root: Path, n: int = 50) -> Path:
     art = root / "artifacts"
-    make_run(art / "coarse-l32", 32, [1.5, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6], 1042)
-    make_run(art / "coarse-l64", 64, [1.5, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6], 42)
-    make_run(art / "window-l32", 32, [round(2.0 + 0.05 * k, 2) for k in range(13)], 1042)
-    make_run(art / "window-l64", 64, [round(2.0 + 0.05 * k, 2) for k in range(13)], 42)
+    make_run(art / "coarse-l32", 32, [1.5, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6], 1042, n)
+    make_run(art / "coarse-l64", 64, [1.5, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6], 42, n)
+    make_run(art / "window-l32", 32, [round(2.0 + 0.05 * k, 2) for k in range(13)], 1042, n)
+    make_run(art / "window-l64", 64, [round(2.0 + 0.05 * k, 2) for k in range(13)], 42, n)
     return art
