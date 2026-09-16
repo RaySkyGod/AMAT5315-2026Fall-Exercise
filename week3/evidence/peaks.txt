@@ -1,0 +1,6 @@
+mean |M| at lowest T: L=32: 0.9865
+T_peak(L=32) = 2.3526
+mean |M| at lowest T: L=64: 0.9867
+T_peak(L=64) = 2.3050
+T_c = 2.2574 (peaks: L32 2.3526, L64 2.3050)
+exact Tc = 2.26919, deviation -0.52%
