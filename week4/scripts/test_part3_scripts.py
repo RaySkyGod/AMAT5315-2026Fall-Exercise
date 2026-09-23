@@ -19,7 +19,8 @@ def test_ripple_velocity_has_the_prescribed_vorticity():
     k = np.fft.fftfreq(n, 1.0 / n).astype(int)
     kx = k[None, :]
     ky = k[:, None]
-    wh = (np.fft.fft2(dv.reshape(n, n)) * 1j * kx - np.fft.fft2(du.reshape(n, n)) * 1j * ky) / n**2
+    # numpy's fft2/ifft2 are both unnormalized (round trip = identity).
+    wh = np.fft.fft2(dv.reshape(n, n)) * 1j * kx - np.fft.fft2(du.reshape(n, n)) * 1j * ky
     omega = np.real(np.fft.ifft2(wh))
     x = np.arange(n) * 2 * np.pi / n
     X, Y = np.meshgrid(x, x)
