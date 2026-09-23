@@ -35,10 +35,11 @@ def ensure_artifacts():
 
 
 def relative_velocity_error(frame, exact):
-    u = np.array(frame["u"]).reshape(64, 64)
-    v = np.array(frame["v"]).reshape(64, 64)
-    ue = np.array(exact["u"]).reshape(64, 64)
-    ve = np.array(exact["v"]).reshape(64, 64)
+    n = int(round(len(frame["u"]) ** 0.5))
+    u = np.array(frame["u"]).reshape(n, n)
+    v = np.array(frame["v"]).reshape(n, n)
+    ue = np.array(exact["u"]).reshape(n, n)
+    ve = np.array(exact["v"]).reshape(n, n)
     return np.sqrt(((u - ue) ** 2 + (v - ve) ** 2).sum()) / np.sqrt((ue**2 + ve**2).sum())
 
 
