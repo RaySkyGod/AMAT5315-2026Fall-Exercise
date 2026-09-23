@@ -22,6 +22,7 @@ def _binary(name: str) -> str:
 
 def field(args, stdout_path):
     """Run `field` and write its JSON to stdout_path."""
+    Path(stdout_path).parent.mkdir(parents=True, exist_ok=True)
     with open(stdout_path, "w") as fh:
         subprocess.run([_binary("field")] + args, stdout=fh, check=True)
     return stdout_path
@@ -32,6 +33,7 @@ def pipeline(field_args, fluid_args, tsv_path):
 
     Returns fluid's exit code (1 means the run stopped at non-finite energy).
     """
+    Path(tsv_path).parent.mkdir(parents=True, exist_ok=True)
     f = subprocess.run([_binary("field")] + field_args, capture_output=True, check=True)
     with open(tsv_path, "wb") as fh:
         r = subprocess.run(
