@@ -24,11 +24,11 @@ def test_read_tsv_parses_header_rows_and_nan():
 def test_relative_error_on_synthetic_fields():
     from taylor_green import relative_velocity_error
 
-    frame = {"u": [1.0, 0.0], "v": [0.0, 1.0]}
-    exact = {"u": [1.0, 0.0], "v": [0.0, 2.0]}
-    # difference norm 1, exact norm sqrt(2) -> 1/sqrt(2)
+    # 2x2 grids: difference norm sqrt(2), exact norm sqrt(10).
+    frame = {"u": [1.0, 0.0, 0.0, 1.0], "v": [0.0, 1.0, 0.0, 1.0]}
+    exact = {"u": [1.0, 0.0, 0.0, 1.0], "v": [0.0, 2.0, 0.0, 2.0]}
     rel = relative_velocity_error(frame, exact)
-    assert abs(rel - 1 / math.sqrt(2)) < 1e-12
+    assert abs(rel - math.sqrt(2 / 10)) < 1e-12
 
 
 def test_taylor_green_script_ran():
