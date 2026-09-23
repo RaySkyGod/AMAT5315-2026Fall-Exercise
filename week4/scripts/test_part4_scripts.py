@@ -11,14 +11,15 @@ EV = HERE.parent / "evidence"
 
 
 def test_richardson_recovers_synthetic_fourth_order_error():
-    """omega_h = omega* + C h^4: the estimate must return C h^4 / ||omega||."""
+    """omega_h = omega* + C h^4: the estimate must return the finer run's
+    relative error ||omega_h - omega*|| / ||omega*||."""
     grid = np.linspace(0, 1, 256)
     omega_star = np.sin(4 * grid)
     c = 0.03
     w_1h = omega_star + c * 0.02**4  # h = 0.02
     w_2h = omega_star + c * 0.04**4  # 2h
     est = np.linalg.norm(w_2h - w_1h) / (15.0 * np.linalg.norm(w_1h))
-    want = c * 0.02**4 / np.linalg.norm(omega_star)
+    want = np.linalg.norm(w_1h - omega_star) / np.linalg.norm(omega_star)
     assert abs(est - want) / want < 1e-3
 
 
