@@ -36,6 +36,10 @@ exp_path = args.experiment or ROOT / "inputs" / run["experiment_file"].split("in
 exp = json.load(open(ROOT / run["experiment_file"]
                      if (ROOT / run["experiment_file"]).exists()
                      else Path(run["experiment_file"])))
+mode = "forward"
+res_path = args.dir / "result.json"
+if res_path.exists():
+    mode = json.load(open(res_path))["mode"]
 nx, nz = exp["nx"], exp["nz"]
 dx_km = exp["dx"] * exp["length_unit_m"] / 1000.0
 extent = [0, (nx - 1) * dx_km, (nz - 1) * dx_km, 0]
@@ -47,7 +51,11 @@ im = ax.imshow(frame, extent=extent, origin="upper", cmap="RdBu_r",
 ax.plot(np.array(exp["receivers"])[:, 0] * dx_km,
         np.array(exp["receivers"])[:, 1] * dx_km, "o", mfc="none", mec="k",
         ms=6, mew=1.2, label="Receivers")
-if args.field == "wavefield":
+if args.field == "wavefield" and mode == "adjoint":
+    pz = np.abs(np.array(exp["perturbation"])).sum(axis=1).argmax()
+    ax.axhline(pz * dx_km, color="0.2", ls="--", lw=1.2, label="Reflector")
+    title = f"Adjoint wavefield; shot 0, t = {t_s:.2f} s"
+elif args.field == "wavefield":
     sx, sz = exp["shots"][0]
     ax.plot(sx * dx_km, sz * dx_km, "*", color="red", ms=14, label="Active source")
     title = f"Forward wavefield; shot 0, t = {t_s:.2f} s"
@@ -61,7 +69,9 @@ ax.set_ylabel("Depth (km)")
 ax.set_title(title)
 ax.legend(loc="upper right", fontsize=8)
 cb = fig.colorbar(im, ax=ax, shrink=0.9)
-cb.set_label("Pressure difference (arbitrary units)" if args.field == "echo"
+cb.set_label("Adjoint pressure (arbitrary units)"
+             if (args.field == "wavefield" and mode == "adjoint")
+             else "Pressure difference (arbitrary units)" if args.field == "echo"
              else "Pressure (arbitrary units)")
 fig.tight_layout()
 out = args.dir / f"{args.field}.png"
