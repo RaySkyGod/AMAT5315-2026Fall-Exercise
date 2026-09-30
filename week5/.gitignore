@@ -1,0 +1,6 @@
+inputs/
+.venv/
+__pycache__/
+.pytest_cache/
+*.npy
+week5-extracted.txt
