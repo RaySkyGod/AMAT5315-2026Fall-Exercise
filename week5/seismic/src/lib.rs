@@ -1,3 +1,4 @@
+pub mod enzyme;
 pub mod experiment;
 pub mod forward;
 pub mod npy;
