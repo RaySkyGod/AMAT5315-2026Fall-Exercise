@@ -4,3 +4,4 @@ __pycache__/
 .pytest_cache/
 *.npy
 week5-extracted.txt
+week5-learning-sheet.pdf
