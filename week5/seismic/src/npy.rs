@@ -1,7 +1,7 @@
-//! Minimal NumPy .npy writer (version 1.0, little-endian, C order).
+//! Minimal NumPy .npy reader and writer (version 1.0, little-endian, C order).
 
 use std::fs::File;
-use std::io::Write;
+use std::io::{Read, Write};
 use std::path::Path;
 
 use anyhow::{bail, Context, Result};
@@ -62,4 +62,48 @@ pub fn write_f32(path: &Path, shape: &[usize], data: &[f32]) -> Result<()> {
         bytes.extend_from_slice(&v.to_le_bytes());
     }
     write_npy(path, "<f4", shape, &bytes)
+}
+
+/// Read a float64 .npy file: returns (shape, data). Validates the magic,
+/// version, `'<'` endianness, `f8` descr and C order.
+pub fn read_f64(path: &Path) -> Result<(Vec<usize>, Vec<f64>)> {
+    let mut f = File::open(path).with_context(|| format!("open {}", path.display()))?;
+    let mut buf = Vec::new();
+    f.read_to_end(&mut buf).with_context(|| format!("read {}", path.display()))?;
+    if buf.len() < 10 || &buf[..6] != b"\x93NUMPY" {
+        bail!("{}: not an npy file", path.display());
+    }
+    if buf[6] != 1 || buf[7] != 0 {
+        bail!("{}: only npy version 1.0 is supported", path.display());
+    }
+    let hlen = u16::from_le_bytes([buf[8], buf[9]]) as usize;
+    let header = String::from_utf8_lossy(&buf[10..10 + hlen]).to_string();
+    if !header.contains("'descr': '<f8'") {
+        bail!("{}: expected descr '<f8', header is {}", path.display(), header.trim_end());
+    }
+    if !header.contains("'fortran_order': False") {
+        bail!("{}: only C-order arrays are supported", path.display());
+    }
+    let open = header.find("'shape': (").context("shape key missing")? + "'shape': (".len();
+    let close = header[open..].find(')').context("shape tuple not closed")? + open;
+    let dims: Vec<usize> = header[open..close]
+        .split(',')
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.parse::<usize>())
+        .collect::<Result<_, _>>()
+        .with_context(|| format!("{}: bad shape tuple", path.display()))?;
+    let n: usize = dims.iter().product();
+    let payload = &buf[10 + hlen..];
+    if payload.len() != n * 8 {
+        bail!(
+            "{}: payload is {} bytes, shape {:?} needs {}",
+            path.display(), payload.len(), dims, n * 8
+        );
+    }
+    let mut data = Vec::with_capacity(n);
+    for chunk in payload.chunks_exact(8) {
+        data.push(f64::from_le_bytes(chunk.try_into().unwrap()));
+    }
+    Ok((dims, data))
 }
