@@ -156,3 +156,74 @@ fn adjoint_requires_data_option() {
     let st = run(&exp, &["--mode", "adjoint"], &out);
     assert!(!st.status.success(), "adjoint without --data must fail");
 }
+
+#[test]
+fn treeverse_matches_full_history_bitwise() {
+    let dir = test_dir("treeverse");
+    let m = model();
+    let exp = write_exp(&dir, "exp.json", &m);
+    let outb = dir.join("born");
+    let st = run(&exp, &["--mode", "born"], &outb);
+    assert!(st.status.success(), "{}", String::from_utf8_lossy(&st.stderr));
+    let data = outb.join("born_data.npy").display().to_string();
+
+    let outf = dir.join("full");
+    let st = run(&exp, &["--mode", "adjoint", "--data", &data], &outf);
+    assert!(st.status.success(), "{}", String::from_utf8_lossy(&st.stderr));
+    let (_, img_full) = seismic::npy::read_f64(&outf.join("image.npy")).unwrap();
+    let (_, d) = seismic::npy::read_f64(&outb.join("born_data.npy")).unwrap();
+
+    for delta in [1usize, 2, 3] {
+        let out = dir.join(format!("tv{delta}"));
+        let st = run(&exp, &["--mode", "adjoint", "--data", &data,
+                             "--storage", "treeverse", "--checkpoints", &delta.to_string()], &out);
+        assert!(st.status.success(), "{}", String::from_utf8_lossy(&st.stderr));
+        let (_, img) = seismic::npy::read_f64(&out.join("image.npy")).unwrap();
+        assert_eq!(img, img_full, "delta={delta} image must match full history bitwise");
+
+        // transpose identity still holds
+        let mflat: Vec<f64> = m.concat();
+        let dd = dot(&d, &d);
+        let mi = dot(&mflat, &img);
+        assert!((dd - mi).abs() / dd < 1e-12);
+
+        // actions file: exists, grad order 5..0, peak within budget
+        let doc: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(out.join("actions-0.json")).unwrap()).unwrap();
+        let acts = doc["actions"].as_array().unwrap();
+        let grads: Vec<i64> = acts.iter()
+            .filter(|a| a["action"] == "grad")
+            .map(|a| a["n"].as_i64().unwrap()).collect();
+        assert_eq!(grads, vec![5, 4, 3, 2, 1, 0]);
+        let peak = acts.iter().map(|a| a["saved_states"].as_u64().unwrap()).max().unwrap();
+        assert!(peak <= (delta + 1) as u64);
+
+        // statistics
+        let res: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(out.join("result.json")).unwrap()).unwrap();
+        let s = &res["statistics"];
+        assert_eq!(s["storage"], "treeverse");
+        assert_eq!(s["checkpoints"], delta);
+        assert_eq!(s["reverse_calls"], 6);
+        assert_eq!(s["per_shot"][0]["actions_file"], "actions-0.json");
+        let sched: usize = s["scheduler_forward_calls"].as_u64().unwrap() as usize;
+        assert!(sched > 0, "treeverse must replay some forward steps");
+    }
+}
+
+#[test]
+fn storage_option_validation() {
+    let dir = test_dir("storage-validation");
+    let exp = write_exp(&dir, "exp.json", &model());
+    let outb = dir.join("born");
+    run(&exp, &["--mode", "born"], &outb);
+    let data = outb.join("born_data.npy").display().to_string();
+    let out = dir.join("out");
+    // treeverse without --checkpoints fails
+    let st = run(&exp, &["--mode", "adjoint", "--data", &data, "--storage", "treeverse"], &out);
+    assert!(!st.status.success(), "treeverse without --checkpoints must fail");
+    // full with --checkpoints fails
+    let st = run(&exp, &["--mode", "adjoint", "--data", &data,
+                         "--storage", "full", "--checkpoints", "2"], &out);
+    assert!(!st.status.success(), "full with --checkpoints must fail");
+}

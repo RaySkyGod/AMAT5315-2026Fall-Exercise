@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use anyhow::{bail, Result};
 use clap::{Parser, ValueEnum};
 
+use seismic::adjoint::Storage;
 use seismic::{adjoint, born, experiment, forward};
 
 /// Simulate acoustic waves and their derivatives; no unstated defaults.
@@ -23,6 +24,12 @@ struct Cli {
     /// adjoint only: born_data.npy of a born run: the receiver weights to back-propagate
     #[arg(long)]
     data: Option<PathBuf>,
+    /// how adjoint keeps states: full (default) or treeverse
+    #[arg(long, value_enum, default_value_t = StorageArg::Full)]
+    storage: StorageArg,
+    /// treeverse only: saved-state slots beyond the initial state
+    #[arg(long)]
+    checkpoints: Option<usize>,
 }
 
 #[derive(Clone, ValueEnum)]
@@ -30,6 +37,12 @@ enum Mode {
     Forward,
     Born,
     Adjoint,
+}
+
+#[derive(Clone, ValueEnum, PartialEq)]
+enum StorageArg {
+    Full,
+    Treeverse,
 }
 
 fn main() -> Result<()> {
@@ -54,7 +67,22 @@ fn main() -> Result<()> {
                 Some(p) => p.clone(),
                 None => bail!("adjoint mode requires --data with a born_data.npy file"),
             };
-            adjoint::run(&exp, &meta, &cli.experiment, &data, &cli.out, cli.every)?;
+            let storage = match (&cli.storage, cli.checkpoints) {
+                (StorageArg::Full, None) => Storage::Full,
+                (StorageArg::Full, Some(_)) => {
+                    bail!("--checkpoints is only valid with --storage treeverse")
+                }
+                (StorageArg::Treeverse, None) => {
+                    bail!("--storage treeverse requires --checkpoints")
+                }
+                (StorageArg::Treeverse, Some(d)) => {
+                    if d == 0 {
+                        bail!("--checkpoints must be at least 1");
+                    }
+                    Storage::Treeverse(d)
+                }
+            };
+            adjoint::run(&exp, &meta, &cli.experiment, &data, &cli.out, cli.every, storage)?;
         }
     }
     Ok(())
