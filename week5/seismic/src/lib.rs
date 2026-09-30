@@ -1,3 +1,4 @@
+pub mod adjoint;
 pub mod born;
 pub mod enzyme;
 pub mod experiment;

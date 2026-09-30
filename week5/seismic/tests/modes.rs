@@ -80,3 +80,79 @@ fn born_rejects_every_option() {
     let st = run(&exp, &["--mode", "born", "--every", "2"], &out);
     assert!(!st.status.success(), "--every with born must fail");
 }
+
+fn model() -> Vec<Vec<f64>> {
+    (0..11).map(|z| (0..11).map(|x| 0.1 * ((x + 2 * z) as f64).sin()).collect()).collect()
+}
+
+fn dot(a: &[f64], b: &[f64]) -> f64 {
+    a.iter().zip(b).map(|(x, y)| x * y).sum()
+}
+
+#[test]
+fn adjoint_full_history_transpose_identity_and_statistics() {
+    let dir = test_dir("adjoint-full");
+    let m = model();
+    let exp = write_exp(&dir, "exp.json", &m);
+
+    // born data d = J m
+    let outb = dir.join("born");
+    let st = run(&exp, &["--mode", "born"], &outb);
+    assert!(st.status.success(), "{}", String::from_utf8_lossy(&st.stderr));
+    let (_, d) = seismic::npy::read_f64(&outb.join("born_data.npy")).unwrap();
+
+    // adjoint with the born data as weights: <d, d> == <m, J^T d>
+    let outa = dir.join("adj");
+    let data = outb.join("born_data.npy").display().to_string();
+    let st = run(&exp, &["--mode", "adjoint", "--data", &data, "--every", "2"], &outa);
+    assert!(st.status.success(), "{}", String::from_utf8_lossy(&st.stderr));
+    let stdout = String::from_utf8_lossy(&st.stdout);
+    assert!(stdout.starts_with("shot\tmode\tL2"));
+    assert_eq!(stdout.lines().count(), 2);
+    let (ishape, img) = seismic::npy::read_f64(&outa.join("image.npy")).unwrap();
+    assert_eq!(ishape, vec![11, 11]);
+    let mflat: Vec<f64> = m.concat();
+    let dd = dot(&d, &d);
+    let mi = dot(&mflat, &img);
+    assert!((dd - mi).abs() / dd < 1e-12, "<d,d>={dd} <m,img>={mi}");
+
+    // (c) random weights w: <J m, w> == <m, J^T w>
+    let mut x = 999u64;
+    let mut rnd = move || {
+        x = x.wrapping_mul(6364136223846793005).wrapping_add(1);
+        ((x >> 33) as f64) / (u32::MAX as f64)
+    };
+    let wv: Vec<f64> = (0..d.len()).map(|_| rnd() * 2.0 - 1.0).collect();
+    let wpath = dir.join("w.npy");
+    seismic::npy::write_f64(&wpath, &[1, 6, 2], &wv).unwrap();
+    let outw = dir.join("adjw");
+    let st = run(&exp, &["--mode", "adjoint", "--data", &wpath.display().to_string()], &outw);
+    assert!(st.status.success(), "{}", String::from_utf8_lossy(&st.stderr));
+    let (_, imgw) = seismic::npy::read_f64(&outw.join("image.npy")).unwrap();
+    let jw = dot(&d, &wv);
+    let mw = dot(&mflat, &imgw);
+    assert!((jw - mw).abs() / jw.abs() < 1e-12, "<Jm,w>={jw} <m,J^Tw>={mw}");
+    assert!(!outw.join("wavefield.npy").exists(), "no --every, no recording");
+    assert!(outa.join("wavefield.npy").exists(), "--every records shot 0");
+
+    // (d) statistics for full history: N steps -> N+1 saved states
+    let res: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(outa.join("result.json")).unwrap()).unwrap();
+    let s = &res["statistics"];
+    assert_eq!(s["storage"], "full");
+    assert_eq!(s["checkpoints"], serde_json::Value::Null);
+    assert_eq!(s["reverse_calls"], 6);   // steps * shots
+    assert_eq!(s["scheduler_forward_calls"], 0);
+    assert_eq!(s["peak_saved_states"], 7); // steps + 1
+    assert_eq!(s["peak_saved_bytes"], (7 * 2 * 11 * 11 * 8) as u64);
+    assert_eq!(s["per_shot"].as_array().unwrap().len(), 1);
+}
+
+#[test]
+fn adjoint_requires_data_option() {
+    let dir = test_dir("adjoint-nodata");
+    let exp = write_exp(&dir, "exp.json", &model());
+    let out = dir.join("out");
+    let st = run(&exp, &["--mode", "adjoint"], &out);
+    assert!(!st.status.success(), "adjoint without --data must fail");
+}

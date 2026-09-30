@@ -61,3 +61,32 @@ pub fn write_result_json(path: &Path, exp: &Experiment, mode: &str,
         statistics,
     })
 }
+
+/// The reverse-pass accounting that `writes.reverse` in seismic.design.toml
+/// promises in result.json.
+#[derive(Serialize)]
+pub struct Statistics {
+    /// "full": every complete state is kept; "treeverse": checkpointed
+    pub storage: String,
+    /// number of checkpoints used by treeverse; null for full
+    pub checkpoints: Option<usize>,
+    /// timestep VJPs (aggregated over shots)
+    pub reverse_calls: usize,
+    /// forward steps run to supply saved states, not the step repeated
+    /// inside each VJP (aggregated over shots)
+    pub scheduler_forward_calls: usize,
+    /// most complete states held at once
+    pub peak_saved_states: usize,
+    /// their size; one state is 2*nx*nz*8 bytes
+    pub peak_saved_bytes: u64,
+    pub per_shot: Vec<PerShot>,
+}
+
+#[derive(Serialize)]
+pub struct PerShot {
+    pub reverse_calls: usize,
+    pub scheduler_forward_calls: usize,
+    pub peak_saved_states: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub actions_file: Option<String>,
+}
