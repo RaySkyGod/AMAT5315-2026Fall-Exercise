@@ -12,8 +12,8 @@ use crate::output::{write_result_json, write_run_json, Recording};
 use crate::survey;
 use crate::wave::{self, State};
 
-pub fn run(exp: &Experiment, exp_path: &Path, out: &Path, every: Option<usize>)
-    -> Result<()> {
+pub fn run(exp: &Experiment, meta: &serde_json::Value, exp_path: &Path,
+          out: &Path, every: Option<usize>) -> Result<()> {
     std::fs::create_dir_all(out).with_context(|| format!("create {}", out.display()))?;
     let co = survey::coeffs(exp);
     let c = flatten(&exp.background, exp.nx, exp.nz)?;
@@ -83,7 +83,7 @@ pub fn run(exp: &Experiment, exp_path: &Path, out: &Path, every: Option<usize>)
             recording = Some(Recording { every: e, steps, times });
         }
     }
-    write_run_json(&out.join("run.json"), exp, &exp_path.display().to_string(), recording)?;
+    write_run_json(&out.join("run.json"), meta, &exp_path.display().to_string(), recording)?;
     write_result_json(&out.join("result.json"), exp, "forward", None)?;
     Ok(())
 }

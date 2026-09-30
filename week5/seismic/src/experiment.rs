@@ -8,6 +8,12 @@ use std::path::Path;
 use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 
+fn idx_pairs<'de, D>(d: D) -> Result<Vec<[usize; 2]>, D::Error>
+where D: serde::Deserializer<'de> {
+    let v: Vec<[f64; 2]> = serde::Deserialize::deserialize(d)?;
+    Ok(v.iter().map(|&[x, z]| [x as usize, z as usize]).collect())
+}
+
 #[derive(Deserialize, Serialize, Clone)]
 pub struct Experiment {
     #[serde(skip_serializing)]
@@ -22,7 +28,9 @@ pub struct Experiment {
     pub source_frequency: f64,
     pub source_peak_time: f64,
     pub source_amplitude: f64,
+    #[serde(deserialize_with = "idx_pairs")]
     pub shots: Vec<[usize; 2]>,      // [x, z]
+    #[serde(deserialize_with = "idx_pairs")]
     pub receivers: Vec<[usize; 2]>,  // [x, z]
     pub sponge_width: usize,
     pub sponge_strength: f64,
@@ -61,6 +69,18 @@ pub fn load(path: &Path) -> Result<Experiment> {
         }
     }
     Ok(e)
+}
+
+/// The experiment's raw JSON minus the two field arrays (for run.json).
+pub fn load_metadata(path: &Path) -> Result<serde_json::Value> {
+    let f = File::open(path).with_context(|| format!("open {}", path.display()))?;
+    let mut v: serde_json::Value = serde_json::from_reader(BufReader::new(f))
+        .with_context(|| format!("parse {}", path.display()))?;
+    if let Some(o) = v.as_object_mut() {
+        o.remove("background");
+        o.remove("perturbation");
+    }
+    Ok(v)
 }
 
 /// Flatten a `[z][x]` nested array into one Vec (depth-major).

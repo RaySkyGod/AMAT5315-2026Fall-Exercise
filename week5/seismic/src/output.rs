@@ -10,6 +10,7 @@ use serde::Serialize;
 
 use crate::experiment::Experiment;
 
+
 #[derive(Serialize)]
 pub struct Recording {
     pub every: usize,
@@ -25,16 +26,16 @@ fn write_json(path: &Path, value: &impl Serialize) -> Result<()> {
     Ok(())
 }
 
-pub fn write_run_json(path: &Path, exp: &Experiment, exp_file: &str,
+pub fn write_run_json(path: &Path, meta: &serde_json::Value, exp_file: &str,
                       recording: Option<Recording>) -> Result<()> {
     #[derive(Serialize)]
     struct Run<'a> {
         experiment_file: &'a str,
-        experiment: &'a Experiment,
+        experiment: &'a serde_json::Value,
         #[serde(skip_serializing_if = "Option::is_none")]
         recording: Option<Recording>,
     }
-    write_json(path, &Run { experiment_file: exp_file, experiment: exp, recording })
+    write_json(path, &Run { experiment_file: exp_file, experiment: meta, recording })
 }
 
 #[derive(Serialize)]

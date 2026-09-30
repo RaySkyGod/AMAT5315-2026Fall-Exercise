@@ -35,8 +35,9 @@ fn main() -> Result<()> {
         }
     }
     let exp = experiment::load(&cli.experiment)?;
+    let meta = experiment::load_metadata(&cli.experiment)?;
     match cli.mode {
-        Mode::Forward => forward::run(&exp, &cli.experiment, &cli.out, cli.every)?,
+        Mode::Forward => forward::run(&exp, &meta, &cli.experiment, &cli.out, cli.every)?,
     }
     Ok(())
 }
