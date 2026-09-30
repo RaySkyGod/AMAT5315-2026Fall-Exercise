@@ -45,9 +45,14 @@ fn state_rotate_and_sample_and_l2() {
     assert!(s.um.iter().all(|&v| v == 0.0));
     let mut un = vec![0.0; 12];
     un[5] = 2.0;
-    s.rotate(un);
+    s.rotate(&mut un);
     assert_eq!(s.u[5], 2.0);
     assert_eq!(s.um[5], 0.0);       // old u moved to um
+    assert_eq!(un[5], 0.0);         // scratch now holds the old u^{n-1}
+    un[5] = 7.0;
+    s.rotate(&mut un);
+    assert_eq!(s.um[5], 2.0);       // previous u became um
+    assert_eq!(s.u[5], 7.0);
     let y = sample(&s.u, 4, &[[1, 1], [3, 2], [1, 1]]);
     assert_eq!(y, vec![s.u[1 * 4 + 1], s.u[2 * 4 + 3], s.u[1 * 4 + 1]]);
     assert!((l2(&[3.0, 4.0]) - 5.0).abs() < 1e-12);

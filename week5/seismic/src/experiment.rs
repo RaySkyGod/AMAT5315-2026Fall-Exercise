@@ -6,10 +6,14 @@ use std::io::BufReader;
 use std::path::Path;
 
 use anyhow::{bail, Context, Result};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Experiment {
+    #[serde(skip_serializing)]
+    pub background: Vec<Vec<f64>>,           // [z][x]
+    #[serde(skip_serializing)]
+    pub perturbation: Option<Vec<Vec<f64>>>, // [z][x]
     pub nx: usize,
     pub nz: usize,
     pub dx: f64,
@@ -22,8 +26,6 @@ pub struct Experiment {
     pub receivers: Vec<[usize; 2]>,  // [x, z]
     pub sponge_width: usize,
     pub sponge_strength: f64,
-    pub background: Vec<Vec<f64>>,           // [z][x]
-    pub perturbation: Option<Vec<Vec<f64>>>, // [z][x]
     pub length_unit_m: f64,
     pub time_unit_s: f64,
 }

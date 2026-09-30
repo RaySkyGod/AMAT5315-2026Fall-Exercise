@@ -39,10 +39,11 @@ impl State {
         State { um: vec![0.0; nx * nz], u: vec![0.0; nx * nz] }
     }
 
-    /// Advance to `(u^n, u^{n+1})` given the newly computed field.
-    pub fn rotate(&mut self, un: Vec<f64>) {
-        let old = std::mem::replace(&mut self.u, un);
-        self.um = old;
+    /// Advance to `(u^n, u^{n+1})`: rotates the three buffers in place,
+    /// so `un` becomes the old `u^{n-1}` and stays a full-size scratch field.
+    pub fn rotate(&mut self, un: &mut Vec<f64>) {
+        std::mem::swap(&mut self.um, &mut self.u);
+        std::mem::swap(&mut self.u, un);
     }
 }
 
