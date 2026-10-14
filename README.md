@@ -16,6 +16,16 @@ Each week of the course gets its own directory:
   `test_pi.py`)
 - `week2/` — Rust: two-atom molecular dynamics (`md/`, Lennard-Jones potential,
   Euler & Verlet integrators) plus Python plotting scripts
+- `week3/` — Rust: Monte Carlo `ising` sampler (Metropolis and Wolff updates
+  on an L×L periodic lattice along a temperature ramp)
+- `week4/` — Rust: spectral `field`/`fluid` solvers (advection-diffusion
+  integrators, 2-D vorticity equation on the periodic square)
+- `week5/` — Python/JAX: forward and reverse automatic differentiation,
+  checkpointed adjoint (treeverse), and Marmousi reverse-time migration
+- `week6/` — Python/JAX: energy-based models — MNIST/CIFAR-10 inspection,
+  a restricted Boltzmann machine (CD-1 vs CD-10, generation and completion),
+  Hopfield capacity near αc≈0.138, and modern Hopfield retrieval as
+  softmax attention
 
 New directories are added as the semester progresses.
 
