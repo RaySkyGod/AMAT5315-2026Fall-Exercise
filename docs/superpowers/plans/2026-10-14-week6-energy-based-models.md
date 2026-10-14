@@ -62,25 +62,25 @@ week6/
 - 命令 `cd week6 && uv run python <script>` 可运行任何后续脚本。
 - `inputs/mnist/*.gz`（4 个文件）、`inputs/cifar10/cifar-10-binary.tar.gz`（已解压出 `data_batch_*`、`test_batch`）。
 
-- [ ] **Step 1: 安装 uv**（系统当前没有）：
+- [x] **Step 1: 安装 uv**（系统当前没有）：
   ```bash
   curl -LsSf https://astral.sh/uv/install.sh | sh   # 或 pip install --user uv
   ```
-- [ ] **Step 2: 初始化项目并加依赖**：
+- [x] **Step 2: 初始化项目并加依赖**：
   ```bash
   cd week6
   uv init --no-readme --python 3.12
   uv add jax numpy matplotlib pytest
   ```
   与 week5 的版本对齐（jax==0.11.x, numpy, matplotlib, pytest）。
-- [ ] **Step 3: 写 `.gitignore`**：
+- [x] **Step 3: 写 `.gitignore`**：
   ```
   inputs/
   artifacts/
   .venv/
   __pycache__/
   ```
-- [ ] **Step 4: 按学习单原样执行下载**（命令会把 URL 追加到 README.md）：
+- [x] **Step 4: 按学习单原样执行下载**（命令会把 URL 追加到 README.md）：
   ```bash
   mkdir -p inputs/mnist inputs/cifar10
   mnist_url=https://storage.googleapis.com/cvdf-datasets/mnist
@@ -95,7 +95,7 @@ week6/
     --write-out "%{url_effective}\n" >> README.md
   tar -xzf inputs/cifar10/cifar-10-binary.tar.gz -C inputs/cifar10
   ```
-- [ ] **Step 5: Commit** — `git add week6/pyproject.toml week6/uv.lock week6/.gitignore week6/README.md` → `week6: uv environment and dataset provenance`（确认 `inputs/` 未被跟踪）。
+- [x] **Step 5: Commit** — `git add week6/pyproject.toml week6/uv.lock week6/.gitignore week6/README.md` → `week6: uv environment and dataset provenance`（确认 `inputs/` 未被跟踪）。
 
 **预计用时：** 代理 15–25 min；下载约 10–15 min（MNIST ≈11 MB + CIFAR ≈170 MB，视网速）。
 
@@ -115,7 +115,7 @@ week6/
   - `class_frequencies(labels, n_classes=10) -> float[10]`
 - 验收（学习单 VERIFY 1–2）：MNIST 60000/10000；digit 1 最多、digit 5 最少（两个 split 皆是）；CIFAR 50000/10000，每类恰 5000/1000（全部频率 0.1）。
 
-- [ ] **Step 1: 失败测试**（IDX 魔数 2051/2049、大端；CIFAR 记录 = 1 label 字节 + 3072 像素字节，RGB 三个平面）：
+- [x] **Step 1: 失败测试**（IDX 魔数 2051/2049、大端；CIFAR 记录 = 1 label 字节 + 3072 像素字节，RGB 三个平面）：
   ```python
   # tests/test_datasets.py
   import numpy as np
@@ -142,10 +142,10 @@ week6/
   def test_binarize_threshold_at_128():
       assert binarize(np.array([[[127, 128, 255]]])) .tolist() == [[[False, True, True]]]
   ```
-- [ ] **Step 2:** `uv run pytest tests/test_datasets.py` → FAIL（模块不存在）。
-- [ ] **Step 3: 实现** `datasets.py`（用 `struct.unpack(">IIII", ...)` 解头、`np.frombuffer` 读像素；CIFAR 逐记录 `reshape(3,32,32).transpose(1,2,0)`）与 `gallery.py`（`imshow(..., interpolation="nearest", cmap="gray" / None)`，每类等量采样；频率图双子图 train/test）。
-- [ ] **Step 4:** 测试 PASS；跑 `scripts/part1_gallery.py` 产出 `evidence/part1/{mnist_gallery,cifar_gallery,mnist_class_freq,cifar_class_freq}.png`。
-- [ ] **Step 5: Commit** — `week6: part1 dataset galleries and class frequencies`。
+- [x] **Step 2:** `uv run pytest tests/test_datasets.py` → FAIL（模块不存在）。
+- [x] **Step 3: 实现** `datasets.py`（用 `struct.unpack(">IIII", ...)` 解头、`np.frombuffer` 读像素；CIFAR 逐记录 `reshape(3,32,32).transpose(1,2,0)`）与 `gallery.py`（`imshow(..., interpolation="nearest", cmap="gray" / None)`，每类等量采样；频率图双子图 train/test）。
+- [x] **Step 4:** 测试 PASS；跑 `scripts/part1_gallery.py` 产出 `evidence/part1/{mnist_gallery,cifar_gallery,mnist_class_freq,cifar_class_freq}.png`。
+- [x] **Step 5: Commit** — `week6: part1 dataset galleries and class frequencies`。
 
 **预计用时：** 代理 45–60 min；计算 <1 min。
 
@@ -165,7 +165,7 @@ week6/
 - `hamming_fraction(v0, v1) -> float`：`mean(v0 != v1)`
 - `init_params(key, n_vis=784, n_hid=128, scale=0.01)`
 
-- [ ] **Step 1: 失败测试**（核心技巧：在 n_vis=4, n_hid=3 的小 RBM 上与暴力枚举对拍）：
+- [x] **Step 1: 失败测试**（核心技巧：在 n_vis=4, n_hid=3 的小 RBM 上与暴力枚举对拍）：
   ```python
   # tests/test_rbm.py
   import itertools, numpy as np, jax, jax.numpy as jnp
@@ -211,8 +211,8 @@ week6/
   def test_hamming_fraction():
       assert hamming_fraction(jnp.zeros(4), jnp.array([0., 1., 0., 0.])) == 0.25
   ```
-- [ ] **Step 2:** 跑测试确认 FAIL。
-- [ ] **Step 3: 实现** `rbm.py` 关键片段：
+- [x] **Step 2:** 跑测试确认 FAIL。
+- [x] **Step 3: 实现** `rbm.py` 关键片段：
   ```python
   def free_energy(v, p):
       pre = p.b + v @ p.W                      # (n_hid,)
@@ -228,8 +228,8 @@ week6/
       return jnp.mean(free_energy(v0, p)) - jnp.mean(free_energy(jax.lax.stop_gradient(vk), p))
   ```
   Gibbs 的 k 步链用 `jax.lax.fori_loop`（或 `jax.lax.scan`）实现 `gibbs_chain(v, key, p, k)`。
-- [ ] **Step 4:** 测试 PASS。
-- [ ] **Step 5: Commit** — `week6: rbm energy, free energy, block gibbs, cd surrogate with tests`。
+- [x] **Step 4:** 测试 PASS。
+- [x] **Step 5: Commit** — `week6: rbm energy, free energy, block gibbs, cd surrogate with tests`。
 
 **预计用时：** 代理 45–60 min；计算秒级。
 
@@ -245,10 +245,10 @@ week6/
 - Produces: `evidence/part2/learning_curves.png`（双子图：CD surrogate + held-out Hamming fraction，各两条曲线 CD-1/CD-10）、`evidence/part2/spins_gallery.png`（前 16 张二值化训练图 + 一张放大的自旋配置 + RBM 结构示意）、`artifacts/rbm_cd1.npz`、`artifacts/rbm_cd10.npz`（参数 + 每 epoch 记录 + 设置 JSON，不进 git）。
 - 训练设置：128 hidden、20 epochs、lr=0.1 plain GD、batch=100、**两模型用同一个 PRNGKey 初始化和同一次数据打乱序列**；epoch 内记录 surrogate；每 epoch 在 10000 张测试图上算一步重构 Hamming fraction。
 
-- [ ] **Step 1:** 实现 `part2_train.py`：`jax.jit` 的批更新 `θ ← θ - 0.1 · ∇_θ L̃_CD`；`scan` 跑 20 epochs；结束存 npz + 设置。
-- [ ] **Step 2:** 运行并核对学习单阈值：CD-1 ≈ 18 s、CD-10 ≈ 105 s（参考值，本机量级相同即可）；重构误差应从 ~17% 降到 ~4.7%，**必须低于初始值的一半**；surrogate 可升可降（在 README 里解释为什么不能当 NLL 曲线）。
-- [ ] **Step 3:** 生成 `spins_gallery.png`（验证 VERIFY 1：标出 +1/−1 像素对应关系；结构图可用 matplotlib 画两层 + 连线示意）。
-- [ ] **Step 4: Commit** — `week6: part2 rbm training curves for cd-1 and cd-10`。
+- [x] **Step 1:** 实现 `part2_train.py`：`jax.jit` 的批更新 `θ ← θ - 0.1 · ∇_θ L̃_CD`；`scan` 跑 20 epochs；结束存 npz + 设置。
+- [x] **Step 2:** 运行并核对学习单阈值：CD-1 ≈ 18 s、CD-10 ≈ 105 s（参考值，本机量级相同即可）；重构误差应从 ~17% 降到 ~4.7%，**必须低于初始值的一半**；surrogate 可升可降（在 README 里解释为什么不能当 NLL 曲线）。
+- [x] **Step 3:** 生成 `spins_gallery.png`（验证 VERIFY 1：标出 +1/−1 像素对应关系；结构图可用 matplotlib 画两层 + 连线示意）。
+- [x] **Step 4: Commit** — `week6: part2 rbm training curves for cd-1 and cd-10`。
 
 **预计用时：** 代理 45–60 min；计算 3–5 min。
 
@@ -264,10 +264,10 @@ week6/
 - 补全：64 个 held-out 数字 × 8 条链 × {1,10,100,1000} 步，clamp 上半部；画廊显示 1/10/100/1000 步；ink overlap `2|A∩B|/(|A|+|B|)` vs 步数曲线（CD-1 与 CD-10 各一条），再画"错误上半部"（取自另一数字）对照。
 - 阈值：**1000 步时 true-half overlap 比 wrong-half 高至少 0.1**（参考：CD-10 ≈0.51±0.02，CD-1 ≈0.40±0.02；wrong ≈0.27/0.24，且 1 步时两者几乎相同）。
 
-- [ ] **Step 1:** `part2_generate.py`：同一 key 初始化 N_CHAINS 条链，`gibbs_chain` 各步数快照；并排展示若干测试图的一步重构作对照。检查两模型起点一致（assert 同一 v0）。
-- [ ] **Step 2:** `part2_complete.py`：clamp 实现 = 每次 `v ← v.at[:, :14].set(upper_half)`（Gibbs 步后重置观测位）；错误上半部实验把 clamp 换成另一数字的上半部。计算 overlap 均值 ± 标准误（64 个数字上）。
-- [ ] **Step 3:** 产出 `evidence/part2/generation_chains.png`、`completion_gallery.png`、`ink_overlap.png`；核对阈值；把结论写进 README（不同链补全不同、CD-1 常把 1 的下半留白等观察）。
-- [ ] **Step 4: Commit** — `week6: part2 generation chains and clamped completion with ink overlap`。
+- [x] **Step 1:** `part2_generate.py`：同一 key 初始化 N_CHAINS 条链，`gibbs_chain` 各步数快照；并排展示若干测试图的一步重构作对照。检查两模型起点一致（assert 同一 v0）。
+- [x] **Step 2:** `part2_complete.py`：clamp 实现 = 每次 `v ← v.at[:, :14].set(upper_half)`（Gibbs 步后重置观测位）；错误上半部实验把 clamp 换成另一数字的上半部。计算 overlap 均值 ± 标准误（64 个数字上）。
+- [x] **Step 3:** 产出 `evidence/part2/generation_chains.png`、`completion_gallery.png`、`ink_overlap.png`；核对阈值；把结论写进 README（不同链补全不同、CD-1 常把 1 的下半留白等观察）。
+- [x] **Step 4: Commit** — `week6: part2 generation chains and clamped completion with ink overlap`。
 
 **预计用时：** 代理 60–75 min；计算 5–10 min（参考：两核 CPU 约 5 min）。
 
@@ -287,7 +287,7 @@ week6/
 - `recall(s0, J, key) -> s_final, n_flips`：异步更新 `s_i ← sign(h_i)`（`h_i=0` 不动），随机顺序，直到一整轮无翻转（`jax.lax.while_loop` + `scan`；上界如 100 轮防死循环）
 - `overlap(s, xi_mu) -> m`、`unstable_fraction(J, xi) -> float`（所有存储模式上 `ξ_i h_i < 0` 的比例）
 
-- [ ] **Step 1: 失败测试：**
+- [x] **Step 1: 失败测试：**
   ```python
   # tests/test_hopfield.py
   import jax, jax.numpy as jnp, numpy as np
@@ -311,8 +311,8 @@ week6/
       assert unstable_fraction(hebbian(xi_n100_p5), xi_n100_p5) < 5e-3
   ```
   另加一个能量单调测试：recall 每轮结束后 `E(s)` 不增。
-- [ ] **Step 2:** FAIL → **Step 3: 实现**（注意 sign(0)=0 的坑：`jnp.where(h == 0, s_i, jnp.sign(h))`）→ **Step 4: PASS**。
-- [ ] **Step 5: Commit** — `week6: hopfield hebbian couplings and asynchronous recall with tests`。
+- [x] **Step 2:** FAIL → **Step 3: 实现**（注意 sign(0)=0 的坑：`jnp.where(h == 0, s_i, jnp.sign(h))`）→ **Step 4: PASS**。
+- [x] **Step 5: Commit** — `week6: hopfield hebbian couplings and asynchronous recall with tests`。
 
 **预计用时：** 代理 45–60 min；计算秒级。
 
@@ -329,9 +329,9 @@ week6/
 - 图 1：unstable-bit fraction vs α（各 N 一条曲线 + 误差棒），叠加理论 `Φ(-1/√α)` 与有限 N 形式 `Φ(-√((N-1)/(P-1)))`；参考值：N=800, α=0.20 → 1.25e-2（理论 1.27e-2）；N=100, α=0.10 → 3.5e-4（有限 N 预测 4.6e-4）。若出现 ~0.5 说明 J 建错；若小 4 倍说明忘了置零对角。
 - 图 2：mean final overlap 与 P(m ≥ 0.9) 比例 vs α，各 N 一条曲线，标出 α=0.138 竖线。**crossing（m 跌破 0.9 处）须随 N 递减，且落在参考值 ±0.02 内**：N=100/200/400/800 → 0.186/0.170/0.156/0.150。
 
-- [ ] **Step 1:** 实现（`jax.vmap` 或逐 set 循环；recall 是纯 Python 循环 + jit 的单轮 scan，性能足够：参考 7 min @ 2 核）。
-- [ ] **Step 2:** 运行、出图 `evidence/part3/{unstable_bits,capacity}.png`、对照阈值。
-- [ ] **Step 3: Commit** — `week6: part3 hopfield load sweep matches crosstalk prediction`。
+- [x] **Step 1:** 实现（`jax.vmap` 或逐 set 循环；recall 是纯 Python 循环 + jit 的单轮 scan，性能足够：参考 7 min @ 2 核）。
+- [x] **Step 2:** 运行、出图 `evidence/part3/{unstable_bits,capacity}.png`、对照阈值。
+- [x] **Step 3: Commit** — `week6: part3 hopfield load sweep matches crosstalk prediction`。
 
 **预计用时：** 代理 45–60 min；计算 7–10 min。
 
@@ -349,7 +349,7 @@ week6/
 - `retrieval_success(x_ret, X, target_idx) -> bool`：`overlap(sign(x_ret), X[:,target]) ≥ 0.95` **且** target 是与 sign(x_ret) 重叠最大的存储模式
 - 经典对照复用 Task 5 的 `recall`（模式即 X 的列）。
 
-- [ ] **Step 1: 失败测试：**
+- [x] **Step 1: 失败测试：**
   ```python
   # tests/test_modern.py
   import jax, jax.numpy as jnp, numpy as np
@@ -370,8 +370,8 @@ week6/
       s_big = jnp.sign(modern_update(q, X, 10.0))
       assert float(jnp.mean(s_big == q)) > 0.95   # 大 β: 一次更新检索回目标
   ```
-- [ ] **Step 2:** FAIL → **Step 3: 实现**（注意 `dot_product_attention` 的 scale 参数就是 beta，不要用默认 `1/√d`）→ **Step 4: PASS**。
-- [ ] **Step 5: Commit** — `week6: modern hopfield update equals one softmax attention step`。
+- [x] **Step 2:** FAIL → **Step 3: 实现**（注意 `dot_product_attention` 的 scale 参数就是 beta，不要用默认 `1/√d`）→ **Step 4: PASS**。
+- [x] **Step 5: Commit** — `week6: modern hopfield update equals one softmax attention step`。
 
 **预计用时：** 代理 30–45 min；计算秒级。
 
@@ -390,10 +390,10 @@ week6/
 - β≤0.01 全部返回同一张模糊平均数字；β≥0.1 一步取回存储数字；经典 recall 对每个查询都返回同一堆稀疏笔画碎片。
 - 成功率 vs P 曲线（modern 多条 β + classical）：**β=0.3 时每个 P 成功率 ≥ 0.95；classical 恒为 0**。P=100 的画廊：targets / queries / 两种检索并排。
 
-- [ ] **Step 1:** 实现 `part4_retrieve.py`（modern 一步是矩阵乘，秒级；classical recall 到 P=1000 用 Task 5 的 recall，从查询位形出发）。
-- [ ] **Step 2:** 出图 `evidence/part4/{attention_weights, beta_gallery, success_vs_P}.png`，核对阈值。
-- [ ] **Step 3: README 收尾**（学习单 Wrap up）：每张 evidence 图 ↔ 生成命令表；按 Final verification 清单写解释——p_data vs 经验分布 vs 拟合模型 vs 采样算法的区分、CD 在哪近似似然梯度、clamp 如何把生成变成推断、crosstalk 曲线与坍缩、attention ≡ modern Hopfield、β 的作用；记录环境、训练设置、数据 provenance。
-- [ ] **Step 4:** `uv run pytest tests/` 全绿；`git status` 确认无 inputs/artifacts 混入；Commit — `week6: part4 retrieval grid, readme evidence and final verification`。
+- [x] **Step 1:** 实现 `part4_retrieve.py`（modern 一步是矩阵乘，秒级；classical recall 到 P=1000 用 Task 5 的 recall，从查询位形出发）。
+- [x] **Step 2:** 出图 `evidence/part4/{attention_weights, beta_gallery, success_vs_P}.png`，核对阈值。
+- [x] **Step 3: README 收尾**（学习单 Wrap up）：每张 evidence 图 ↔ 生成命令表；按 Final verification 清单写解释——p_data vs 经验分布 vs 拟合模型 vs 采样算法的区分、CD 在哪近似似然梯度、clamp 如何把生成变成推断、crosstalk 曲线与坍缩、attention ≡ modern Hopfield、β 的作用；记录环境、训练设置、数据 provenance。
+- [x] **Step 4:** `uv run pytest tests/` 全绿；`git status` 确认无 inputs/artifacts 混入；Commit — `week6: part4 retrieval grid, readme evidence and final verification`。
 
 **预计用时：** 代理 60–90 min；计算 5–15 min。
 
