@@ -28,8 +28,8 @@ MNIST_FILES = {
 }
 
 CIFAR_FILES = {
-    "train": [f"data_batch_{i}" for i in range(1, 6)],
-    "test": ["test_batch"],
+    "train": [f"data_batch_{i}.bin" for i in range(1, 6)],
+    "test": ["test_batch.bin"],
 }
 
 CIFAR_CLASSES = [
