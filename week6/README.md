@@ -52,6 +52,7 @@ https://cave.cs.toronto.edu/kriz/cifar-10-binary.tar.gz (md5 c32a1d4ab5d03f1284b
 | `evidence/part4/attention_weights.png` | `uv run python scripts/part4_retrieve.py` |
 | `evidence/part4/beta_gallery.png` | same |
 | `evidence/part4/success_vs_P.png` | same |
+| `evidence/part4/p100_gallery.png` | same |
 
 ## Part 2: RBM training settings and results
 

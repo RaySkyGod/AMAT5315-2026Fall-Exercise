@@ -163,6 +163,36 @@ if __name__ == "__main__":
     fig.tight_layout()
     fig.savefig(EVID / "success_vs_P.png", dpi=150)
 
+    # ---- VERIFY 3 gallery: targets, queries, both retrievals at P=100 ----
+    Xg0, qg0, finals0, tg0, _ = gallery_data[100]
+    Jg = hebbian(jnp.asarray(Xg0))
+    n_show = 8
+    fig, axes = plt.subplots(4, n_show, figsize=(1.4 * n_show, 6.0))
+    for j in range(n_show):
+        i = j * 12
+        axes[0, j].imshow(Xg0[:, tg0[i]].reshape(28, 28), cmap="gray_r",
+                          vmin=-1, vmax=1, interpolation="nearest")
+        axes[1, j].imshow(qg0[i].reshape(28, 28), cmap="gray_r", vmin=-1, vmax=1,
+                          interpolation="nearest")
+        mod = np.asarray(modern_update(jnp.asarray(qg0[i]), jnp.asarray(Xg0), 0.3))
+        axes[2, j].imshow(np.sign(mod).reshape(28, 28), cmap="gray_r", vmin=-1,
+                          vmax=1, interpolation="nearest")
+        axes[3, j].imshow(finals0[i].reshape(28, 28), cmap="gray_r", vmin=-1,
+                          vmax=1, interpolation="nearest")
+    axes[0, 0].set_ylabel("target (stored\ndigit)", rotation=0, ha="right",
+                          va="center", fontsize=8)
+    axes[1, 0].set_ylabel("query (lower half\nrandomized)", rotation=0, ha="right",
+                          va="center", fontsize=8)
+    axes[2, 0].set_ylabel("modern, one update\nbeta=0.3", rotation=0, ha="right",
+                          va="center", fontsize=8)
+    axes[3, 0].set_ylabel("classical recall", rotation=0, ha="right",
+                          va="center", fontsize=8)
+    for ax in axes.ravel():
+        ax.set_xticks([]), ax.set_yticks([])
+    fig.suptitle("Retrieval at P=100: targets, queries, modern vs classical")
+    fig.tight_layout()
+    fig.savefig(EVID / "p100_gallery.png", dpi=150)
+
     json.dump({"modern": {f"{P}_{beta}": results[(P, beta)] for (P, beta) in results},
                "classical": {str(P): classical[P] for P in PS},
                "max_update_attention_diff": max_diff,
