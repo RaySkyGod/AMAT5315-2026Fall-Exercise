@@ -101,8 +101,6 @@ def main():
     exact = mixture.sample_mixture(jax.random.PRNGKey(6), N_SAMPLES)
 
     max_diff = float(jnp.max(jnp.abs(ddims - ddims2)))
-    lab = jnp.argmax(jnp.sum((ddims[:, None, :] - mixture.MEANS[None]) ** 2,
-                             -1) * -1, axis=-1)  # nearest-mean labels
     from mixture import assign_modes, mode_stats  # noqa: E402
     c_ddim1 = assign_modes(ddims)
     c_ddim2 = assign_modes(ddims2)
