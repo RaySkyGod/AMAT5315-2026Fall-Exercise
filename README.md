@@ -26,6 +26,10 @@ Each week of the course gets its own directory:
   a restricted Boltzmann machine (CD-1 vs CD-10, generation and completion),
   Hopfield capacity near αc≈0.138, and modern Hopfield retrieval as
   softmax attention
+- `week7/` — Python/JAX: diffusion models and flow matching — DDPM on a
+  four-cluster Gaussian mixture, deterministic DDIM with skipped levels,
+  velocity-network step-count comparison, generation with the pretrained
+  CIFAR-10 UNet in JAX, and RePaint inpainting
 
 New directories are added as the semester progresses.
 
