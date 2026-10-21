@@ -49,7 +49,7 @@ def test_predicts_added_noise_on_real_images():
     from diffusion import beta_schedule, alphas_cumprod, noise_to_level
     from unet import load_config, load_params, unet_apply
 
-    week6 = CFG.parents[1].parent / "week6"
+    week6 = CFG.parents[2].parent / "week6"
     if not (week6 / "inputs/cifar10").exists():
         pytest.skip("week6 cifar inputs not present")
     sys.path.insert(0, str(week6))
