@@ -58,8 +58,7 @@ def test_predicts_added_noise_on_real_images():
     config = load_config(CFG)
     params = load_params(WEIGHTS)
     real, _ = load_cifar10("test")
-    x0 = jnp.asarray(real[:4].astype(np.float32) / 127.5 - 1)
-    x0 = jnp.asarray(x0.transpose(0, 2, 3, 1))
+    x0 = jnp.asarray(real[:4].astype(np.float32) / 127.5 - 1)  # NHWC
     beta = beta_schedule()
     abar = alphas_cumprod(beta)
     t = 300
