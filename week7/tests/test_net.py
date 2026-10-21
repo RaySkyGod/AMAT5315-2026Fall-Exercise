@@ -38,3 +38,10 @@ def test_train_noise_predictor_loss_decreases():
         stage_updates=(0, 300))
     assert len(stages) == 2 and len(hist) == 300
     assert float(jnp.mean(hist[-20:])) < float(jnp.mean(hist[:20]))
+
+
+def test_train_velocity_loss_decreases():
+    from net import train_velocity
+    params, hist, _ = train_velocity(jax.random.PRNGKey(0), n_updates=300,
+                                     batch=512, lr0=0.03)
+    assert float(jnp.mean(hist[-20:])) < float(jnp.mean(hist[:20]))

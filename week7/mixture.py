@@ -63,8 +63,29 @@ def exact_noise(x: jax.Array, t, abar: jax.Array) -> jax.Array:
     return (x - jnp.sqrt(ab) * x0_hat) / jnp.sqrt(1.0 - ab)
 
 
-def exact_velocity(x: jax.Array, s) -> jax.Array:  # pragma: no cover - Task 5
-    raise NotImplementedError("implemented with flow matching (Task 5)")
+def exact_velocity(x: jax.Array, s) -> jax.Array:
+    """Marginal velocity v(x, s) = E[z - x0 | x_s = x] (sheet Eq. 10).
+
+    Within component k the path position has
+      x_s | k ~ N((1-s) mu_k, ((1-s)^2 SIGMA2 + s^2) I),
+    so the clean point has Gaussian posterior x0 | x, k ~ N(m_k, S_k) with
+      S_k = 1/((1-s)^2/s^2 + 1/SIGMA2),
+      m_k = S_k ((1-s) x/s^2 + mu_k/SIGMA2),
+    and E[z | x, k] = (x - (1-s) m_k)/s since z = (x_s - (1-s) x0)/s.
+    The mixture velocity is the weight-averaged E[z|x,k] - m_k with weights
+    component_weights(x, 1-s, s^2). Limits: v(x, 0) = -x, v(x, 1) = x.
+    """
+    sc = 1.0 - s
+    if s < 1e-9:
+        return -x
+    var = s**2
+    prec = sc**2 / var + 1.0 / SIGMA2
+    S = 1.0 / prec
+    m_k = S * (sc * x[:, None, :] / var + MEANS[None] / SIGMA2)
+    w = component_weights(x, sc, var)
+    ez_k = (x[:, None, :] - sc * m_k) / s
+    v_k = ez_k - m_k
+    return jnp.einsum("nk,nkd->nd", w, v_k)
 
 
 def assign_modes(x: jax.Array) -> jax.Array:

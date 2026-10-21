@@ -44,3 +44,29 @@ def test_energy_distance_large_for_shifted_set():
     X = sample_mixture(jax.random.PRNGKey(1), 500)
     Y = X + 10.0
     assert float(energy_distance(X, Y)) > 1.0
+
+
+def test_exact_velocity_limits_and_symmetry():
+    from mixture import exact_velocity
+    x = jnp.array([[2.0, -1.0], [0.0, 0.0], [5.0, 5.0]])
+    # near s=1 the field approaches v(x, 1) = x (sheet Part 3 VERIFY 1)
+    assert float(jnp.max(jnp.abs(exact_velocity(x, 1.0) - x))) < 1e-4
+    # the symmetric mixture has v(0, s) = 0
+    assert float(jnp.max(jnp.abs(exact_velocity(jnp.zeros((3, 2)), 0.5)))) < 1e-5
+
+
+def test_exact_velocity_matches_monte_carlo_at_s_half():
+    from mixture import exact_velocity, SIGMA2
+    key = jax.random.PRNGKey(0)
+    x0 = sample_mixture(key, 2_000_000)
+    z = jax.random.normal(jax.random.PRNGKey(1), x0.shape)
+    s = 0.5
+    xs = (1 - s) * x0 + s * z
+    v = z - x0
+    centers = jnp.array([[1.5, 0.0], [-1.5, 0.0], [0.0, 1.5]])
+    for c in centers:
+        m = jnp.linalg.norm(xs - c, axis=-1) < 0.05
+        assert int(m.sum()) > 500
+        mc = v[m].mean(0)
+        ex = exact_velocity(c[None], s)[0]
+        assert float(jnp.max(jnp.abs(mc - ex))) < 0.05  # MC noise tolerance
