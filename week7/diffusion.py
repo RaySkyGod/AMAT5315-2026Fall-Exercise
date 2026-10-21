@@ -37,3 +37,56 @@ def noise_to_level(x0: jax.Array, t: int, eps: jax.Array, abar: jax.Array):
     """Direct noising to level t (Eq. 5), one noise draw instead of t steps."""
     ab = abar[t]
     return jnp.sqrt(ab) * x0 + jnp.sqrt(1.0 - ab) * eps
+
+
+def ddpm_posterior_mean(x_t: jax.Array, t: int, eps_hat: jax.Array,
+                        abar: jax.Array, beta: jax.Array):
+    """Reverse-step mean of the DDPM sampler (sheet DDPM-Sample box, line 4):
+
+        mu_t = (x_t - beta_t / sqrt(1-abar_t) * eps_hat) / sqrt(alpha_t)
+
+    equivalent to the sheet's form x_t/sqrt(alpha_t) -
+    beta_t eps_hat / (sqrt(alpha_t) sqrt(1-abar_t)) with alpha_t = 1-beta_t
+    the per-step shrinkage and abar_t the cumulative product.
+    """
+    b = beta[t - 1]
+    return (x_t - b / jnp.sqrt(1.0 - abar[t]) * eps_hat) / jnp.sqrt(1.0 - b)
+
+
+def ddpm_sample(eps_net, x_T: jax.Array, abar: jax.Array, beta: jax.Array,
+                zs: jax.Array, T: int = T_DEFAULT) -> jax.Array:
+    """DDPM sampling: levels T..1, noise of variance beta_t, no clipping;
+    the final step (t=1) returns the mean with no added noise.
+
+    eps_net(x, t) -> eps_hat is called with the 1-based level t;
+    zs has shape (T, n, 2) — one standard draw per level per sample.
+    """
+    def step(carry, t):
+        x = carry
+        eps_hat = eps_net(x, t)
+        mu = ddpm_posterior_mean(x, t, eps_hat, abar, beta)
+        z = zs[t - 1]
+        x_prev = jnp.where(t > 1, mu + jnp.sqrt(beta[t - 1]) * z, mu)
+        return x_prev, x_prev
+
+    # lax.scan needs increasing order; reverse by scanning t = 1..T backwards
+    ts = jnp.arange(T, 0, -1)
+    x0, _ = jax.lax.scan(step, x_T, ts)
+    return x0
+
+
+def ddpm_trajectory(eps_net, x_T: jax.Array, abar: jax.Array, beta: jax.Array,
+                    zs: jax.Array, T: int = T_DEFAULT) -> jax.Array:
+    """Same as ddpm_sample but returns all states, shape (T+1, n, 2);
+    index k holds x_{T-k} (index 0 is x_T, index T is x_0)."""
+    def step(carry, t):
+        x = carry
+        eps_hat = eps_net(x, t)
+        mu = ddpm_posterior_mean(x, t, eps_hat, abar, beta)
+        z = zs[t - 1]
+        x_prev = jnp.where(t > 1, mu + jnp.sqrt(beta[t - 1]) * z, mu)
+        return x_prev, x_prev
+
+    ts = jnp.arange(T, 0, -1)
+    x0, path = jax.lax.scan(step, x_T, ts)
+    return jnp.concatenate([x_T[None], path], axis=0)

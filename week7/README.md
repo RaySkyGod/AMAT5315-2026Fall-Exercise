@@ -45,7 +45,10 @@ curl -fL https://giggleliu.github.io/AMAT5315-2026Fall/downloads/week7-images.np
 
 | Figure | Command |
 |---|---|
-| (filled in as tasks complete) | |
+| `evidence/part1/loss_history.png` | `uv run python scripts/part1_train.py` |
+| `evidence/part1/forward_diffusion.gif`, `forward_stats.txt` | `uv run python scripts/part1_forward.py` |
+| `evidence/part1/stages.gif` | `uv run python scripts/part1_stages.py` |
+| `evidence/part1/generate.gif`, `generate_final.png`, `mode_stats.txt` | `uv run python scripts/part1_generate.py` |
 
 ## Training settings
 

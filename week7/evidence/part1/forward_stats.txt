@@ -1,0 +1,5 @@
+forward diffusion, 2000 samples followed for 1000 steps
+abar[1000] = 4.036e-05 (sheet: ~4e-5)
+t=1000: coordinate means = [-0.002099999925121665, 0.05779999867081642] (target 0 +- 0.1)
+t=1000: coordinate vars  = [0.9891999959945679, 0.9466999769210815] (target 1 +- 0.1)
+PASS = True

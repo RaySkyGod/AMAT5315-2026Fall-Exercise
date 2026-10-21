@@ -200,6 +200,11 @@ def save_mlp(path: str, params: MLP, prefix: str = "") -> None:
 def load_mlp(path: str, prefix: str = "") -> MLP:
     import numpy as np
     data = np.load(path)
+    return params_from_npz(data, prefix)
+
+
+def params_from_npz(data, prefix: str = "") -> MLP:
+    """Rebuild MLP weights saved by scripts/part1_train.py (prefix like 's3_')."""
     layers = []
     i = 0
     while f"{prefix}l{i}_w" in data:

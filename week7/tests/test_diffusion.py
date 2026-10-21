@@ -2,7 +2,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from diffusion import beta_schedule, alphas_cumprod, forward_step, noise_to_level
+from diffusion import (beta_schedule, alphas_cumprod, forward_step,
+                       noise_to_level, ddpm_posterior_mean)
 
 
 def test_schedule_endpoints_and_cumprod():
@@ -46,3 +47,33 @@ def test_sequential_steps_match_direct_draw_moments():
     expect_var = abar[300] * mixture.SIGMA2 + (1.0 - abar[300])
     assert float(jnp.max(jnp.abs(jnp.mean(x, 0) - expect_mean))) < 0.02
     assert float(jnp.max(jnp.abs(jnp.var(x, 0) - expect_var))) < 0.03
+
+
+def test_ddpm_posterior_mean_formula():
+    # mu_t = (x_t - beta_t/sqrt(1-abar_t) * eps_hat) / sqrt(alpha_t)
+    beta = beta_schedule()
+    abar = alphas_cumprod(beta)
+    x_t = jnp.array([[0.3, -0.2]])
+    eps_hat = jnp.array([[1.0, -1.0]])
+    t = 500
+    mu = ddpm_posterior_mean(x_t, t, eps_hat, abar, beta)
+    expect = (x_t - beta[t - 1] / jnp.sqrt(1 - abar[t]) * eps_hat) / jnp.sqrt(
+        1 - beta[t - 1])
+    assert float(jnp.max(jnp.abs(mu - expect))) < 1e-6
+
+
+def test_ddpm_sample_shape_and_zero_noise_determinism():
+    from net import init_mlp, apply_mlp
+    from diffusion import ddpm_sample
+
+    p = init_mlp(jax.random.PRNGKey(0))
+    # eps_net convention: x is (n, 2), t a scalar level; the wrapper
+    # broadcasts t/1000 to a per-sample u for the time features
+    net = lambda x, t: apply_mlp(p, x, jnp.full((x.shape[0],), t / 1000.0))
+    beta = beta_schedule()
+    abar = alphas_cumprod(beta)
+    zs = jnp.zeros((1000, 5, 2))  # all-zero step noise
+    x0 = ddpm_sample(net, jnp.zeros((5, 2)), abar, beta, zs)
+    assert x0.shape == (5, 2)
+    assert bool(jnp.all(jnp.isfinite(x0)))
+    assert bool(jnp.allclose(x0, ddpm_sample(net, jnp.zeros((5, 2)), abar, beta, zs)))
