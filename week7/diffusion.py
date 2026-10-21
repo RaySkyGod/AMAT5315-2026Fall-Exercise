@@ -90,3 +90,64 @@ def ddpm_trajectory(eps_net, x_T: jax.Array, abar: jax.Array, beta: jax.Array,
     ts = jnp.arange(T, 0, -1)
     x0, path = jax.lax.scan(step, x_T, ts)
     return jnp.concatenate([x_T[None], path], axis=0)
+
+
+def _levels_pairs(levels):
+    """Descending level tuple -> list of (t, t') jump pairs."""
+    levels = list(levels)
+    assert all(levels[i] > levels[i + 1] for i in range(len(levels) - 1)), \
+        "levels must be strictly descending"
+    return list(zip(levels[:-1], levels[1:]))
+
+
+def ddim_sample(eps_net, x_T: jax.Array, levels, abar: jax.Array):
+    """Deterministic DDIM over a selectable subset of levels (sheet box).
+
+    For each jump t -> t' in the descending tuple `levels`:
+        x0_hat = x_t/sqrt(abar_t) - eps_hat * sqrt(1/abar_t - 1)   (Tweedie)
+        x_t'   = sqrt(abar_t') x0_hat + sqrt(1-abar_t') eps_hat
+    No random draw after the starting sample; eps_net(x, t) receives the
+    1-based level t of the jump's origin.
+    """
+    pairs = _levels_pairs(levels)
+    ab_ts = jnp.asarray([abar[t] for t, _ in pairs])
+    ab_tps = jnp.asarray([abar[tp] for _, tp in pairs])
+    ts = jnp.asarray([t for t, _ in pairs])
+
+    def step(x, tc):
+        ab_t, ab_tp, t = tc
+        eps_hat = eps_net(x, t)
+        x0_hat = x / jnp.sqrt(ab_t) - eps_hat * jnp.sqrt(1.0 / ab_t - 1.0)
+        x_next = jnp.sqrt(ab_tp) * x0_hat + jnp.sqrt(1.0 - ab_tp) * eps_hat
+        return x_next, x_next
+
+    x0, _ = jax.lax.scan(step, x_T, (ab_ts, ab_tps, ts))
+    return x0
+
+
+def ddpm_skip_sample(eps_net, x_T: jax.Array, levels, abar: jax.Array,
+                     zs: jax.Array):
+    """DDPM reverse rule on a coarser grid (sheet Eq. 8).
+
+    For a jump t -> t' set a = abar_t/abar_t'; then
+        mu = (x_t - (1-a)/sqrt(1-abar_t) * eps_hat) / sqrt(a)
+    with Gaussian noise of variance 1-a added when t' > 0 and none at t'=0.
+    zs has shape (n_jumps, n, 2). For adjacent levels this is exactly Part
+    1's choice of variance beta_t.
+    """
+    pairs = _levels_pairs(levels)
+    ab_ts = jnp.asarray([abar[t] for t, _ in pairs])
+    ab_tps = jnp.asarray([abar[tp] for _, tp in pairs])
+    ts = jnp.asarray([t for t, _ in pairs])
+    tps = jnp.asarray([tp for _, tp in pairs])
+
+    def step(x, tc):
+        ab_t, ab_tp, t, tp, z = tc
+        a = ab_t / ab_tp
+        eps_hat = eps_net(x, t)
+        mu = (x - (1.0 - a) / jnp.sqrt(1.0 - ab_t) * eps_hat) / jnp.sqrt(a)
+        x_next = jnp.where(tp > 0, mu + jnp.sqrt(1.0 - a) * z, mu)
+        return x_next, x_next
+
+    x0, _ = jax.lax.scan(step, x_T, (ab_ts, ab_tps, ts, tps, zs))
+    return x0

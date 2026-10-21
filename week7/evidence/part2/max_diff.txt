@@ -1,0 +1,7 @@
+largest difference between the two DDIM runs: 0.0
+DDIM vs DDIM same-cluster rate: 1.0
+DDIM vs DDPM same-cluster rate: 0.262 (~0.25 by chance)
+DDPM vs DDPM same-cluster rate: 0.262 (~0.25 by chance)
+DDIM (learned): populations [0.2529999911785126, 0.257999986410141, 0.24799999594688416, 0.2409999966621399] (max dev 0.009, < 0.015 OK), widths in [0.300, 0.325] (target [0.29, 0.32])
+DDIM (exact noise): populations [0.25099998712539673, 0.25999999046325684, 0.2460000067949295, 0.24300000071525574] (max dev 0.010, < 0.015 OK), widths in [0.294, 0.312] (target [0.29, 0.32])
+DDPM (learned): populations [0.23999999463558197, 0.25699999928474426, 0.25999999046325684, 0.24300000071525574] (max dev 0.010, < 0.015 OK), widths in [0.290, 0.318] (target [0.29, 0.32])
