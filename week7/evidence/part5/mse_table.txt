@@ -1,0 +1,21 @@
+hidden-pixel MSE (1200 hidden values) and observed-pixel stability per completion:
+
+image 0 seed 7201: hidden MSE = 0.132
+image 0 seed 7202: hidden MSE = 0.128
+image 0 seed 7203: hidden MSE = 0.126
+image 0 seed 7204: hidden MSE = 0.159
+image 1 seed 7201: hidden MSE = 0.280
+image 1 seed 7202: hidden MSE = 0.265
+image 1 seed 7203: hidden MSE = 0.207
+image 1 seed 7204: hidden MSE = 0.172
+image 2 seed 7201: hidden MSE = 0.110
+image 2 seed 7202: hidden MSE = 0.167
+image 2 seed 7203: hidden MSE = 0.223
+image 2 seed 7204: hidden MSE = 0.201
+image 3 seed 7201: hidden MSE = 0.520
+image 3 seed 7202: hidden MSE = 0.202
+image 3 seed 7203: hidden MSE = 0.139
+image 3 seed 7204: hidden MSE = 0.219
+
+mean hidden-pixel MSE over images and seeds: 0.203 (sheet reference ~0.24)
+largest observed-pixel change: 0.00e+00 (sheet: < 1e-5)
