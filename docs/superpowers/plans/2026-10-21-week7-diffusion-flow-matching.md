@@ -73,22 +73,22 @@ week7/
 - `cd week7 && uv run python <script>` 与 `uv run pytest tests/` 可用。
 - `inputs/images.npz`（4 张测试图，值域 [−1,1]）；`inputs/cifar-model/`（config.json + safetensors，pinned revision）。
 
-- [ ] **Step 1: 初始化 uv 项目并加依赖**：
+- [x] **Step 1: 初始化 uv 项目并加依赖**：
   ```bash
   cd week7
   uv init --no-readme --python 3.12
   uv add jax numpy matplotlib safetensors pytest
   ```
   版本与 week6 对齐（jax 0.11.x）。
-- [ ] **Step 2: 写 `.gitignore`**：
+- [x] **Step 2: 写 `.gitignore`**：
   ```
   inputs/
   artifacts/
   .venv/
   __pycache__/
   ```
-- [ ] **Step 3: 建目录** `mkdir -p evidence/part{1..5} artifacts/part{1..5} inputs`。
-- [ ] **Step 4: 按学习单原样下载**（URL 记入 README.md）：
+- [x] **Step 3: 建目录** `mkdir -p evidence/part{1..5} artifacts/part{1..5} inputs`。
+- [x] **Step 4: 按学习单原样下载**（URL 记入 README.md）：
   ```bash
   curl -fL https://giggleliu.github.io/AMAT5315-2026Fall/downloads/week7-images.npz \
     -o inputs/images.npz
@@ -98,7 +98,7 @@ week7/
     --local-dir inputs/cifar-model
   ```
   校验：`python -c "import numpy as np; a=np.load('inputs/images.npz'); print(list(a.keys()), a[list(a.keys())[0]].shape)"` → 4 张 32×32×3、值域约 [−1,1]；`ls inputs/cifar-model` 两文件齐全（safetensors ≈ 143 MB）。
-- [ ] **Step 5: README stub**（标题、环境命令、provenance 小节，表格后续任务填）+ **Commit** `week7: uv environment and pinned inputs`（确认 `inputs/`、`artifacts/` 未被跟踪）。
+- [x] **Step 5: README stub**（标题、环境命令、provenance 小节，表格后续任务填）+ **Commit** `week7: uv environment and pinned inputs`（确认 `inputs/`、`artifacts/` 未被跟踪）。
 
 **预计用时：** 代理 15–25 min；下载约 5–15 min（视网速）。
 
@@ -126,7 +126,7 @@ week7/
 - `diffusion.ddpm_sample(eps_net, x_T, abar, beta, zs) -> x0`：zs 形状 (T,n,2)，逐步 z 显式传入（Task 3 前，采样循环本 Task 先给出签名与逐步公式）
 - `diffusion.ddim_sample / ddiffusion.ddpm_skip_sample`（Task 4）
 
-- [ ] **Step 1: 失败测试** `tests/test_diffusion.py`：
+- [x] **Step 1: 失败测试** `tests/test_diffusion.py`：
   ```python
   import jax, jax.numpy as jnp, numpy as np
   from diffusion import beta_schedule, alphas_cumprod, forward_step, noise_to_level
@@ -190,8 +190,8 @@ week7/
       Y = X + 10.0
       assert float(energy_distance(X, Y)) > 1.0               # 远移 ⇒ 距离大
   ```
-- [ ] **Step 2:** `uv run pytest tests/test_mixture.py tests/test_diffusion.py` → FAIL（模块不存在）。
-- [ ] **Step 3: 实现核心公式**。
+- [x] **Step 2:** `uv run pytest tests/test_mixture.py tests/test_diffusion.py` → FAIL（模块不存在）。
+- [x] **Step 3: 实现核心公式**。
   `mixture.component_weights`（log-domain 稳定版）：
   ```python
   def component_weights(x, mean_coeff, var):
@@ -213,8 +213,8 @@ week7/
       return (x - jnp.sqrt(ab) * x0_hat) / jnp.sqrt(1 - ab)
   ```
   `diffusion` 模块按接口逐行实现（`forward_step` 用 `jax.random.normal`；`noise_to_level` 为两行公式）。
-- [ ] **Step 4:** 测试 PASS。
-- [ ] **Step 5: Commit** — `week7: mixture exact quantities and forward diffusion with tests`。
+- [x] **Step 4:** 测试 PASS。
+- [x] **Step 5: Commit** — `week7: mixture exact quantities and forward diffusion with tests`。
 
 **预计用时：** 代理 45–60 min；计算秒级。
 
@@ -235,7 +235,7 @@ week7/
 - `net.train_noise_predictor(key, n_updates=25000, batch=512, lr0=<pilot 选定>, stage_updates=(0,100,250,500,1000,2000,4000,8000,16000,25000)) -> (stages list[(update, params)], loss_history (25000,), settings dict)`：每 update 新采 x0∼p_data、t∼U{1..T}、ε∼N(0,I)，x_t 用直达式(5)；学习率线性衰减 η_k = lr0·(1−k/n_updates)；普通 SGD（学习单算法框）+ `lax.scan` JIT
 - 训练脚本把 stages 序列化进 npz（每阶段存 `(2,width)` 等 Dense 权重展平或 object 数组）+ `settings` JSON。
 
-- [ ] **Step 1: 失败测试** `tests/test_net.py`：
+- [x] **Step 1: 失败测试** `tests/test_net.py`：
   ```python
   import jax, jax.numpy as jnp, numpy as np
   from net import time_features, init_mlp, apply_mlp, noise_loss, train_noise_predictor
@@ -262,10 +262,10 @@ week7/
                                               stage_updates=(0, 300))
       assert hist[-1] < hist[0]                        # 训练确实降损失
   ```
-- [ ] **Step 2:** FAIL → **Step 3: 实现**（`time_features`：`sin/cos(2π f_j u)` 各 dim/2 个频率；MLP 参数用 NamedTuple of (w,b) 列表；训练器内 `value_and_grad`，t 抽样用 `jax.random.randint(1, T+1)`）。
-- [ ] **Step 4:** PASS。
-- [ ] **Step 5: 学习率 pilot + 正式训练。** 先 2000 updates × {0.003, 0.01, 0.03, 0.1} 四档跑 pilot（各 <10 s），取 2000 步损失最低者为 lr0（记录进 settings）；再跑正式 25000 updates（约 1 分钟），存 npz。用 Task 3 的采样器抽查最终模型能出四簇（此时若失败，允许改 Adam(lr=1e-3 线性衰减)重跑并在 settings 记录该决定）。
-- [ ] **Step 6: Commit** — `week7: time-conditioned noise predictor, training loop and stages`。
+- [x] **Step 2:** FAIL → **Step 3: 实现**（`time_features`：`sin/cos(2π f_j u)` 各 dim/2 个频率；MLP 参数用 NamedTuple of (w,b) 列表；训练器内 `value_and_grad`，t 抽样用 `jax.random.randint(1, T+1)`）。
+- [x] **Step 4:** PASS。
+- [x] **Step 5: 学习率 pilot + 正式训练。** 先 2000 updates × {0.003, 0.01, 0.03, 0.1} 四档跑 pilot（各 <10 s），取 2000 步损失最低者为 lr0（记录进 settings）；再跑正式 25000 updates（约 1 分钟），存 npz。用 Task 3 的采样器抽查最终模型能出四簇（此时若失败，允许改 Adam(lr=1e-3 线性衰减)重跑并在 settings 记录该决定）。
+- [x] **Step 6: Commit** — `week7: time-conditioned noise predictor, training loop and stages`。
 
 **预计用时：** 代理 60–90 min；训练 <2 min。
 
@@ -287,7 +287,7 @@ week7/
   ```
 - `diffusion.ddpm_trajectory(...) -> (T+1, n, 2)`：同上但记录全部状态（供动画/路径）。
 
-- [ ] **Step 1: 失败测试**（追加到 test_diffusion.py）：
+- [x] **Step 1: 失败测试**（追加到 test_diffusion.py）：
   ```python
   def test_ddpm_step_with_true_noise_stays_consistent():
       # 用真噪声 ε（由已知 x0 构造）作预测: ε̂ = ε ⇒ 一步后均值恰为后验均值
@@ -314,14 +314,14 @@ week7/
       # zs 全零 ⇒ 相同输入两次调用结果逐位相同（确定性接口）
       assert jnp.allclose(x0, ddpm_sample(net, jnp.zeros((5, 2)), abar, beta, zs))
   ```
-- [ ] **Step 2:** FAIL → **Step 3: 实现** `ddpm_sample`/`ddpm_trajectory`（`lax.scan` 从 t=T 到 1；`eps_net` 接口为 `(x, t:int)`，脚本侧用闭包把 params 绑进去）→ **Step 4:** PASS。
-- [ ] **Step 5: VERIFY 1 脚本** `scripts/part1_forward.py`：2000 个干净样本逐步前向（跟随同一样本，坐标固定尺度如 [−5,5]），t ∈ {0,10,20,50,100,200,400,600,800,1000} 等帧生成 `forward_diffusion.gif`；打印 t=1000 处每坐标 mean/var。
+- [x] **Step 2:** FAIL → **Step 3: 实现** `ddpm_sample`/`ddpm_trajectory`（`lax.scan` 从 t=T 到 1；`eps_net` 接口为 `(x, t:int)`，脚本侧用闭包把 params 绑进去）→ **Step 4:** PASS。
+- [x] **Step 5: VERIFY 1 脚本** `scripts/part1_forward.py`：2000 个干净样本逐步前向（跟随同一样本，坐标固定尺度如 [−5,5]），t ∈ {0,10,20,50,100,200,400,600,800,1000} 等帧生成 `forward_diffusion.gif`；打印 t=1000 处每坐标 mean/var。
   **验收（学习单阈值）:** mean 距 0 < 0.1，var 距 1 < 0.1。
-- [ ] **Step 6: VERIFY 2 脚本** `scripts/part1_stages.py`：载入 npz 的 10 阶段；固定 key 生成共享 x_T(10,2) 与共享逐步噪声 zs(T,10,2)；每阶段一帧：10 条完整路径（起点白点、终点彩点、虚线圆 = 各中心半径 2σ=0.6、固定方形 [−6,6]，初始化阶段路径出画幅属预期 |x|≈1500）+ 该阶段为止的损失历史（竖直虚线标当前阶段）。输出 `stages.gif`。
+- [x] **Step 6: VERIFY 2 脚本** `scripts/part1_stages.py`：载入 npz 的 10 阶段；固定 key 生成共享 x_T(10,2) 与共享逐步噪声 zs(T,10,2)；每阶段一帧：10 条完整路径（起点白点、终点彩点、虚线圆 = 各中心半径 2σ=0.6、固定方形 [−6,6]，初始化阶段路径出画幅属预期 |x|≈1500）+ 该阶段为止的损失历史（竖直虚线标当前阶段）。输出 `stages.gif`。
   **验收:** 初始化路径出画幅；最终阶段 10 个终点全部落在四簇上；损失前几百 updates 内骤降、后平台（参考 ≈0.25，非零由条件均值恒等式解释）。
-- [ ] **Step 7: VERIFY 3 脚本** `scripts/part1_generate.py`：最终模型、1000 步、2000 样本；反向过程动画 `generate.gif`（帧内同前向固定尺度）+ 终态散点 vs 精确样本 `generate_final.png`；`mode_stats` 写入 `mode_stats.txt`（populations/centres/spreads 表）。
+- [x] **Step 7: VERIFY 3 脚本** `scripts/part1_generate.py`：最终模型、1000 步、2000 样本；反向过程动画 `generate.gif`（帧内同前向固定尺度）+ 终态散点 vs 精确样本 `generate_final.png`；`mode_stats` 写入 `mode_stats.txt`（populations/centres/spreads 表）。
   **验收:** populations 距 0.25 < 0.04；spreads 距 0.30 < 0.03；centres 距目标 < 0.05（参考: populations 0.245–0.262，spreads 0.29–0.30）。未达标 → 回 Task 2 调 lr/宽度重训，不放宽阈值。
-- [ ] **Step 8:** README 表格加三行（图 ↔ 命令）；**Commit** — `week7: part1 ddpm sampler and forward/stages/generation evidence`。
+- [x] **Step 8:** README 表格加三行（图 ↔ 命令）；**Commit** — `week7: part1 ddpm sampler and forward/stages/generation evidence`。
 
 **预计用时：** 代理 90–120 min；计算 <2 min（25000 步训练外的采样均为秒级）。
 
@@ -344,7 +344,7 @@ week7/
 - `diffusion.ddpm_skip_sample(eps_net, x_T, levels, abar, zs)`（式 8）：a = ᾱ_t/ᾱ_t'，μ = (1/√a)(x_t − (1−a)/√(1−ᾱ_t)·ε̂)；t'>0 加方差 1−a 噪声，t'=0 不加。
 - 采样器 `eps_net` 一律接口 `(x, t:int) -> eps_hat`，故 Part 1 训练网络与 `mixture.exact_noise` 包装的精确版可互换。
 
-- [ ] **Step 1: 失败测试**（追加）：
+- [x] **Step 1: 失败测试**（追加）：
   ```python
   def test_ddim_true_noise_jump_is_exact_forward_sample():
       # ε̂ 取真噪声 ⇒ x̂0 = x0 精确, 跳到任意 t' 恰为该层前向样本(同一 ε)
@@ -386,13 +386,13 @@ week7/
       assert jnp.max(jnp.abs(out - mu)) < 1e-6
   ```
   （若 `mixture.exact_noise` 的形式参数顺序与之不符，以实现为准修测试调用，不改公式。）
-- [ ] **Step 2:** FAIL → **Step 3: 实现** 两个采样器（共享"取层序列"辅助函数；`ddim_sample` 无 key 参数）→ **Step 4:** PASS。
-- [ ] **Step 5: VERIFY 1 脚本** `scripts/part2_determinism.py`：
+- [x] **Step 2:** FAIL → **Step 3: 实现** 两个采样器（共享"取层序列"辅助函数；`ddim_sample` 无 key 参数）→ **Step 4:** PASS。
+- [x] **Step 5: VERIFY 1 脚本** `scripts/part2_determinism.py`：
   - 同一 x_T 下 DDIM（1000 层全网格）跑两遍、DDPM 跑两遍（不同 z 序列）；画 10 条轨迹（DDIM 两次完全重合一条，DDPM 两条分开）`determinism.png`；
   - 2000 个共享起始噪声的 DDIM/DDPM 样本 vs 精确样本散点 `samples_compare.png`；
   - 打印两次 DDIM 运行的最大差（参考: 0，逐位相等）与两 DDIM 版本终点同簇比例（参考: ≈1/4）。
   **验收:** DDIM 最大差 = 0（打印值）；DDIM 各簇占比距 0.25 < 0.015；两采样器 spreads ∈ [0.29, 0.32]。
-- [ ] **Step 6:** README 表格两行；**Commit** — `week7: ddim, skip-level ddpm, exact conditional-mean noise and determinism evidence`。
+- [x] **Step 6:** README 表格两行；**Commit** — `week7: ddim, skip-level ddpm, exact conditional-mean noise and determinism evidence`。
 
 **预计用时：** 代理 60–90 min；计算 <1 min。
 
@@ -412,7 +412,7 @@ week7/
 - `mixture.exact_velocity(x, s)`：分量 k 内 x_s|k ~ N((1−s)μ_k, ((1−s)²·0.09 + s²)I)；后验 E[x0|x,k]（同 Task 1 的 S,m_k 公式，mean_coeff=1−s、var=s²）；E[z|x,k] = (x − (1−s)m_k)/s；v = Σ_k w_k(x,s)·(E[z|x,k] − m_k)；w_k 用 `component_weights(x, 1−s, s²)`
 - Euler 采样在脚本里实现（12 式），或 `net.euler_sample(v_net, x1, n_steps) -> x0`：s 网格 1 → 0 均匀 n+1 点，x_{s−Δs} = x_s − Δs·v_θ(x_s,s)
 
-- [ ] **Step 1: 失败测试**（追加 test_mixture.py）：
+- [x] **Step 1: 失败测试**（追加 test_mixture.py）：
   ```python
   def test_exact_velocity_limits_and_symmetry():
       from mixture import exact_velocity
@@ -446,9 +446,9 @@ week7/
       p, hist, _ = train_velocity(jax.random.PRNGKey(0), n_updates=300, batch=512, lr0=0.03)
       assert hist[-1] < hist[0]
   ```
-- [ ] **Step 2:** FAIL → **Step 3: 实现** `exact_velocity`（注意 s=1 分母：s→1 时 E[z|x,k] = x，直接分支处理 s>1−1e−6 返回 x）与 `flow_loss`/`train_velocity` → **Step 4:** PASS。
-- [ ] **Step 5: 训练。** 同 Task 2 的 pilot 选 lr0，跑 25000 updates（约 1 分钟），存 `artifacts/part3/velocity.npz`。
-- [ ] **Step 6: Commit** — `week7: flow matching training and exact marginal velocity with tests`。
+- [x] **Step 2:** FAIL → **Step 3: 实现** `exact_velocity`（注意 s=1 分母：s→1 时 E[z|x,k] = x，直接分支处理 s>1−1e−6 返回 x）与 `flow_loss`/`train_velocity` → **Step 4:** PASS。
+- [x] **Step 5: 训练。** 同 Task 2 的 pilot 选 lr0，跑 25000 updates（约 1 分钟），存 `artifacts/part3/velocity.npz`。
+- [x] **Step 6: Commit** — `week7: flow matching training and exact marginal velocity with tests`。
 
 **预计用时：** 代理 60–90 min；计算 <2 min。
 
@@ -462,15 +462,15 @@ week7/
 
 **Interfaces (Consumes):** Task 4 的 `ddim_sample`/`ddpm_skip_sample`（levels 可选子网格，均匀间隔），Task 5 的速度网络与 `euler_sample`，Task 1 的 `mode_stats`/`energy_distance`，Task 2 的噪声预测器。
 
-- [ ] **Step 1: VERIFY 1 脚本** `scripts/part3_fields.py`：15×15 网格覆盖样本范围（约 [−5,5]²），s ∈ {0.1, 0.5, 0.9} 三面板双行（学习 vs 精确，箭头图，远场箭长裁剪）；打印各 s 的相对 RMS = RMS(v_θ − v_exact)/RMS(v_exact)。
+- [x] **Step 1: VERIFY 1 脚本** `scripts/part3_fields.py`：15×15 网格覆盖样本范围（约 [−5,5]²），s ∈ {0.1, 0.5, 0.9} 三面板双行（学习 vs 精确，箭头图，远场箭长裁剪）；打印各 s 的相对 RMS = RMS(v_θ − v_exact)/RMS(v_exact)。
   **验收:** 相对 RMS < 0.1 于每个 s（参考: 0.011, 0.017, 0.058）。
-- [ ] **Step 2: VERIFY 2 脚本** `scripts/part3_compare.py`：
+- [x] **Step 2: VERIFY 2 脚本** `scripts/part3_compare.py`：
   - 步数 K ∈ {1,2,5,10,20,50,100}，DDPM/DDIM 另加 1000 层（即 K=1000）；"K 步" = 在 [0,T] 上均匀间隔的层网格（DDPM/DDIM 用 Part 2 的跳层版；DDIM 无噪声，DDPM 加方差 1−a 噪声，t'=0 不加）；
   - 每配置 4000 样本（各采样器共享起始噪声 seed=0；DDPM 另有逐步噪声 seed）；记录 cluster fractions、centres、widths、与 4000 精确样本的能量距离 → `steps_table.txt`；
   - null scale：40 组独立精确样本（各 4000）配 20 对，算能量距离，取 95% 分位数（参考 ≈0.0013）；
   - 三联图 `steps_sweep.png`：能量距离 / 最大簇占比误差 / 最大宽度误差 vs K（三采样器三条线，log-x），能量距离面板画 null 95% 带，簇占比面板画 p=0.25±2×二项标准误带（√(0.25·0.75/4000)≈0.0068），D<1e−4 画在 1e−4，K=20 竖虚线。
   **验收:** flow 在 K=20 能量距离 < 0.005 且 widths 距 0.30 < 0.03（参考: flow 0.0015@20、DDIM 0.0038、DDPM ≈50 层达标）；K∈{1,2} 所有采样器均坍缩向均值（含精确预测版本，可加跑一组 exact-ε DDIM/flow 作旁证）。
-- [ ] **Step 3:** README 两行 + 结果摘要（哪个采样器多少步达标）；**Commit** — `week7: velocity field check and ddpm/ddim/flow step-count comparison`。
+- [x] **Step 3:** README 两行 + 结果摘要（哪个采样器多少步达标）；**Commit** — `week7: velocity field check and ddpm/ddim/flow step-count comparison`。
 
 **预计用时：** 代理 90–120 min；计算：能量距离 40 组 4000×4000（分块算，每组 <1 s）；采样扫网格均为秒级~分钟级。
 
@@ -492,7 +492,7 @@ week7/
   - 架构核对锚点（学习单给出）：网格 32→16→8→4→8→16→32，down 通道 **[128,256,256,256]**，参数总量 **≈35.7M**；模块按 config 构建：Timesteps 正弦嵌入（`flip_sin_to_cos=True`, `freq_shift=0`）、TimestepEmbedding(Linear-SiLU-Linear)、Down/UpBlock2D 与 AttnDown/UpBlock2D（ResnetBlock: GroupNorm(32)-SiLU-Conv3×3 ×2 + 时间投影加性偏置；Attention: GroupNorm + qkv 线性 + softmax + 残差 `rescale_output_factor=1`）、UNetMidBlock2D(resnet-attn-resnet)、上采样 skip 拼接、UpBlock 末块含 `conv_norm_out`(GroupNorm 32) + SiLU + `conv_out` 1×1... （3×3）；若某块 config 与此不符，以 **config.json 为准**。
 - 采样复用 `diffusion.ddpm_sample`：`eps_net = lambda x, t: unet_apply(params, config, x, full((B,), t-1))`（模型索引 t−1，float32，无裁剪）。
 
-- [ ] **Step 1: 失败测试** `tests/test_unet.py`：
+- [x] **Step 1: 失败测试** `tests/test_unet.py`：
   ```python
   import jax, jax.numpy as jnp, numpy as np, pathlib
   from unet import load_config, load_params, unet_apply
@@ -515,17 +515,17 @@ week7/
       assert jnp.allclose(eps, unet_apply(params, config, x, t), atol=1e-5)
   ```
   （`inputs/` 不在 git：测试文件顶部若 `not CFG.exists()` 则 `pytest.skip("download inputs/cifar-model first")`。）
-- [ ] **Step 2:** FAIL → **Step 3: 实现** `unet.py`（逐模块小函数 + config 驱动组装；Conv 用 `jnp.einsum`/`lax.conv_general_dilated`(NHWC, SAME padding)；GroupNorm 注意 torch `num_channels % num_groups == 0`、按组减均值除 std + affine；attention 在 (B,H*W,C) 上做）。**参数量对不上 35.7M 是第一诊断信号**：优先核对 attention 块位置（AttnDown/UpBlock）与 `attention_head_dim`。
+- [x] **Step 2:** FAIL → **Step 3: 实现** `unet.py`（逐模块小函数 + config 驱动组装；Conv 用 `jnp.einsum`/`lax.conv_general_dilated`(NHWC, SAME padding)；GroupNorm 注意 torch `num_channels % num_groups == 0`、按组减均值除 std + affine；attention 在 (B,H*W,C) 上做）。**参数量对不上 35.7M 是第一诊断信号**：优先核对 attention 块位置（AttnDown/UpBlock）与 `attention_head_dim`。
   可选数值对拍（网络好时）：
   ```bash
   uv run --with torch --with diffusers==0.40.0 python - <<'EOF'
   # 同一 (x, t) 输入, diffusers UNet2DModel vs unet.unet_apply, 输出 max|Δ| 应 < 1e-3
   EOF
   ```
-- [ ] **Step 4:** PASS。
-- [ ] **Step 5: VERIFY 1 脚本** `scripts/part4_generate.py`：4 张图（batch=4，seed 固定），1000 步 DDPM（CPU 约 3 分钟；每步一次 UNet 前向）；快照 t ∈ {1000,900,...,300,200,150,100,50,0}（学习单: t=200 仍近噪声、200→50 显形）；显示用 (x+1)/2 clip [0,1]。出 `cifar_stages.png`（4 行 × 快照列）、`cifar_final.png`、`cifar_vs_real.png`（与 week6 Part 1 的 CIFAR 画廊脚本并排真实图；直接复用 `week6/gallery.py` 的显示函数或拷贝小助手，README 注明来源）。
+- [x] **Step 4:** PASS。
+- [x] **Step 5: VERIFY 1 脚本** `scripts/part4_generate.py`：4 张图（batch=4，seed 固定），1000 步 DDPM（CPU 约 3 分钟；每步一次 UNet 前向）；快照 t ∈ {1000,900,...,300,200,150,100,50,0}（学习单: t=200 仍近噪声、200→50 显形）；显示用 (x+1)/2 clip [0,1]。出 `cifar_stages.png`（4 行 × 快照列）、`cifar_final.png`、`cifar_vs_real.png`（与 week6 Part 1 的 CIFAR 画廊脚本并排真实图；直接复用 `week6/gallery.py` 的显示函数或拷贝小助手，README 注明来源）。
   README 写明：**哪些是下载前已学好的**（网络权重 = 噪声预测），**哪些是本作业计算的**（DDPM 反向更新、调度表系数、采样循环）。
-- [ ] **Step 6:** Commit — `week7: jax port of cifar unet, pretrained noise prediction and ddpm image generation`。
+- [x] **Step 6:** Commit — `week7: jax port of cifar unet, pretrained noise prediction and ddpm image generation`。
 
 **预计用时：** 代理 3–5 h（本计划最重任务；权重映射细节多）；计算：参数量/形状测试秒级，采样约 3 min。
 
@@ -547,7 +547,7 @@ week7/
   - 每跳 2 次尝试（第 2 次先 `X_t = √a·X_t′ + √(1−a)·f` 回噪再重提），最后跳 20→0 只 1 次；共 49×2+1 = **99 次网络评估**。
 - `mask`：`np.zeros((32,32,3), bool); mask[6:26, 6:26, :] = False` 之外为 True（观测=1）。
 
-- [ ] **Step 1: 失败测试** `tests/test_repaint.py`（用玩具 eps_net，不依赖 UNet 下载）：
+- [x] **Step 1: 失败测试** `tests/test_repaint.py`（用玩具 eps_net，不依赖 UNet 下载）：
   ```python
   import jax, jax.numpy as jnp, numpy as np
   from diffusion import alphas_cumprod, beta_schedule
@@ -579,12 +579,12 @@ week7/
               jax.random.PRNGKey(1), levels=[40, 20, 0])
       assert len(calls) == 3      # 40→20 两次 + 20→0 一次（小网格 3 跳）
   ```
-- [ ] **Step 2:** FAIL → **Step 3: 实现** `repaint.py`（纯 Python 循环 99 次前向即可，无需 JIT 整体；`jax.random` 每 draw split key）→ **Step 4:** PASS。
-- [ ] **Step 5: VERIFY 1 脚本** `scripts/part5_inpaint.py`：载入 `inputs/images.npz` 4 图，mask 隐藏 rows/cols 6:26 全通道；seeds 7201–7204（16 个补全；按 (image, seed) 批处理，16 样本批一次前向，总 99 次评估，约 2–4 分钟）；输出：
+- [x] **Step 2:** FAIL → **Step 3: 实现** `repaint.py`（纯 Python 循环 99 次前向即可，无需 JIT 整体；`jax.random` 每 draw split key）→ **Step 4:** PASS。
+- [x] **Step 5: VERIFY 1 脚本** `scripts/part5_inpaint.py`：载入 `inputs/images.npz` 4 图，mask 隐藏 rows/cols 6:26 全通道；seeds 7201–7204（16 个补全；按 (image, seed) 批处理，16 样本批一次前向，总 99 次评估，约 2–4 分钟）；输出：
   - `inpaint_gallery.png`：每图一行 = 真值 | 观测 | 4 补全 | 跨 4 补全的逐像素方差图（热图）；
   - `mse_table.txt`：每个补全的 hidden-pixel MSE（隐藏区 400×3=1200 值）与**观测像素最大改变量**。
   **验收:** 观测像素改变 < 1e−5；洞外 4 补全逐位相同、洞内不同；参考 hidden MSE 均值 ≈0.24（船图 0.13–0.38）。README 解释"为何补全看起来合理却仍可能错"。
-- [ ] **Step 6:** Commit — `week7: repaint inpainting with noised-observation merge and evidence`。
+- [x] **Step 6:** Commit — `week7: repaint inpainting with noised-observation merge and evidence`。
 
 **预计用时：** 代理 90–120 min；计算 2–4 min。
 
@@ -595,9 +595,9 @@ week7/
 **Files:**
 - Modify: `week7/README.md`
 
-- [ ] **Step 1:** README 补齐（学习单 "Save the results" 要求）：每张 evidence 图/动画 ↔ 生成命令表；**transport 对比解释**（Part 3：DDPM/DDIM/flow 各自步数需求与原因）、**生成照片解释**（Part 4：下载已学好的 vs 采样器现算的）、**补全结果解释**（Part 5：观测约束 vs 隐藏区不确定性）；训练设置表（两个网络：updates/batch/lr 调度/宽度/阶段点/损失终值）、环境（uv 命令）、pinned 模型下载（repo + revision 哈希 + 文件大小）。
-- [ ] **Step 2:** `uv run pytest tests/` 全绿；`git status` 确认无 `inputs/`、`artifacts/`、GIF 均在 `evidence/` 且 <5 MB；`du -sh evidence/` 记录进 README。
-- [ ] **Step 3: Commit** — `week7: readme evidence tables, settings and explanations`；push（source + environment + evidence）。
+- [x] **Step 1:** README 补齐（学习单 "Save the results" 要求）：每张 evidence 图/动画 ↔ 生成命令表；**transport 对比解释**（Part 3：DDPM/DDIM/flow 各自步数需求与原因）、**生成照片解释**（Part 4：下载已学好的 vs 采样器现算的）、**补全结果解释**（Part 5：观测约束 vs 隐藏区不确定性）；训练设置表（两个网络：updates/batch/lr 调度/宽度/阶段点/损失终值）、环境（uv 命令）、pinned 模型下载（repo + revision 哈希 + 文件大小）。
+- [x] **Step 2:** `uv run pytest tests/` 全绿；`git status` 确认无 `inputs/`、`artifacts/`、GIF 均在 `evidence/` 且 <5 MB；`du -sh evidence/` 记录进 README。
+- [x] **Step 3: Commit** — `week7: readme evidence tables, settings and explanations`；push（source + environment + evidence）。
 
 **预计用时：** 代理 30–45 min。
 
