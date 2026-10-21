@@ -37,10 +37,17 @@ def component_weights(x: jax.Array, mean_coeff, var) -> jax.Array:
 
     Within component k, x ~ N(mean_coeff*mu_k, (mean_coeff^2*SIGMA2 + var)*I);
     with equal priors pi_k = 1/4 the softmax of the (shared-normalizer) log
-    densities gives the posterior.
+    densities gives the posterior. mean_coeff/var may be scalars or
+    per-sample arrays broadcastable to (n, 1).
     """
-    total_var = mean_coeff**2 * SIGMA2 + var
-    d2 = jnp.sum((x[:, None, :] - mean_coeff * MEANS[None]) ** 2, axis=-1)
+    mc = jnp.asarray(mean_coeff)
+    vv = jnp.asarray(var)
+    if mc.ndim == 1:
+        mc = mc[:, None]
+        vv = vv.reshape(-1, 1) if vv.ndim == 1 else vv
+    total_var = mc**2 * SIGMA2 + vv
+    mc3 = mc[:, None] if mc.ndim else mc  # (n,1,1) or scalar
+    d2 = jnp.sum((x[:, None, :] - mc3 * MEANS[None]) ** 2, axis=-1)
     logw = -0.5 * d2 / total_var
     return jax.nn.softmax(logw, axis=-1)
 
@@ -75,17 +82,24 @@ def exact_velocity(x: jax.Array, s) -> jax.Array:
     The mixture velocity is the weight-averaged E[z|x,k] - m_k with weights
     component_weights(x, 1-s, s^2). Limits: v(x, 0) = -x, v(x, 1) = x.
     """
-    sc = 1.0 - s
-    if s < 1e-9:
-        return -x
-    var = s**2
+    s_arr = jnp.asarray(s)
+    if s_arr.ndim == 0:
+        s_b = s_arr
+    else:  # per-sample times: broadcast against x (n, d)
+        s_b = s_arr.reshape(s_arr.shape + (1,) * (x.ndim - s_arr.ndim))
+    small = s_b < 1e-9
+    s_safe = jnp.where(small, 1.0, s_b)
+    sc = 1.0 - s_safe
+    var = s_safe**2
     prec = sc**2 / var + 1.0 / SIGMA2
     S = 1.0 / prec
-    m_k = S * (sc * x[:, None, :] / var + MEANS[None] / SIGMA2)
+    m_k = S[..., None] * (sc[..., None] * x[:, None, :] / var[..., None]
+                         + MEANS[None] / SIGMA2)
     w = component_weights(x, sc, var)
-    ez_k = (x[:, None, :] - sc * m_k) / s
+    ez_k = (x[:, None, :] - sc[..., None] * m_k) / s_safe[..., None]
     v_k = ez_k - m_k
-    return jnp.einsum("nk,nkd->nd", w, v_k)
+    v = jnp.einsum("nk,nkd->nd", w, v_k)
+    return jnp.where(small, -x, v)
 
 
 def assign_modes(x: jax.Array) -> jax.Array:

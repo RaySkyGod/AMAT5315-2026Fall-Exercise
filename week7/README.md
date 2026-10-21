@@ -50,6 +50,9 @@ curl -fL https://giggleliu.github.io/AMAT5315-2026Fall/downloads/week7-images.np
 | `evidence/part1/stages.gif` | `uv run python scripts/part1_stages.py` |
 | `evidence/part1/generate.gif`, `generate_final.png`, `mode_stats.txt` | `uv run python scripts/part1_generate.py` |
 | `evidence/part2/determinism.png`, `samples_compare.png`, `max_diff.txt` | `uv run python scripts/part2_determinism.py` |
+| `evidence/part3/flow_loss_history.png` | `uv run python scripts/part3_train_flow.py` |
+| `evidence/part3/velocity_fields.png`, `velocity_rms.txt` | `uv run python scripts/part3_fields.py` |
+| `evidence/part3/steps_sweep.png`, `steps_table.txt` | `uv run python scripts/part3_compare.py` |
 
 ## Training settings
 
