@@ -1,0 +1,10 @@
+V3: 100,000 draws per sampler from one broad validation context (model entropy 3.71 nats)
+  temperature T=0.8    chi2 =    125.3  dof =  117  p = 0.2828  OK
+  top-k 20 (T=1)       chi2 =     27.0  dof =   19  p = 0.1039  OK
+  top-p 0.9 (T=0.8)    chi2 =     25.1  dof =   28  p = 0.6207  OK
+  min-p 0.1 (T=0.7)    chi2 =     12.2  dof =    9  p = 0.2008  OK
+  temperature 1e-4     most-likely token in 1000/1000 draws
+
+V4: mean surprise vs mean predicted entropy, z over 128 sequences
+  T = 1.0:  mean surprise 1.670  mean entropy 1.650  z = +1.8  (must lie within -4..4; ref 1.6)
+  T = 0.7:  mean surprise 1.140  mean entropy 1.567  z = -65.4  (size must exceed 40; ref ~ -68)
