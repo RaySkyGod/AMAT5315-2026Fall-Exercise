@@ -1,0 +1,6 @@
+one-token MLP: 64-dim embedding, 512 tanh units, 4000 steps x 16384,
+peak lr 0.006 (400-step warmup, cosine decay, AdamW wd 0.01)
+training time: 456 s
+MLP held-out cross-entropy:     3.0420 nats/token
+bigram held-out cross-entropy:  3.0382 nats/token
+difference: +0.0039  (acceptance: within 0.01; sheet ref +0.003)
