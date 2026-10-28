@@ -1,0 +1,16 @@
+fit (240 runs, Huber log loss, delta=0.001):
+  E     =   1.8167 +- 0.0251
+  A     = 475.5300 +- 145.1220
+  B     = 2136.3869 +- 993.1506
+  alpha =   0.3470 +- 0.0141
+  beta  =   0.3670 +- 0.0174
+  (sheet ref: alpha 0.347+-0.014, beta 0.367+-0.021, E 1.817+-0.025, A 478, B 2143)
+
+mean log-loss residual (predicted - measured):
+  our fit:    -0.0007  (acceptance within +-0.005; sheet ref -0.0007)
+  printed:    +0.0167  (must exceed 0.01; sheet ref +0.017)
+
+at C = 5.76e23 FLOP: N* = 7.33e+10, D* = 1.31e+12, D*/N* = 17.9
+  95% bootstrap interval: [8.5, 36.7] (ref 17.9 in [7.7, 37]; must lie in [10, 30])
+  N* grows like C^0.51, D* like C^0.49 (ref 0.51 / 0.49)
+  printed parameters give D*/N* = 93 tokens per parameter, N* = 3.22e+10 (a model a third of Chinchilla's 70e9)
