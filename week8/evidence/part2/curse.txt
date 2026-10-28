@@ -1,0 +1,8 @@
+ n bits/char unseen %   (sheet: bpc 3.40 2.14 1.47 1.31 1.46 1.79; unseen 0.6 4.2 12.2 23.5 for n=3..6)
+ 1     3.403     0.00
+ 2     2.136     0.03
+ 3     1.473     0.63
+ 4     1.310     4.15
+ 5     1.464    12.22
+ 6     1.793    23.50
+lowest loss at n = 4 (1.310 bits/char); 6-gram perplexity 12.8 predicts worse than the trigram's 8.12
