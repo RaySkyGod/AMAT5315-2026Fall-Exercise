@@ -1,0 +1,34 @@
+potion-base-8M relation directions (rows unit length)
+table: 29528 tokens x 256 dims; vocab spot check cat=3943 kitten=17407 anthony=3944
+
+country to capital: table mean cosine +0.466 (sheet ref ~0.47/0.55/0.43, must be >= 0.3); control +0.029 (must lie within +-0.15)
+  pairs: iran->tehran +0.45, turkey->ankara +0.36, russia->moscow +0.52, china->beijing +0.37, france->paris +0.49, sweden->stockholm +0.52, japan->tokyo +0.55, peru->lima +0.30, kenya->nairobi +0.63
+
+male to female: table mean cosine +0.549 (sheet ref ~0.47/0.55/0.43, must be >= 0.3); control -0.015 (must lie within +-0.15)
+  pairs: king->queen +0.49, man->woman +0.84, he->she +0.85, brother->sister +0.63, father->mother +0.35, son->daughter +0.53, uncle->aunt +0.44, boy->girl +0.75, husband->wife +0.07
+
+adjective to comparative: table mean cosine +0.433 (sheet ref ~0.47/0.55/0.43, must be >= 0.3); control +0.009 (must lie within +-0.15)
+  pairs: big->bigger +0.51, small->smaller +0.42, fast->faster +0.45, dark->darker +0.36, cold->colder +0.43, old->older +0.17, strong->stronger +0.59, long->longer +0.44, tall->taller +0.53
+
+20 shuffles of the control (different seeds):
+  seed  0: max |mean| 0.036
+  seed  1: max |mean| 0.074
+  seed  2: max |mean| 0.016
+  seed  3: max |mean| 0.060
+  seed  4: max |mean| 0.059
+  seed  5: max |mean| 0.091
+  seed  6: max |mean| 0.044
+  seed  7: max |mean| 0.010
+  seed  8: max |mean| 0.029
+  seed  9: max |mean| 0.056
+  seed 10: max |mean| 0.028
+  seed 11: max |mean| 0.081
+  seed 12: max |mean| 0.016
+  seed 13: max |mean| 0.072
+  seed 14: max |mean| 0.081
+  seed 15: max |mean| 0.045
+  seed 16: max |mean| 0.105
+  seed 17: max |mean| 0.036
+  seed 18: max |mean| 0.085
+  seed 19: max |mean| 0.010
+worst over 20 shuffles: 0.105 (sheet ref <= 0.09)
