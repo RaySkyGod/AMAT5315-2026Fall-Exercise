@@ -1,0 +1,4 @@
+bigram ancestral sampling, 250,000 tokens, k=0.01
+contexts: 20 most frequent training tokens (EOS excluded)
+model sampler:     chi2 = 1192.6  dof = 1211  p = 0.6414  (must exceed 0.001; sheet ref 0.37)
+wrong sampler:     chi2 = 25025727.3  dof = 1212  p = 0.00e+00  (conditions two places back; sheet ref p = 0)
