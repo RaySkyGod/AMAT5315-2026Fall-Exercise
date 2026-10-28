@@ -82,15 +82,15 @@ week8/
 - `cd week8 && uv run python <script>` 与 `uv run pytest tests/` 可用。
 - `data/TinyStoriesV2-GPT4-valid.txt`（≈22.5 MB，27,630 篇）、`data/chinchilla-runs.csv`（245 行）、`inputs/potion-base-8M/{model.safetensors,tokenizer.json}`（表 29,528×256）、`inputs/tinyllamas/stories260K/tok512.model`。
 
-- [ ] **Step 1: 初始化 uv 项目**：
+- [x] **Step 1: 初始化 uv 项目**：
   ```bash
   cd week8
   uv init --no-readme --python 3.12
   uv add jax numpy matplotlib safetensors sentencepiece scipy pytest
   ```
   jax 版本与 week7 对齐（0.11.x，CPU）。`touch conftest.py`。
-- [ ] **Step 2: `.gitignore`**（内容：`data/`、`inputs/`、`artifacts/`、`.venv/`、`__pycache__/`、`.pytest_cache/`）+ `mkdir -p evidence/part{1..6} artifacts/part{1..6} data inputs`。
-- [ ] **Step 3: 学习单原文下载（语料与 CSV，URL 记入 README）**：
+- [x] **Step 2: `.gitignore`**（内容：`data/`、`inputs/`、`artifacts/`、`.venv/`、`__pycache__/`、`.pytest_cache/`）+ `mkdir -p evidence/part{1..6} artifacts/part{1..6} data inputs`。
+- [x] **Step 3: 学习单原文下载（语料与 CSV，URL 记入 README）**：
   ```bash
   mkdir -p week8/data
   base=https://huggingface.co/datasets/roneneldan/TinyStories/resolve
@@ -101,7 +101,7 @@ week8/
   rev=92258837425e1b5f2851d624287f0120583a3d0e
   curl -L -o week8/data/chinchilla-runs.csv "$base/$rev/data/svg_extracted_data.csv"
   ```
-- [ ] **Step 4: 模型文件（pinned revisions）**：
+- [x] **Step 4: 模型文件（pinned revisions）**：
   ```bash
   uv run --with huggingface-hub==1.33.0 hf download minishlab/potion-base-8M \
     model.safetensors tokenizer.json --revision bf8b056 \
@@ -123,7 +123,7 @@ week8/
   print(open('data/chinchilla-runs.csv').readline())    # 记录列名，Task 13 用
   "
   ```
-- [ ] **Step 5: README stub**（标题、环境命令、provenance 小节）+ **Commit** `week8: uv environment, directories and pinned downloads`（确认 data/、inputs/ 未被跟踪）。
+- [x] **Step 5: README stub**（标题、环境命令、provenance 小节）+ **Commit** `week8: uv environment, directories and pinned downloads`（确认 data/、inputs/ 未被跟踪）。
 
 **预计用时：** 代理 15–25 min；下载 5–15 min（视网速）。
 
@@ -144,7 +144,7 @@ week8/
 - `embeddings.shuffled_control(E, seed=1730) -> E_shuf`：`np.random.default_rng(seed).permutation(V)` 重排行。
 - `embeddings.leave_one_out_cosines(E_hat, pairs, vocab) -> np.ndarray (9,)`：对每对 j，offset_j = E_hat[b]−E_hat[a]，cos_j = ⟨offset_j, mean_{i≠j} offset_i⟩ / (|offset_j| |mean|)。
 
-- [ ] **Step 1: 失败测试** `tests/test_embeddings.py`：
+- [x] **Step 1: 失败测试** `tests/test_embeddings.py`：
   ```python
   import numpy as np
   from embeddings import unit_rows, shuffled_control, leave_one_out_cosines
@@ -167,15 +167,15 @@ week8/
       pairs = []
   ```
   （test 续：`E[2*i] = rng.normal(...)` 任意起点 a_i，`E[2*i+1] = E[2*i] + u`，则 `leave_one_out_cosines(unit_rows 的非必须——直接传已单位化的 E, pairs, key)` 全为 1。再加一个洗牌后 |mean cos| 小的对照断言。）
-- [ ] **Step 2: 跑 `uv run pytest tests/test_embeddings.py -v` 确认失败**（ModuleNotFoundError: embeddings）。
-- [ ] **Step 3: 实现 `embeddings.py`**（纯 NumPy；54 个词全部在词表中，载入时 assert）。
-- [ ] **Step 4: 跑测试通过。**
-- [ ] **Step 5: evidence 脚本** `scripts/part1_embeddings.py`：
+- [x] **Step 2: 跑 `uv run pytest tests/test_embeddings.py -v` 确认失败**（ModuleNotFoundError: embeddings）。
+- [x] **Step 3: 实现 `embeddings.py`**（纯 NumPy；54 个词全部在词表中，载入时 assert）。
+- [x] **Step 4: 跑测试通过。**
+- [x] **Step 5: evidence 脚本** `scripts/part1_embeddings.py`：
   - 表与对照（seed 1730）各自算三关系的 9 个 cos；每关系一个子图：上半天蓝箭头=表（与水平轴夹角 arccos(cos)），下半灰箭头=对照，黑色水平箭头=平均 offset 方向，90° 虚线；箭头尖端横坐标=cosine。
   - `cosines.txt`：每关系的 mean cosine（表/对照），另跑 **20 个不同 seed 的洗牌**打印 max |mean|（学习单参考 ≤0.09）。
   - 打印词表抽查：cat=3943、kitten=17407（图 3 一致性）。
-- [ ] **Step 6: 验收（学习单 V1 阈值）**：表的每关系 mean cos ≥ **0.3**（参考 0.47/0.55/0.43）；对照在 **±0.15** 内（参考 0.03/−0.01/0.01）。不达标 → 检查单位化顺序（先单位化行再作差）、词表大小写（potion 词表全小写）。
-- [ ] **Step 7: Commit** `week8: part1 embedding relations as directions, shuffled control`
+- [x] **Step 6: 验收（学习单 V1 阈值）**：表的每关系 mean cos ≥ **0.3**（参考 0.47/0.55/0.43）；对照在 **±0.15** 内（参考 0.03/−0.01/0.01）。不达标 → 检查单位化顺序（先单位化行再作差）、词表大小写（potion 词表全小写）。
+- [x] **Step 7: Commit** `week8: part1 embedding relations as directions, shuffled control`
 
 **预计用时：** 代理 30–45 min。
 
@@ -197,7 +197,7 @@ week8/
 - `stories.decode_story(sp, tokens) -> str`。
 - `stories.cache_streams() -> (train_tokens, val_tokens)`：首次编码后存 npy 缓存到 artifacts/。
 
-- [ ] **Step 1: 失败测试**（要点）：
+- [x] **Step 1: 失败测试**（要点）：
   ```python
   def test_split_on_endoftext_strips_and_drops_empty():
       text = "<|endoftext|>\n  A story.  \n<|endoftext||>\n\n<|endoftext|>B<|endoftext|>"
@@ -207,9 +207,9 @@ week8/
   def test_encode_stream_starts_with_eos_and_separates():
       # 用假 tokenizer（stub 两个 token）验证结构 [EOS, a, b, EOS, c]；EOS 出现次数 = 故事数
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
-- [ ] **Step 5: 编码两 split 并缓存**；打印：24,867 / 2,763 篇；训练 token 数 ≈ 9.7e6；验证解码匹配篇数（期望 **2,763−3** 篇逐字节还原；差异源于双空格合并，逐篇打印不匹配的 3 篇索引）；chars/token ≈ **2.05**（验证集解码字符数 ÷ token 数）。
-- [ ] **Step 6: Commit** `week8: part2 corpus split, tok512 encoding, decode check (all but 3 stories)`
+- [x] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
+- [x] **Step 5: 编码两 split 并缓存**；打印：24,867 / 2,763 篇；训练 token 数 ≈ 9.7e6；验证解码匹配篇数（期望 **2,763−3** 篇逐字节还原；差异源于双空格合并，逐篇打印不匹配的 3 篇索引）；chars/token ≈ **2.05**（验证集解码字符数 ÷ token 数）。
+- [x] **Step 6: Commit** `week8: part2 corpus split, tok512 encoding, decode check (all but 3 stories)`
 
 **预计用时：** 代理 30–45 min。
 
@@ -231,7 +231,7 @@ week8/
 - `ngram.sample_stream(model_row_fn, n, rng, n_tokens) -> tokens`：祖先采样（上下文不足补 EOS）。
 - `ngram.chi2_pooled(observed: dict[ctx, Counter], expected: dict[ctx, probs], n_draws_per_ctx) -> (stat, dof, p)`：稀有 token 并桶至期望计数 ≥5，统计量与自由度跨 20 个上下文相加，`scipy.stats.chi2.sf`。
 
-- [ ] **Step 1: 失败测试**（要点，全部小合成例）：
+- [x] **Step 1: 失败测试**（要点，全部小合成例）：
   ```python
   def test_packing_roundtrip_and_width():
       toks = np.array([3, 511, 7, 0], dtype=np.int64)
@@ -251,8 +251,8 @@ week8/
   def test_choose_k_prefers_smooth_zero_infinite_loss():
       # 构造含未见 bigram 的"验证"流：k=0 时损失 inf → choose_k 不返回 0
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现（float64 计数；int64 打包键）→ Step 4: 通过。**
-- [ ] **Step 5: Commit** `week8: part2 n-gram counts, add-k smoothing, exact normalization helpers`
+- [x] **Step 2: 确认失败 → Step 3: 实现（float64 计数；int64 打包键）→ Step 4: 通过。**
+- [x] **Step 5: Commit** `week8: part2 n-gram counts, add-k smoothing, exact normalization helpers`
 
 **预计用时：** 代理 45–60 min。
 
@@ -265,14 +265,14 @@ week8/
 - Evidence: `evidence/part2/normalization.txt`、`evidence/part2/losses_table.txt`、`evidence/part2/sampler_chi2.txt`、`evidence/part2/curse.png`
 - Artifacts: `artifacts/part2/ngram_losses.json`（后续 Part 5 对比用）
 
-- [ ] **Step 1: `part2_losses.py`**：
+- [x] **Step 1: `part2_losses.py`**：
   - V1：对选好 k 的 bigram 矩阵算 `seq_prob_sums`；打印 |sum−1|（学习单阈值 **1e-12**，参考 ≤ 3.2e-15）；对照组：不做行归一的得分（如 `exp(n(ab)/max n)`）打印 512 / 2.6e5 / 1.3e8 以对照。
   - V2：uniform、unigram..6-gram 七个模型；每 n 先 `choose_k`（打印所选 k），再在验证流上评分；输出表：nats/token、perplexity=e^L、bits/char（总 nats ÷ ln2 ÷ 验证解码字符数）；损失历史存 JSON。
   - 验收：uniform 行精确 **6.238 / 512 / 4.386**；unigram **4.839 / 126.4 / 3.403**；bigram **3.038 / 20.9 / 2.136**；trigram **2.094 / 8.12 / 1.473**；各值差 **≤0.03 nats**、perplexity差 **≤3%**。不达标先查：k 选择口径、流首 EOS、chars 口径（解码字符）。
-- [ ] **Step 2: `part2_sampler.py`（V3）**：bigram 祖先采样 **250,000** token；取训练流中 **20 个最频繁 token** 为上下文，比较样本中各"下一 token 计数"与模型概率（期望=该上下文在样本中作为前一 token 的次数 × P(·|a)），合并 χ²；打印 p 值（阈值 **> 0.001**，参考 0.37）。附一个反例 sampler（条件于往前第 2 个 token）打印 p ≈ 0，作对照。
-- [ ] **Step 3: `part2_curse.py`（V4）**：n=1..6 的验证流未见 n-gram 比例（held-out n-gram 从未在训练 token 中出现的比例）与 bpc 双图（参考图 7 布局）。
+- [x] **Step 2: `part2_sampler.py`（V3）**：bigram 祖先采样 **250,000** token；取训练流中 **20 个最频繁 token** 为上下文，比较样本中各"下一 token 计数"与模型概率（期望=该上下文在样本中作为前一 token 的次数 × P(·|a)），合并 χ²；打印 p 值（阈值 **> 0.001**，参考 0.37）。附一个反例 sampler（条件于往前第 2 个 token）打印 p ≈ 0，作对照。
+- [x] **Step 3: `part2_curse.py`（V4）**：n=1..6 的验证流未见 n-gram 比例（held-out n-gram 从未在训练 token 中出现的比例）与 bpc 双图（参考图 7 布局）。
   - 验收：bpc 在 **n=4 最低 ≈1.310**；n=5 ≈ **1.46**、n=6 ≈ **1.79**（各 ±0.03）；未见比例 n=3..6 距 **0.6% / 4.2% / 12.2% / 23.5%** 在 **2 个百分点** 内；打印 6-gram perplexity（参考 12.8）> trigram 8.12。
-- [ ] **Step 4: Commit**（可分三条：`week8: part2 bigram exact normalization + loss ladder (…)` / `week8: part2 ancestral sampling passes pooled chi-square` / `week8: part2 curse of dimensionality, 4-gram best at 1.310 bpc`）。
+- [x] **Step 4: Commit**（可分三条：`week8: part2 bigram exact normalization + loss ladder (…)` / `week8: part2 ancestral sampling passes pooled chi-square` / `week8: part2 curse of dimensionality, 4-gram best at 1.310 bpc`）。
 
 **预计用时：** 代理 45–60 min；计算几分钟。
 
@@ -292,7 +292,7 @@ week8/
 - `stores.capacity(Ms, Rs) -> float | None`：R 过 1 的 M，log R–log M 线性插值。
 - 预测线：`stores.R_PRED = {'outer': sqrt(M/d), 'lstsq': max(0, sqrt(M/d)−1)（M>d）, ('relu',p): sqrt((2p−1)!!·M/(2d^p))}`。
 
-- [ ] **Step 1: 失败测试**（要点）：
+- [x] **Step 1: 失败测试**（要点）：
   ```python
   def test_orthogonal_keys_outer_store_recalls_exactly():
       K = np.eye(6)[:, :4]                # 4 个正交单位键, d=6 → M=d
@@ -311,8 +311,8 @@ week8/
   def test_capacity_interpolation():
       Ms = [8, 32, 128]; Rs = [0.2, 0.5, 1.4] → 容量在 (32,128) 内、log-log 插值可复现
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
-- [ ] **Step 5: Commit** `week8: part3 key-value stores (outer, lstsq, relu^p, softmax) with interference ratio`
+- [x] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
+- [x] **Step 5: Commit** `week8: part3 key-value stores (outer, lstsq, relu^p, softmax) with interference ratio`
 
 **预计用时：** 代理 45–60 min。
 
@@ -325,14 +325,14 @@ week8/
 - Evidence: `evidence/part3/interference_d64.png`、`evidence/part3/capacity.png`、`evidence/part3/capacity_table.txt`
 - Artifacts: `artifacts/part3/capacity.json`
 
-- [ ] **Step 1: 脚本**：对 d ∈ {16, 32, 64}、M = 8..65536（2 的幂）× {outer, lstsq, relu1, relu2, relu3}，每配置 3 次独立抽取取中位数；R>1.5 后可提前停（容量已括出）；d=64 图：R–M log-log + 预测虚线 + R=1 水平线；容量–d log-log + 最小二乘斜率。float32；大 M 分块。
-- [ ] **Step 2: 验收（学习单 V1/V2）**：
+- [x] **Step 1: 脚本**：对 d ∈ {16, 32, 64}、M = 8..65536（2 的幂）× {outer, lstsq, relu1, relu2, relu3}，每配置 3 次独立抽取取中位数；R>1.5 后可提前停（容量已括出）；d=64 图：R–M log-log + 预测虚线 + R=1 水平线；容量–d log-log + 最小二乘斜率。float32；大 M 分块。
+- [x] **Step 2: 验收（学习单 V1/V2）**：
   - 曲线在 R ≳ 0.1 后斜率 ≈ 1/2；
   - outer 在 d=64 于 **M ∈ [50, 85]** 过 1（参考 67.4）；
   - lstsq 在 M ≤ 64 时 **R < 1e-10**，在 **[100, 170]** 过 1（参考 129，参考 R=5e-14）；
   - ReLU²/ReLU³ 过 1 于 **≈2,871 / ≈38,124**（高斯预测 2,731 / 34,953）；
   - 斜率：outer/lstsq/relu1 距 1 **≤0.1**（参考 0.96/0.99/0.95）；relu2 距 2 **≤0.15**（参考 1.96）；relu3 **>2.5**（参考 2.79）。
-- [ ] **Step 3: Commit** `week8: part3 capacity ~d, ~2d, ~d^p with slopes 0.96/0.99/0.95/1.96/2.79`
+- [x] **Step 3: Commit** `week8: part3 capacity ~d, ~2d, ~d^p with slopes 0.96/0.99/0.95/1.96/2.79`
 
 **预计用时：** 代理 30–45 min；计算：float32 BLAS 数分钟（ReLU³ d=64 最重；若超 10 min，把大 M 查询键降到 1024）。
 
@@ -352,7 +352,7 @@ week8/
 - `mlp_lm.train(train_tokens, val_tokens, steps=4000, batch=16384, peak_lr=0.006, warmup=400) -> (params, history)`：AdamW（weight_decay=0.01，记录），每步从训练 bigram 位置均匀抽 batch；lr 线性 warmup 后 cosine 衰减到 0。
 - `mlp_lm.heldout_loss(params, val_tokens) -> float`：与 Part 2 bigram 完全相同的 (prev,next) 位置集合上的平均 CE（nats/token）。
 
-- [ ] **Step 1: 失败测试**（要点）：
+- [x] **Step 1: 失败测试**（要点）：
   ```python
   def test_forward_shapes_and_param_count():
       p = init_params(jax.random.PRNGKey(0))
@@ -365,10 +365,10 @@ week8/
   def test_training_pushes_toy_distribution_to_counts():
       # V=4、手造 bigram 计数 → 训练后 p(·|a) 逼近行归一计数（tolerance 1e-2）
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现（JAX，jit 训练步）→ Step 4: 通过。**
-- [ ] **Step 5: `scripts/part3_mlp.py`**：训练（4000×16384，CPU 约一两分钟），保存权重与损失历史，报告 held-out CE。
-- [ ] **Step 6: 验收（V3）**：|MLP held-out − 3.038| ≤ **0.01** nats/token（参考 +0.003）。附 512 样本/步的对照跑（参考：差 0.02 nats，可只在 README 记一句，脚本加 `--batch 512` 开关）。
-- [ ] **Step 7: Commit** `week8: part3 one-token MLP stores the bigram table (held-out 3.041 vs 3.038)`
+- [x] **Step 2: 确认失败 → Step 3: 实现（JAX，jit 训练步）→ Step 4: 通过。**
+- [x] **Step 5: `scripts/part3_mlp.py`**：训练（4000×16384，CPU 约一两分钟），保存权重与损失历史，报告 held-out CE。
+- [x] **Step 6: 验收（V3）**：|MLP held-out − 3.038| ≤ **0.01** nats/token（参考 +0.003）。附 512 样本/步的对照跑（参考：差 0.02 nats，可只在 README 记一句，脚本加 `--batch 512` 开关）。
+- [x] **Step 7: Commit** `week8: part3 one-token MLP stores the bigram table (held-out 3.041 vs 3.038)`
 
 **预计用时：** 代理 45–60 min。
 
@@ -399,7 +399,7 @@ week8/
 - `picture.recall(target_value, M, d, store, rng) -> (recalled (1024,), R)`：键全随机单位（含目标的键），其余值随机 ±1；用其键查询；softmax 权重减最大值；返回**除以自身权重 w_j 后**的召回与 R。
 - 预测：`R_softmax = sqrt(M)·exp(β²/d−β)`（d=64, β=8, M=4096 → 0.058）、`sqrt(M/d)`、`sqrt(M/(2d))`、`sqrt(3M/(2d²))`。
 
-- [ ] **Step 1: 失败测试**（要点）：
+- [x] **Step 1: 失败测试**（要点）：
   ```python
   def test_bitmap_shape_values_and_ink_count():
       pic = target_picture()
@@ -412,10 +412,10 @@ week8/
   def test_outer_recall_matches_prediction_at_zero_noise():
       # M=64, d=64：R ≈ sqrt(M/d)=1（tolerance 宽）
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
-- [ ] **Step 5: `scripts/part4_recall.py`**：M ∈ {64,256,1024,4096} × {outer, relu, relu2, softmax(β=8)}，固定 seed 单次抽取画 4×4 点图（点面积∝召回像素/自身权重，R<1 标红），打印全部 R；另对 M=1024 跑 **20 次抽取中位数**（outer/ReLU 检验用）。
-- [ ] **Step 6: 验收（V1）**：M=1024 的 outer/ReLU R 距 **4 / 2.83** ≤15%（参考中位数 4.05/2.84）；ReLU² 在 M=1024 处 **R≈0.60**（预测 0.61）且图片可读；M=4096 时 ReLU² **R>1**（参考 1.2）；softmax 每个 M 都 **R<0.1**（M=4096 参考 0.057，预测 0.058）且四行图片同样清晰。
-- [ ] **Step 7: Commit** `week8: part4 softmax store (beta=8) recalls the picture among 4096 memories`
+- [x] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
+- [x] **Step 5: `scripts/part4_recall.py`**：M ∈ {64,256,1024,4096} × {outer, relu, relu2, softmax(β=8)}，固定 seed 单次抽取画 4×4 点图（点面积∝召回像素/自身权重，R<1 标红），打印全部 R；另对 M=1024 跑 **20 次抽取中位数**（outer/ReLU 检验用）。
+- [x] **Step 6: 验收（V1）**：M=1024 的 outer/ReLU R 距 **4 / 2.83** ≤15%（参考中位数 4.05/2.84）；ReLU² 在 M=1024 处 **R≈0.60**（预测 0.61）且图片可读；M=4096 时 ReLU² **R>1**（参考 1.2）；softmax 每个 M 都 **R<0.1**（M=4096 参考 0.057，预测 0.058）且四行图片同样清晰。
+- [x] **Step 7: Commit** `week8: part4 softmax store (beta=8) recalls the picture among 4096 memories`
 
 **预计用时：** 代理 45–60 min。
 
@@ -434,7 +434,7 @@ week8/
 - `transformer.eval_positions(params, batch65) -> (B, 64) per-token nats`：位置损失（V2 用，第 1 位不评分 → 返回 63 个值或首位置置 NaN，接口注明）。
 - `transformer.next_token_logits(params, tokens (1, t)) -> (V,)`：生成用（t ≤ 64）。
 
-- [ ] **Step 1: 失败测试**（要点）：
+- [x] **Step 1: 失败测试**（要点）：
   ```python
   def test_param_count_matches_figure14_formula():
       p = init_params(PRNGKey(0))
@@ -453,8 +453,8 @@ week8/
   def test_loss_zero_when_logits_one_hot_on_target():
       # 手工参数构造或对 loss_fn 用 logits 注入 stub
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
-- [ ] **Step 5: Commit** `week8: part5 pre-norm decoder, causal multi-head attention, 328,448 params`
+- [x] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
+- [x] **Step 5: Commit** `week8: part5 pre-norm decoder, causal multi-head attention, 328,448 params`
 
 **预计用时：** 代理 60–90 min。
 
@@ -467,13 +467,13 @@ week8/
 - Evidence: `evidence/part5/bpc_compare.png`、`evidence/part5/samples.txt`、`evidence/part5/loss_history.png`
 - Artifacts: `artifacts/part5/transformer.npz`、`artifacts/part5/train_log.json`
 
-- [ ] **Step 1: `part5_train.py`**：训练窗口 65 连续 token，每步随机偏移抽 32 条；AdamW(wd=0.01，记录)、6000 步、峰值 lr 0.003、300 步线性 warmup、cosine 衰减至 1/10；保存权重 + 损失历史 + 每 500 步验证 bpc 曲线。CPU 预计 ≈2–5 分钟（参考机器 88 s）。
-- [ ] **Step 2: `part5_eval.py`（V1）**：
+- [x] **Step 1: `part5_train.py`**：训练窗口 65 连续 token，每步随机偏移抽 32 条；AdamW(wd=0.01，记录)、6000 步、峰值 lr 0.003、300 步线性 warmup、cosine 衰减至 1/10；保存权重 + 损失历史 + 每 500 步验证 bpc 曲线。CPU 预计 ≈2–5 分钟（参考机器 88 s）。
+- [x] **Step 2: `part5_eval.py`（V1）**：
   - held-out bpc：验证 token 流切成"64 上下文 + 64 评分"的窗口（stride 64），总 nats ÷ ln2 ÷ 验证解码字符数（与 Part 2 同 chars 口径）。
   - 图：uniform/unigram/bigram/trigram/transformer 五柱 bpc 图（参考图 16）。
   - 样本表：五模型各以 **seed 1848**、T=1 采 60 token 故事开头（统一从 EOS 起采；解码时排除 eos，"␣"→可视需要保留空格，学习单表 1 风格），按 bpc 升序排列。
-- [ ] **Step 3: 验收（V1）**：transformer bpc **< 1.310**（4-gram），参考 **1.207**。未达标：查因果 mask、warmup/衰减、lr 峰值、bpc 口径。
-- [ ] **Step 4: Commit** `week8: part5 transformer trained, 1.2x bpc beats every count model`
+- [x] **Step 3: 验收（V1）**：transformer bpc **< 1.310**（4-gram），参考 **1.207**。未达标：查因果 mask、warmup/衰减、lr 峰值、bpc 口径。
+- [x] **Step 4: Commit** `week8: part5 transformer trained, 1.2x bpc beats every count model`
 
 **预计用时：** 代理 45–60 min；训练几分钟。
 
@@ -491,7 +491,7 @@ week8/
 - `samplers.draw(rng, probs) -> int`。
 - `samplers.binned_chi2(counts (V,), probs (V,)) -> (stat, dof)`：稀有并桶至期望 ≥5。
 
-- [ ] **Step 1: 失败测试**（要点，全部手工小例）：
+- [x] **Step 1: 失败测试**（要点，全部手工小例）：
   ```python
   def test_temperature_matches_softmax_formula():           # 式 25
   def test_topk_keeps_k_and_renormalizes():
@@ -502,12 +502,12 @@ week8/
   def test_minp_keeps_fraction_of_max():
   def test_greedy_low_temperature_returns_argmax_everywhere():
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
-- [ ] **Step 5: `part5_samplers.py`**：
+- [x] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
+- [x] **Step 5: `part5_samplers.py`**：
   - V3：从验证集选一个 next-token 分布足够宽（熵高）的固定上下文；四 sampler（T=0.8 / top-k20 / top-p0.9@0.8 / min-p0.1@0.7）各采 **100,000** 次；与各自精确分布做分桶 χ²，打印 p 值（全部 **> 0.001**，参考 0.12–0.98）；T=0.0001 采 1000 次每次都是 argmax。
   - V4：T=1 从 eos 生成 **128 条 × 128 token**；z = (mean surprise − mean predicted entropy) / SE(按序列)；surprise=−ln p_{T=1}(v)。再以 T=0.7 生成同样规模、用 T=1 模型打分。打印两个 z。
-- [ ] **Step 6: 验收（V3/V4）**：T=1 时 **|z| < 4**（参考 1.6）；T=0.7 时 **|z| > 40**（参考约 −68@128 序列）。
-- [ ] **Step 7: Commit** `week8: part5 samplers match exact targets (chi2 p>0.001), T=1 samples as surprising as predicted`
+- [x] **Step 6: 验收（V3/V4）**：T=1 时 **|z| < 4**（参考 1.6）；T=0.7 时 **|z| > 40**（参考约 −68@128 序列）。
+- [x] **Step 7: Commit** `week8: part5 samplers match exact targets (chi2 p>0.001), T=1 samples as surprising as predicted`
 
 **预计用时：** 代理 60–75 min；计算几分钟（生成可 jit 批量化）。
 
@@ -519,10 +519,10 @@ week8/
 - Create: `week8/scripts/part5_context.py`
 - Evidence: `evidence/part5/context_loss.png`（可选：`evidence/part5/attention_heads.png`）
 
-- [ ] **Step 1: `part5_context.py`**：验证 token 流切**连续 64-token 窗口**，每窗从首 token 起评分（位置 1 无上文不评分；位置 t 的损失=t−1 个 token 已读）；对每位置取多窗平均，画 transformer 位置损失 vs 已读 token 数（±2 标准误带），bigram(3.038)/trigram(2.094) 全流平均损失画水平虚线。
-- [ ] **Step 2: 验收（V2）**：读 **≥32** token 后损失 **< 2.09**（trigram；参考最后 8 位平均 1.65）；读 1 token 时**差于** bigram；**3 token** 后超过 trigram 并持续下降至 64。
-- [ ] **Step 3（可选扩展，README 注明为扩展）**：从验证故事开头取 16–24 token，画 8 个头的注意力热图（行=预测位置，列=已读位置）；观察一层头偏局部、二层头回读更远（如 "park" 的 "k" 读 "to"）。
-- [ ] **Step 4: Commit** `week8: part5 loss falls with tokens read; passes trigram after 3 tokens`
+- [x] **Step 1: `part5_context.py`**：验证 token 流切**连续 64-token 窗口**，每窗从首 token 起评分（位置 1 无上文不评分；位置 t 的损失=t−1 个 token 已读）；对每位置取多窗平均，画 transformer 位置损失 vs 已读 token 数（±2 标准误带），bigram(3.038)/trigram(2.094) 全流平均损失画水平虚线。
+- [x] **Step 2: 验收（V2）**：读 **≥32** token 后损失 **< 2.09**（trigram；参考最后 8 位平均 1.65）；读 1 token 时**差于** bigram；**3 token** 后超过 trigram 并持续下降至 64。
+- [x] **Step 3（可选扩展，README 注明为扩展）**：从验证故事开头取 16–24 token，画 8 个头的注意力热图（行=预测位置，列=已读位置）；观察一层头偏局部、二层头回读更远（如 "park" 的 "k" 读 "to"）。
+- [x] **Step 4: Commit** `week8: part5 loss falls with tokens read; passes trigram after 3 tokens`
 
 **预计用时：** 代理 30–45 min。
 
@@ -542,7 +542,7 @@ week8/
 - `scaling.bootstrap(fit_fn, N, D, L, n=400, start=params) -> params_sample (400, 5)`：有放回抽 240 条重拟合。
 - `scaling.compute_optimal(params, C) -> (N_star, D_star)`：N\*=G(C/6)^{β/(α+β)}，D\*=(C/6)^{α/(α+β)}/G，G=(αA/βB)^{1/(α+β)}（式 27）。
 
-- [ ] **Step 1: 失败测试**（要点）：
+- [x] **Step 1: 失败测试**（要点）：
   ```python
   def test_compute_optimal_matches_numeric_minimisation():
       # 玩具参数 α=β=0.5, A=B=2, E=1：L(N)=1+2/√N+2N^0.5/c^0.5，c=C/6
@@ -559,8 +559,8 @@ week8/
   def test_drop_five_highest_loss():
       # 合成 10 行 → 保留 loss 最低 5+... 即去掉最高的 5 条
   ```
-- [ ] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
-- [ ] **Step 5: Commit** `week8: part6 chinchilla fit: huber log-loss, lbfgs grid, bootstrap, compute-optimal`
+- [x] **Step 2: 确认失败 → Step 3: 实现 → Step 4: 通过。**
+- [x] **Step 5: Commit** `week8: part6 chinchilla fit: huber log-loss, lbfgs grid, bootstrap, compute-optimal`
 
 **预计用时：** 代理 45–60 min；bootstrap 400 次 L-BFGS（5 参数、240 行，单起点）约 1–2 分钟。
 
@@ -573,17 +573,17 @@ week8/
 - Evidence: `evidence/part6/fit_law.png`、`evidence/part6/residuals.png`、`evidence/part6/optimal_split.png`、`evidence/part6/params.txt`
 - Artifacts: `artifacts/part6/fit.json`（含 bootstrap 样本与区间）
 
-- [ ] **Step 1: 脚本与四图**：
+- [x] **Step 1: 脚本与四图**：
   - V1 左：L 对 N 的散点 + 三个预算（1e19/1e20/1e21 FLOP，±15% 内的 run 着色）处拟合律曲线 L(N)=E+A/N^α+B(6N/C)^β；右：measured vs fitted loss（对角线）。
   - V2：两个参数组（自己拟合 vs PRINTED）的 log-loss 残差（预测−实测）对 N 散点 + 直方图；各自报告平均残差。
   - V3：N\*、D\* 对 C（1e18–1e25，log-log）双线（自己拟合实线、印刷参数虚线），Chinchilla 星标（70e9 参数、1.4e12 token）；C=5.76e23 的 D\*/N\* 与 95% bootstrap 区间。
   - `params.txt`：α、β、E、A、B ± bootstrap SE；两斜率（N\*~C^x、D\*~C^y）。
-- [ ] **Step 2: 验收（学习单 V1/V2/V3 阈值）**：
+- [x] **Step 2: 验收（学习单 V1/V2/V3 阈值）**：
   - **0.32 ≤ α ≤ 0.38**、**0.32 ≤ β ≤ 0.42**、**1.75 ≤ E ≤ 1.90**（参考 α=0.347±0.014、β=0.367±0.021、E=1.817±0.025、A=478、B=2143）；
   - 自己拟合平均残差 ∈ **±0.005**（参考 −0.0007）；印刷参数 **> 0.01**（参考 +0.017）；
   - C=5.76e23 处 **10 ≤ D\*/N\* ≤ 30**（参考 17.9，区间 7.7–37 含 Chinchilla 的 20；印刷参数给 ≈93）；N\*~C^{≈0.51}、D\*~C^{≈0.49}。
   - 不达标：查 Huber 的 log 口径、丢 5 条、C/(6N)。
-- [ ] **Step 3: Commit** `week8: part6 refit recovers alpha 0.35 beta 0.37, printed params miss runs, ~18 tokens/param`
+- [x] **Step 3: Commit** `week8: part6 refit recovers alpha 0.35 beta 0.37, printed params miss runs, ~18 tokens/param`
 
 **预计用时：** 代理 30–45 min。
 
@@ -594,14 +594,14 @@ week8/
 **Files:**
 - Modify: `week8/README.md`、根 `README.md`
 
-- [ ] **Step 1: `week8/README.md`** 按学习单"Save the results and prepare to show your work"：
+- [x] **Step 1: `week8/README.md`** 按学习单"Save the results and prepare to show your work"：
   - evidence 图 ↔ 产生命令表（week7 风格）；
   - 解释段：tokenizer（BPE 512、~2.05 字符/token、解码除 3 篇）、召回图片（R<1 才可读、softmax 容量 ~e^{2β}）、bpc 模型对比（每加一层上下文 perplexity 除多少）、scaling 拟合（重拟合 vs 印刷参数、20 token/参数）；
   - provenance：全部下载 URL + revision + 是否用了 hf-mirror；
   - 记录学习单未指定而自选的超参：AdamW weight decay 0.01、Part 3 warmup 400、top-k 的 T=1、大 M 存储 R 的 2048 键子采样。
-- [ ] **Step 2: 根 README** 的仓库布局小节加 `week8/`。
-- [ ] **Step 3: 终检**：`cd week8 && uv run pytest tests/ -q` 全绿；`git status` 确认无 data/inputs/artifacts 泄漏；evidence 尺寸合理（<5 MB/图）。
-- [ ] **Step 4: Commit + push** `week8: readme evidence tables, explanations, provenance`（如推送失败/需凭据，询问用户）。
+- [x] **Step 2: 根 README** 的仓库布局小节加 `week8/`。
+- [x] **Step 3: 终检**：`cd week8 && uv run pytest tests/ -q` 全绿；`git status` 确认无 data/inputs/artifacts 泄漏；evidence 尺寸合理（<5 MB/图）。
+- [x] **Step 4: Commit + push** `week8: readme evidence tables, explanations, provenance`（如推送失败/需凭据，询问用户）。
 
 **预计用时：** 代理 30 min。
 
