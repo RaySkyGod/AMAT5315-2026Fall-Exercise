@@ -30,6 +30,12 @@ Each week of the course gets its own directory:
   four-cluster Gaussian mixture, deterministic DDIM with skipped levels,
   velocity-network step-count comparison, generation with the pretrained
   CIFAR-10 UNet in JAX, and RePaint inpainting
+- `week8/` — Python/JAX: language models and the transformer — embedding
+  relations in potion-base-8M, the n-gram ladder on TinyStories with the
+  curse of dimensionality, key-value memory stores (capacity ~d, ~2d, ~d^p)
+  and a one-token MLP that stores the bigram table, softmax-store picture
+  recall, a trained two-layer pre-norm transformer with exact-target
+  samplers, and a Chinchilla scaling-law refit with bootstrap errors
 
 New directories are added as the semester progresses.
 

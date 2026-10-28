@@ -106,8 +106,11 @@ class NgramCounts:
     def bigram_matrix(self, k: float) -> np.ndarray:
         """Dense transition matrix, n == 2 only."""
         assert self.n == 2
-        P = np.full((self.base, self.base), 1.0 / self.base)  # unseen-context rows
+        # unseen-context rows are uniform; seen rows put k/(total+kV) on
+        # every token so each row sums to one exactly
+        P = np.full((self.base, self.base), 1.0 / self.base)
         for ctx_id, total in zip(self.ctx, self.ctx_counts):
+            P[ctx_id, :] = k / (total + k * self.base)
             lo = np.searchsorted(self.keys, ctx_id * self.base)
             hi = np.searchsorted(self.keys, (ctx_id + 1) * self.base)
             nxt = self.keys[lo:hi] - ctx_id * self.base

@@ -53,16 +53,25 @@ def huber(r: float, delta: float) -> float:
 def huber_log_fit(N, D, L, grid="full", delta: float = 1e-3) -> dict:
     """Fit by the Huber loss of log L, L-BFGS from a grid of starts."""
     N, D, L = map(np.asarray, (N, D, L))
+    lnN, lnD, lnL = np.log(N), np.log(D), np.log(L)
 
     def objective(theta):
         p = dict(zip(PARAM_ORDER, theta))
-        pred = law_loss(p, N, D)
+        Nm_a = np.exp(-p["alpha"] * lnN)
+        Dm_b = np.exp(-p["beta"] * lnD)
+        pred = p["E"] + p["A"] * Nm_a + p["B"] * Dm_b
         if np.any(pred <= 0):
-            return 1e6
-        r = np.log(pred) - np.log(L)
-        h = np.where(np.abs(r) <= delta, r ** 2 / 2,
-                     delta * (np.abs(r) - delta / 2))
-        return float(h.sum())
+            return 1e6, np.zeros(5)
+        r = np.log(pred) - lnL
+        ar = np.abs(r)
+        dh = np.where(ar <= delta, r, delta * np.sign(r))   # dh/dr
+        val = float(np.where(ar <= delta, r ** 2 / 2,
+                             delta * (ar - delta / 2)).sum())
+        # d pred/d theta
+        g = np.stack([np.ones_like(pred), Nm_a, Dm_b,
+                      -p["A"] * lnN * Nm_a, -p["B"] * lnD * Dm_b], axis=1)
+        jac = ((dh / pred)[:, None] * g).sum(axis=0)
+        return val, jac
 
     if grid == "small":
         starts = [(1.8, 478.0, 2143.0, 0.35, 0.37),
@@ -77,7 +86,8 @@ def huber_log_fit(N, D, L, grid="full", delta: float = 1e-3) -> dict:
     bounds = [(1.0, 3.0), (1.0, 1e5), (1.0, 1e5), (0.1, 0.8), (0.1, 0.8)]
     best, best_val = None, np.inf
     for s in starts:
-        res = minimize(objective, s, method="L-BFGS-B", bounds=bounds)
+        res = minimize(objective, s, method="L-BFGS-B", bounds=bounds,
+                       jac=True)
         if res.fun < best_val:
             best_val, best = res.fun, dict(zip(PARAM_ORDER, res.x))
     best["huber"] = best_val
