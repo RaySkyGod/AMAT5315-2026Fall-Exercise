@@ -1,0 +1,12 @@
+recall of the 32x32 picture of the character suan (算) among M memories, d = 64
+     M              outer               ReLU           ReLU$^2$ softmax $\beta{=}8$   (R)
+    64              0.896              0.674              0.143              0.007
+   256              1.837              1.357              0.342              0.011
+  1024              3.974              2.635              0.531              0.027
+  4096              8.169              5.672              1.171              0.058
+
+medians over 20 draws (acceptance within 15% of predictions):
+  M=1024 outer : median  4.047  prediction  4.000  (ref 4.05 / 2.84 / 0.60)
+  M=1024 relu1 : median  2.870  prediction  2.828  (ref 4.05 / 2.84 / 0.60)
+  M=1024 relu2 : median  0.608  prediction  0.612  (ref 4.05 / 2.84 / 0.60)
+  M=4096 softmax: median 0.0568  prediction 0.0584  (ref 0.057; must stay below 0.1)
