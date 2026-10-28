@@ -119,3 +119,39 @@ def next_token_logits(params, tokens):
     """Logits (V,) for the token after the (1, t) prefix, t <= 64."""
     logits = forward(params, tokens)
     return logits[0, -1]
+
+
+def save_params(params, path):
+    """Save the parameter pytree to an npz with explicit flat names."""
+    flat = {"E": np.asarray(params["E"]), "P": np.asarray(params["P"]),
+            "lnf_g": np.asarray(params["lnf"][0]),
+            "lnf_b": np.asarray(params["lnf"][1]),
+            "Wout": np.asarray(params["Wout"]), "bout": np.asarray(params["bout"])}
+    for i, blk in enumerate(params["blocks"]):
+        for name in ("WQ", "bQ", "WK", "bK", "WV", "bV", "WO", "bO",
+                     "W1", "b1", "W2", "b2"):
+            flat[f"b{i}_{name}"] = np.asarray(blk[name])
+        flat[f"b{i}_ln1_g"] = np.asarray(blk["ln1"][0])
+        flat[f"b{i}_ln1_b"] = np.asarray(blk["ln1"][1])
+        flat[f"b{i}_ln2_g"] = np.asarray(blk["ln2"][0])
+        flat[f"b{i}_ln2_b"] = np.asarray(blk["ln2"][1])
+    np.savez(path, **flat)
+
+
+def load_params(path):
+    """Rebuild the parameter pytree saved by save_params."""
+    z = np.load(path)
+    params = {"E": jnp.asarray(z["E"]), "P": jnp.asarray(z["P"]),
+              "lnf": (jnp.asarray(z["lnf_g"]), jnp.asarray(z["lnf_b"])),
+              "Wout": jnp.asarray(z["Wout"]), "bout": jnp.asarray(z["bout"]),
+              "blocks": []}
+    n_blocks = sum(1 for k in z.files if k.endswith("_WQ"))
+    for i in range(n_blocks):
+        params["blocks"].append({
+            "ln1": (jnp.asarray(z[f"b{i}_ln1_g"]), jnp.asarray(z[f"b{i}_ln1_b"])),
+            "ln2": (jnp.asarray(z[f"b{i}_ln2_g"]), jnp.asarray(z[f"b{i}_ln2_b"])),
+            **{name: jnp.asarray(z[f"b{i}_{name}"]) for name in
+               ("WQ", "bQ", "WK", "bK", "WV", "bV", "WO", "bO",
+                "W1", "b1", "W2", "b2")},
+        })
+    return params
