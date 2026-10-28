@@ -1,0 +1,18 @@
+validation characters (decoded): 2213912
+
+model             k nats/token perplexity bits/char   (sheet: uniform 6.238/512/4.386; unigram 4.839/126.4/3.403; bigram 3.038/20.9/2.136; trigram 2.094/8.12/1.473)
+uniform           -      6.238    512.000     4.386
+1-gram       0.0001      4.839    126.393     3.403
+2-gram         0.01      3.038     20.867     2.136
+3-gram         0.01      2.094      8.120     1.473
+4-gram         0.01      1.863      6.441     1.310
+5-gram         0.01      2.083      8.025     1.464
+6-gram        0.001      2.550     12.812     1.793
+
+bigram sums over all sequences of length 1, 2, 3 (enumerated):
+  T=1: 1.000000000000001  |sum-1| = 6.66e-16
+  T=2: 1.000000000000070  |sum-1| = 7.04e-14
+  T=3: 1.000000000000016  |sum-1| = 1.62e-14
+  acceptance: within 1e-12 (sheet ref error <= 3.2e-15)
+control exp(n(ab)/max n), rows never normalized:
+  T=1: 512   T=2: 2.63e+05   T=3: 1.35e+08   (sheet: ~512, 2.6e5, 1.3e8)
