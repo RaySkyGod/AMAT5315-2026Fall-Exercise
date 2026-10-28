@@ -1,0 +1,16 @@
+capacity (M at R=1, log-log interpolated), median of 3 draws
+store       d=16     d=32     d=64  slope   (sheet ref slopes 0.96 0.99 0.95 1.96 2.79)
+outer       16.7     30.6     65.5   0.99
+lstsq       32.0     64.6    128.0   1.00
+relu1       34.5     59.7    137.3   1.00
+relu2      214.4    757.0   2899.7   1.88
+relu3      783.2   5358.2  39006.8   2.82
+
+d=64 crossings (sheet: outer 67.4 in [50,85]; lstsq 129 in [100,170]; relu2 ~2871; relu3 ~38124):
+  outer       65.5
+  lstsq      128.0
+  relu1      137.3
+  relu2     2899.7
+  relu3    39006.8
+lstsq d=64 R up to M=64:
+  M=8: 6.1e-16  M=16: 9.3e-16  M=32: 1.5e-15  M=64: 1.9e-13  M=128: 1.0e+00

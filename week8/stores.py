@@ -38,6 +38,27 @@ def lstsq_W(K: np.ndarray, Vm: np.ndarray) -> np.ndarray:
     return X.T
 
 
+def lstsq_mean_R(K: np.ndarray, Vm: np.ndarray) -> float:
+    """Mean R of the least-squares store via the hat matrix.
+
+    The fitted answers are f(k_j) = sum_i A_ji v_i with the projection
+    A = K (K^T K)^{-1} K^T, so the own term is A_jj v_j and the leak is the
+    rest of the row: R_j = ||sum_{i != j} A_ji v_i|| / (|A_jj| ||v_j||).
+    For M <= d the fit interpolates (A = I on the keys) and R = 0; beyond,
+    R ~= sqrt(M/d - 1) crosses one at M = 2d.
+    """
+    M, d = K.shape
+    B = np.linalg.lstsq(K, np.eye(M), rcond=None)[0]      # K^+ , (d, M)
+    A_rows = (K @ B).T                                    # rows of the hat matrix
+    own = np.diag(A_rows)
+    F = A_rows @ Vm                                       # answers f(k_j)
+    signal = own[:, None] * Vm
+    inter = F - signal
+    den = np.linalg.norm(signal, axis=1)
+    num = np.linalg.norm(inter, axis=1)
+    return float((num / den).mean())
+
+
 def _sigma_weights(S: np.ndarray, sigma, normalize: bool = True) -> np.ndarray:
     """Turn the (queries x memories) similarity matrix into weights."""
     if sigma == "outer":
@@ -118,7 +139,7 @@ def R_pred_outer(M: float, d: int) -> float:
 
 
 def R_pred_lstsq(M: float, d: int) -> float:
-    return max(0.0, np.sqrt(M / d) - 1.0) if M > d else 0.0
+    return np.sqrt(max(M / d - 1.0, 0.0))
 
 
 def relu_R_prediction(M: float, d: int, p: int) -> float:

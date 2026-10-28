@@ -3,6 +3,7 @@ import pytest
 
 from stores import (
     capacity,
+    lstsq_mean_R,
     make_random_store,
     mean_R,
     outer_W,
@@ -35,7 +36,17 @@ def test_lstsq_exact_up_to_M_equals_d():
     rng = np.random.default_rng(2)
     K = make_random_store(rng, 6, 6)
     Vm = make_random_store(rng, 6, 6)
+    assert lstsq_mean_R(K, Vm) < 1e-10
     assert mean_R(K, Vm, "outer", store_W=lstsq_W(K, Vm)) < 1e-10
+
+
+def test_lstsq_R_follows_sqrt_M_over_d_minus_one():
+    rng = np.random.default_rng(6)
+    d = 24
+    K = make_random_store(rng, 4 * d, d)
+    Vm = make_random_store(rng, 4 * d, d)
+    r = lstsq_mean_R(K, Vm)
+    assert np.isclose(r, np.sqrt(4.0 - 1.0), rtol=0.15)
 
 
 def test_relu_silences_negative_similarities():
