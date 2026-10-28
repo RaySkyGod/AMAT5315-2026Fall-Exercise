@@ -29,9 +29,13 @@ def outer_W(K: np.ndarray, Vm: np.ndarray) -> np.ndarray:
 
 
 def lstsq_W(K: np.ndarray, Vm: np.ndarray) -> np.ndarray:
-    """The least-squares linear store: argmin_W sum_i ||W k_i - v_i||^2."""
-    W, *_ = np.linalg.lstsq(K, Vm, rcond=None)
-    return W
+    """The least-squares linear store: argmin_W sum_i ||W k_i - v_i||^2.
+
+    Rows of K are keys and f(x) = W x, so W solves K W^T = Vm; numpy's
+    lstsq returns X with K X = Vm, hence W = X^T.
+    """
+    X, *_ = np.linalg.lstsq(K, Vm, rcond=None)
+    return X.T
 
 
 def _sigma_weights(S: np.ndarray, sigma, normalize: bool = True) -> np.ndarray:
