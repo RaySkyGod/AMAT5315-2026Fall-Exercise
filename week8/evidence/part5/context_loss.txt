@@ -1,0 +1,6 @@
+mean held-out loss by position (windows scored from their first token)
+1 token read:  3.206 nats  (bigram 3.04: transformer starts worse)
+3 tokens read: 2.084 nats  (trigram 2.09)
+32 tokens:     1.659 nats
+last 8 positions mean: 1.652 nats (ref 1.65; must be below the trigram's 2.09)
+extension: 8 head heat maps on the opening of a held-out story (24 tokens)
