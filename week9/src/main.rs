@@ -378,13 +378,84 @@ fn is_asia(model: &infer::uai::UaiModel) -> bool {
 }
 
 fn run_bp_cli(
-    _model: &infer::uai::UaiModel,
-    _evidence: &[(usize, usize)],
-    _names: &[String],
-    _model_path: &str,
-    _evidence_label: &str,
-    _out_dir: &Path,
-    _args: &[(String, String)],
+    model: &infer::uai::UaiModel,
+    evidence: &[(usize, usize)],
+    names: &[String],
+    model_path: &str,
+    evidence_label: &str,
+    out_dir: &Path,
+    args: &[(String, String)],
 ) {
-    unimplemented!("bp wired in part 4");
+    let get = |k: &str| args.iter().find(|(a, _)| a == k).map(|(_, v)| v.clone());
+    let damping: f64 = get("damping")
+        .unwrap_or_else(|| { eprintln!("--damping is required with --method bp"); usage(); })
+        .parse()
+        .expect("parse damping");
+    let tolerance: f64 = get("tolerance")
+        .unwrap_or_else(|| { eprintln!("--tolerance is required with --method bp"); usage(); })
+        .parse()
+        .expect("parse tolerance");
+    let max_sweeps: usize = get("max-sweeps")
+        .unwrap_or_else(|| { eprintln!("--max-sweeps is required with --method bp"); usage(); })
+        .parse()
+        .expect("parse max-sweeps");
+    let cfg = infer::bp::BpConfig { damping, tolerance, max_sweeps };
+    println!("BP settings: damping {damping}, tolerance {tolerance}, max sweeps {max_sweeps}");
+    let start = std::time::Instant::now();
+    let result = infer::bp::run_bp(model, evidence, cfg).expect("bp run");
+    let runtime = start.elapsed();
+    println!(
+        "done: {} sweeps, converged = {}, final residual {:.3e}, total update work {} ({:.3?})",
+        result.sweeps, result.converged, result.final_residual, result.total_work, runtime
+    );
+    // Exact reference for comparison (small models only).
+    let exact = if model.nvars <= 20 {
+        let e = enumerate_marginals(model, evidence, None);
+        let mut marginals = vec![None; model.nvars];
+        for (vi, &v) in result.variables.iter().enumerate() {
+            marginals[v] = Some(
+                e.marginals[v]
+                    .iter()
+                    .map(|&p| p / e.evidence_mass)
+                    .collect::<Vec<f64>>(),
+            );
+        }
+        Some(marginals)
+    } else {
+        None
+    };
+    let mut max_err = f64::NAN;
+    if let Some(ref ex) = exact {
+        max_err = 0.0;
+        for (vi, &v) in result.variables.iter().enumerate() {
+            if let Some(ref m) = ex[v] {
+                for s in 0..m.len() {
+                    max_err = max_err.max((result.final_beliefs[vi][s] - m[s]).abs());
+                }
+            }
+        }
+        println!("max abs marginal error vs exact contraction reference = {:.6e}", max_err);
+    }
+    let run = json!({
+        "model": model_path,
+        "evidence_label": evidence_label,
+        "observations": evidence.iter().map(|&(v, s)| json!({
+            "variable": names.get(v).cloned().unwrap_or_else(|| v.to_string()),
+            "id": v, "state": s})).collect::<Vec<_>>(),
+        "settings": result.settings,
+        "converged": result.converged,
+        "sweeps": result.sweeps,
+        "final_residual": result.final_residual,
+        "total_update_work": result.total_work,
+        "runtime_seconds": runtime.as_secs_f64(),
+        "log10_scalar_constant": result.log10_scalar_constant,
+        "variables": result.variables,
+        "final_beliefs": result.final_beliefs,
+        "exact_marginals": exact,
+        "max_abs_marginal_error": if exact.is_some() { json!(max_err) } else { json!(null) },
+        "traces": result.traces,
+    });
+    std::fs::write(out_dir.join("run.json"), serde_json::to_string_pretty(&run).unwrap())
+        .expect("write run.json");
+    println!("wrote {}", out_dir.join("run.json").display());
 }

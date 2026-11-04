@@ -1,6 +1,7 @@
 pub mod checks;
 pub mod contract;
 pub mod enumerate;
+pub mod bp;
 pub mod plan;
 #[cfg(test)]
 pub mod tests_exact;
