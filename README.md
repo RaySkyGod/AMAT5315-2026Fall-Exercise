@@ -36,6 +36,12 @@ Each week of the course gets its own directory:
   and a one-token MLP that stores the bigram table, softmax-store picture
   recall, a trained two-layer pre-norm transformer with exact-target
   samplers, and a Chinchilla scaling-law refit with bootstrap errors
+- `week9/` — Rust: probabilistic inference by tensor contraction — exact
+  ASIA marginals and evidence by enumeration and tenferro contraction,
+  contraction-order optimization (seeded random vs omeco greedy/TreeSA,
+  saved plans and recounted costs), loopy belief propagation judged by
+  residual and marginal error, and the UAI 2014 Promedus_14 benchmark
+  against its published PR/MAR answers
 
 New directories are added as the semester progresses.
 
