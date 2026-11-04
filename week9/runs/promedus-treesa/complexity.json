@@ -1,0 +1,4567 @@
+{
+  "largest_tensor": 131072,
+  "method": "treesa",
+  "runtime_seconds": 3.024115249,
+  "seed": null,
+  "settings": {
+    "betas": {
+      "start": 0.01,
+      "steps": 300,
+      "stop": 14.96
+    },
+    "method": "treesa",
+    "niters": 50,
+    "ntrials": 10,
+    "score": "time_optimized",
+    "seed_policy": "omeco trial-index seeding"
+  },
+  "source": "treesa",
+  "steps": [
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        245,
+        246
+      ],
+      "step": 0
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        77,
+        336,
+        337
+      ],
+      "step": 1
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        77,
+        132,
+        336,
+        338
+      ],
+      "step": 2
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        119,
+        250,
+        251
+      ],
+      "step": 3
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        105,
+        249,
+        250
+      ],
+      "step": 4
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        105,
+        119,
+        249,
+        251
+      ],
+      "step": 5
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        105,
+        119,
+        338,
+        340
+      ],
+      "step": 6
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        105,
+        119,
+        279,
+        281
+      ],
+      "step": 7
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        253,
+        254
+      ],
+      "step": 8
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        256,
+        257
+      ],
+      "step": 9
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        254,
+        255
+      ],
+      "step": 10
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        255,
+        256
+      ],
+      "step": 11
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        254,
+        256
+      ],
+      "step": 12
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        254,
+        257
+      ],
+      "step": 13
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        253,
+        257
+      ],
+      "step": 14
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        257,
+        258
+      ],
+      "step": 15
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        253,
+        258
+      ],
+      "step": 16
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        122,
+        252,
+        258
+      ],
+      "step": 17
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        122,
+        133,
+        251,
+        258
+      ],
+      "step": 18
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        122,
+        343,
+        344
+      ],
+      "step": 19
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        102,
+        122,
+        342,
+        344
+      ],
+      "step": 20
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        11,
+        133,
+        340,
+        342
+      ],
+      "step": 21
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        11,
+        102,
+        122,
+        133,
+        340,
+        344
+      ],
+      "step": 22
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        11,
+        133
+      ],
+      "step": 23
+    },
+    {
+      "cost": 16,
+      "entries": 16,
+      "retained": [
+        11,
+        133,
+        281,
+        282
+      ],
+      "step": 24
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        11,
+        133,
+        281,
+        283
+      ],
+      "step": 25
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        102,
+        122,
+        283,
+        285
+      ],
+      "step": 26
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        11,
+        102,
+        122,
+        133,
+        281,
+        285
+      ],
+      "step": 27
+    },
+    {
+      "cost": 256,
+      "entries": 256,
+      "retained": [
+        11,
+        102,
+        122,
+        133,
+        281,
+        285,
+        340,
+        344
+      ],
+      "step": 28
+    },
+    {
+      "cost": 1024,
+      "entries": 256,
+      "retained": [
+        11,
+        102,
+        251,
+        258,
+        281,
+        285,
+        340,
+        344
+      ],
+      "step": 29
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        259,
+        260
+      ],
+      "step": 30
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        15,
+        258,
+        260
+      ],
+      "step": 31
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        15,
+        287,
+        288
+      ],
+      "step": 32
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        15,
+        96,
+        286,
+        288
+      ],
+      "step": 33
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        15,
+        38,
+        96,
+        285,
+        288
+      ],
+      "step": 34
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        93,
+        163,
+        164
+      ],
+      "step": 35
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        163,
+        164,
+        344,
+        345
+      ],
+      "step": 36
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        164,
+        165
+      ],
+      "step": 37
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        165,
+        166
+      ],
+      "step": 38
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        164,
+        166
+      ],
+      "step": 39
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        96,
+        164,
+        167
+      ],
+      "step": 40
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        96,
+        163,
+        167,
+        344,
+        345
+      ],
+      "step": 41
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        96,
+        346,
+        347
+      ],
+      "step": 42
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        15,
+        96,
+        346,
+        348
+      ],
+      "step": 43
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        38,
+        345,
+        346
+      ],
+      "step": 44
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        15,
+        38,
+        96,
+        345,
+        348
+      ],
+      "step": 45
+    },
+    {
+      "cost": 256,
+      "entries": 128,
+      "retained": [
+        15,
+        38,
+        96,
+        163,
+        167,
+        344,
+        348
+      ],
+      "step": 46
+    },
+    {
+      "cost": 512,
+      "entries": 256,
+      "retained": [
+        15,
+        38,
+        163,
+        167,
+        285,
+        288,
+        344,
+        348
+      ],
+      "step": 47
+    },
+    {
+      "cost": 1024,
+      "entries": 512,
+      "retained": [
+        38,
+        163,
+        167,
+        258,
+        260,
+        285,
+        288,
+        344,
+        348
+      ],
+      "step": 48
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        56,
+        91,
+        348,
+        350
+      ],
+      "step": 49
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        67,
+        272,
+        273
+      ],
+      "step": 50
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        67,
+        85,
+        272,
+        274
+      ],
+      "step": 51
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        67,
+        85,
+        126,
+        271,
+        274
+      ],
+      "step": 52
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        181,
+        182
+      ],
+      "step": 53
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        180,
+        181
+      ],
+      "step": 54
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        180,
+        182
+      ],
+      "step": 55
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        79,
+        180,
+        182
+      ],
+      "step": 56
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        79,
+        179,
+        182
+      ],
+      "step": 57
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        179,
+        182,
+        328,
+        329
+      ],
+      "step": 58
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        174,
+        175
+      ],
+      "step": 59
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        126,
+        174,
+        176
+      ],
+      "step": 60
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        126,
+        174,
+        176
+      ],
+      "step": 61
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        176,
+        177
+      ],
+      "step": 62
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        177,
+        178
+      ],
+      "step": 63
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        176,
+        178
+      ],
+      "step": 64
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        85,
+        176,
+        179
+      ],
+      "step": 65
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        85,
+        176,
+        179
+      ],
+      "step": 66
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        85,
+        126,
+        174,
+        179
+      ],
+      "step": 67
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        85,
+        126,
+        174,
+        182,
+        328,
+        329
+      ],
+      "step": 68
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        67,
+        126,
+        325,
+        327
+      ],
+      "step": 69
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        67,
+        85,
+        126,
+        325,
+        328
+      ],
+      "step": 70
+    },
+    {
+      "cost": 256,
+      "entries": 128,
+      "retained": [
+        67,
+        85,
+        126,
+        174,
+        182,
+        325,
+        329
+      ],
+      "step": 71
+    },
+    {
+      "cost": 512,
+      "entries": 128,
+      "retained": [
+        67,
+        174,
+        182,
+        271,
+        274,
+        325,
+        329
+      ],
+      "step": 72
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        116,
+        321,
+        322
+      ],
+      "step": 73
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        80,
+        321
+      ],
+      "step": 74
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        80,
+        116,
+        322
+      ],
+      "step": 75
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        89,
+        94
+      ],
+      "step": 76
+    },
+    {
+      "cost": 16,
+      "entries": 16,
+      "retained": [
+        89,
+        94,
+        269,
+        270
+      ],
+      "step": 77
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        80,
+        267
+      ],
+      "step": 78
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        80,
+        268
+      ],
+      "step": 79
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        80,
+        94,
+        269
+      ],
+      "step": 80
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        80,
+        89,
+        94,
+        270
+      ],
+      "step": 81
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        80,
+        150
+      ],
+      "step": 82
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        150,
+        151
+      ],
+      "step": 83
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        80,
+        151
+      ],
+      "step": 84
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        80,
+        94,
+        152
+      ],
+      "step": 85
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        80,
+        89,
+        94,
+        153
+      ],
+      "step": 86
+    },
+    {
+      "cost": 32,
+      "entries": 32,
+      "retained": [
+        80,
+        89,
+        94,
+        153,
+        270
+      ],
+      "step": 87
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        89,
+        94,
+        322,
+        324
+      ],
+      "step": 88
+    },
+    {
+      "cost": 128,
+      "entries": 32,
+      "retained": [
+        80,
+        153,
+        270,
+        322,
+        324
+      ],
+      "step": 89
+    },
+    {
+      "cost": 64,
+      "entries": 16,
+      "retained": [
+        116,
+        153,
+        270,
+        324
+      ],
+      "step": 90
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        66,
+        116,
+        153,
+        271,
+        324
+      ],
+      "step": 91
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        66,
+        116,
+        153,
+        271,
+        325
+      ],
+      "step": 92
+    },
+    {
+      "cost": 1024,
+      "entries": 256,
+      "retained": [
+        66,
+        67,
+        116,
+        153,
+        174,
+        182,
+        274,
+        329
+      ],
+      "step": 93
+    },
+    {
+      "cost": 1024,
+      "entries": 512,
+      "retained": [
+        53,
+        66,
+        67,
+        116,
+        153,
+        174,
+        182,
+        274,
+        330
+      ],
+      "step": 94
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        58,
+        276,
+        277
+      ],
+      "step": 95
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        8,
+        58,
+        275,
+        277
+      ],
+      "step": 96
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        75,
+        115,
+        277,
+        279
+      ],
+      "step": 97
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        8,
+        58,
+        75,
+        115,
+        275,
+        279
+      ],
+      "step": 98
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        8,
+        115
+      ],
+      "step": 99
+    },
+    {
+      "cost": 16,
+      "entries": 16,
+      "retained": [
+        8,
+        115,
+        155,
+        156
+      ],
+      "step": 100
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        158,
+        159
+      ],
+      "step": 101
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        159,
+        160
+      ],
+      "step": 102
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        158,
+        160
+      ],
+      "step": 103
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        75,
+        158,
+        161
+      ],
+      "step": 104
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        161,
+        162
+      ],
+      "step": 105
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        162,
+        163
+      ],
+      "step": 106
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        161,
+        163
+      ],
+      "step": 107
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        75,
+        158,
+        163
+      ],
+      "step": 108
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        75,
+        158,
+        163
+      ],
+      "step": 109
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        156,
+        157
+      ],
+      "step": 110
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        115,
+        156,
+        158
+      ],
+      "step": 111
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        75,
+        115,
+        156,
+        163
+      ],
+      "step": 112
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        8,
+        75,
+        115,
+        155,
+        163
+      ],
+      "step": 113
+    },
+    {
+      "cost": 256,
+      "entries": 256,
+      "retained": [
+        8,
+        58,
+        75,
+        115,
+        155,
+        163,
+        275,
+        279
+      ],
+      "step": 114
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        8,
+        115,
+        332,
+        334
+      ],
+      "step": 115
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        58,
+        75,
+        334,
+        336
+      ],
+      "step": 116
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        8,
+        58,
+        75,
+        115,
+        332,
+        336
+      ],
+      "step": 117
+    },
+    {
+      "cost": 1024,
+      "entries": 128,
+      "retained": [
+        58,
+        155,
+        163,
+        275,
+        279,
+        332,
+        336
+      ],
+      "step": 118
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        3,
+        33,
+        330,
+        332
+      ],
+      "step": 119
+    },
+    {
+      "cost": 16,
+      "entries": 16,
+      "retained": [
+        3,
+        33,
+        330,
+        332
+      ],
+      "step": 120
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        3,
+        33,
+        153,
+        155
+      ],
+      "step": 121
+    },
+    {
+      "cost": 64,
+      "entries": 64,
+      "retained": [
+        3,
+        33,
+        153,
+        155,
+        274,
+        275
+      ],
+      "step": 122
+    },
+    {
+      "cost": 256,
+      "entries": 128,
+      "retained": [
+        3,
+        153,
+        155,
+        274,
+        275,
+        330,
+        332
+      ],
+      "step": 123
+    },
+    {
+      "cost": 2048,
+      "entries": 256,
+      "retained": [
+        3,
+        58,
+        153,
+        163,
+        274,
+        279,
+        330,
+        336
+      ],
+      "step": 124
+    },
+    {
+      "cost": 1024,
+      "entries": 512,
+      "retained": [
+        3,
+        153,
+        163,
+        182,
+        183,
+        274,
+        279,
+        330,
+        336
+      ],
+      "step": 125
+    },
+    {
+      "cost": 16384,
+      "entries": 1024,
+      "retained": [
+        3,
+        53,
+        66,
+        67,
+        116,
+        163,
+        174,
+        183,
+        279,
+        336
+      ],
+      "step": 126
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        210,
+        211
+      ],
+      "step": 127
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        211,
+        212
+      ],
+      "step": 128
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        210,
+        212
+      ],
+      "step": 129
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        57,
+        210,
+        213
+      ],
+      "step": 130
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        57,
+        210,
+        213
+      ],
+      "step": 131
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        213,
+        214
+      ],
+      "step": 132
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        214,
+        215
+      ],
+      "step": 133
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        213,
+        215
+      ],
+      "step": 134
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        57,
+        210,
+        215
+      ],
+      "step": 135
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        42,
+        57,
+        210,
+        216
+      ],
+      "step": 136
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        91,
+        378,
+        379
+      ],
+      "step": 137
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        57,
+        91,
+        377,
+        379
+      ],
+      "step": 138
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        12,
+        53,
+        379,
+        381
+      ],
+      "step": 139
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        12,
+        53,
+        57,
+        91,
+        377,
+        381
+      ],
+      "step": 140
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        3,
+        139,
+        381,
+        383
+      ],
+      "step": 141
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        42,
+        49
+      ],
+      "step": 142
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        42,
+        49,
+        383
+      ],
+      "step": 143
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        3,
+        42,
+        49,
+        139,
+        381
+      ],
+      "step": 144
+    },
+    {
+      "cost": 1024,
+      "entries": 512,
+      "retained": [
+        3,
+        12,
+        42,
+        49,
+        53,
+        57,
+        91,
+        139,
+        377
+      ],
+      "step": 145
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        12,
+        53,
+        315,
+        317
+      ],
+      "step": 146
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        57,
+        91,
+        313,
+        315
+      ],
+      "step": 147
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        12,
+        53,
+        57,
+        91,
+        313,
+        317
+      ],
+      "step": 148
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        3,
+        139
+      ],
+      "step": 149
+    },
+    {
+      "cost": 16,
+      "entries": 16,
+      "retained": [
+        3,
+        139,
+        317,
+        318
+      ],
+      "step": 150
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        3,
+        139,
+        317,
+        319
+      ],
+      "step": 151
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        3,
+        42,
+        49,
+        139,
+        317
+      ],
+      "step": 152
+    },
+    {
+      "cost": 1024,
+      "entries": 512,
+      "retained": [
+        3,
+        12,
+        42,
+        49,
+        53,
+        57,
+        91,
+        139,
+        313
+      ],
+      "step": 153
+    },
+    {
+      "cost": 1024,
+      "entries": 1024,
+      "retained": [
+        3,
+        12,
+        42,
+        49,
+        53,
+        57,
+        91,
+        139,
+        313,
+        377
+      ],
+      "step": 154
+    },
+    {
+      "cost": 4096,
+      "entries": 1024,
+      "retained": [
+        3,
+        12,
+        49,
+        53,
+        91,
+        139,
+        210,
+        216,
+        313,
+        377
+      ],
+      "step": 155
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        66,
+        374,
+        375
+      ],
+      "step": 156
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        59,
+        66,
+        373,
+        375
+      ],
+      "step": 157
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        64,
+        375,
+        376
+      ],
+      "step": 158
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        64,
+        127,
+        375,
+        377
+      ],
+      "step": 159
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        59,
+        64,
+        66,
+        127,
+        373,
+        377
+      ],
+      "step": 160
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        2,
+        102,
+        216,
+        218
+      ],
+      "step": 161
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        2,
+        36,
+        102,
+        216,
+        219
+      ],
+      "step": 162
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        2,
+        36,
+        371,
+        373
+      ],
+      "step": 163
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        124,
+        305
+      ],
+      "step": 164
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        145,
+        370
+      ],
+      "step": 165
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        145,
+        370
+      ],
+      "step": 166
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        305,
+        306,
+        370
+      ],
+      "step": 167
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        124,
+        306,
+        370
+      ],
+      "step": 168
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        102,
+        124,
+        307,
+        370
+      ],
+      "step": 169
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        102,
+        370,
+        371
+      ],
+      "step": 170
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        102,
+        124,
+        307,
+        371
+      ],
+      "step": 171
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        2,
+        308,
+        309
+      ],
+      "step": 172
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        36,
+        307,
+        308
+      ],
+      "step": 173
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        2,
+        36,
+        307,
+        309
+      ],
+      "step": 174
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        2,
+        36,
+        102,
+        124,
+        309,
+        371
+      ],
+      "step": 175
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        2,
+        36,
+        102,
+        124,
+        309,
+        373
+      ],
+      "step": 176
+    },
+    {
+      "cost": 256,
+      "entries": 64,
+      "retained": [
+        102,
+        124,
+        216,
+        219,
+        309,
+        373
+      ],
+      "step": 177
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        220,
+        221
+      ],
+      "step": 178
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        219,
+        220
+      ],
+      "step": 179
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        219,
+        221
+      ],
+      "step": 180
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        64,
+        219,
+        222
+      ],
+      "step": 181
+    },
+    {
+      "cost": 256,
+      "entries": 128,
+      "retained": [
+        64,
+        102,
+        124,
+        216,
+        222,
+        309,
+        373
+      ],
+      "step": 182
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        59,
+        66,
+        309,
+        311
+      ],
+      "step": 183
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        127,
+        312,
+        313
+      ],
+      "step": 184
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        64,
+        127,
+        311,
+        313
+      ],
+      "step": 185
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        59,
+        64,
+        66,
+        127,
+        309,
+        313
+      ],
+      "step": 186
+    },
+    {
+      "cost": 2048,
+      "entries": 1024,
+      "retained": [
+        59,
+        64,
+        66,
+        102,
+        124,
+        127,
+        216,
+        222,
+        313,
+        373
+      ],
+      "step": 187
+    },
+    {
+      "cost": 2048,
+      "entries": 512,
+      "retained": [
+        59,
+        66,
+        102,
+        124,
+        127,
+        216,
+        222,
+        313,
+        377
+      ],
+      "step": 188
+    },
+    {
+      "cost": 65536,
+      "entries": 8192,
+      "retained": [
+        3,
+        12,
+        49,
+        53,
+        59,
+        66,
+        91,
+        102,
+        124,
+        127,
+        139,
+        210,
+        222
+      ],
+      "step": 189
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        223,
+        224
+      ],
+      "step": 190
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        224,
+        225
+      ],
+      "step": 191
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        223,
+        225
+      ],
+      "step": 192
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        43,
+        223,
+        226
+      ],
+      "step": 193
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        43,
+        223,
+        226
+      ],
+      "step": 194
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        38,
+        43,
+        222,
+        226
+      ],
+      "step": 195
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        227,
+        228
+      ],
+      "step": 196
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        49,
+        226,
+        228
+      ],
+      "step": 197
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        38,
+        43,
+        49,
+        222,
+        228
+      ],
+      "step": 198
+    },
+    {
+      "cost": 65536,
+      "entries": 16384,
+      "retained": [
+        3,
+        12,
+        38,
+        43,
+        53,
+        59,
+        66,
+        91,
+        102,
+        124,
+        127,
+        139,
+        210,
+        228
+      ],
+      "step": 199
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        399,
+        400
+      ],
+      "step": 200
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        397,
+        398
+      ],
+      "step": 201
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        69,
+        396
+      ],
+      "step": 202
+    },
+    {
+      "cost": 8,
+      "entries": 2,
+      "retained": [
+        397
+      ],
+      "step": 203
+    },
+    {
+      "cost": 4,
+      "entries": 2,
+      "retained": [
+        398
+      ],
+      "step": 204
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        45,
+        399
+      ],
+      "step": 205
+    },
+    {
+      "cost": 4,
+      "entries": 2,
+      "retained": [
+        399
+      ],
+      "step": 206
+    },
+    {
+      "cost": 4,
+      "entries": 2,
+      "retained": [
+        400
+      ],
+      "step": 207
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        1,
+        401
+      ],
+      "step": 208
+    },
+    {
+      "cost": 4,
+      "entries": 2,
+      "retained": [
+        401
+      ],
+      "step": 209
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        67,
+        402
+      ],
+      "step": 210
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        404,
+        405
+      ],
+      "step": 211
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        403,
+        404
+      ],
+      "step": 212
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        402,
+        403
+      ],
+      "step": 213
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        402,
+        404
+      ],
+      "step": 214
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        402,
+        405
+      ],
+      "step": 215
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        67,
+        405
+      ],
+      "step": 216
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        43,
+        67,
+        406
+      ],
+      "step": 217
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        43,
+        67,
+        139,
+        407
+      ],
+      "step": 218
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        394,
+        395
+      ],
+      "step": 219
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        50,
+        108
+      ],
+      "step": 220
+    },
+    {
+      "cost": 8,
+      "entries": 2,
+      "retained": [
+        395
+      ],
+      "step": 221
+    },
+    {
+      "cost": 4,
+      "entries": 2,
+      "retained": [
+        394
+      ],
+      "step": 222
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        129,
+        394
+      ],
+      "step": 223
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        129,
+        393
+      ],
+      "step": 224
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        392,
+        393
+      ],
+      "step": 225
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        391,
+        392
+      ],
+      "step": 226
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        391,
+        393
+      ],
+      "step": 227
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        81,
+        391
+      ],
+      "step": 228
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        81,
+        393
+      ],
+      "step": 229
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        81,
+        129
+      ],
+      "step": 230
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        81,
+        129
+      ],
+      "step": 231
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        243,
+        244
+      ],
+      "step": 232
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        129,
+        243,
+        245
+      ],
+      "step": 233
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        81,
+        243,
+        245
+      ],
+      "step": 234
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        53,
+        242,
+        243
+      ],
+      "step": 235
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        53,
+        81,
+        242,
+        245
+      ],
+      "step": 236
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        81,
+        135,
+        228,
+        230
+      ],
+      "step": 237
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        53,
+        135,
+        228,
+        230,
+        242,
+        245
+      ],
+      "step": 238
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        408,
+        409
+      ],
+      "step": 239
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        52,
+        408,
+        410
+      ],
+      "step": 240
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        52,
+        86,
+        407,
+        410
+      ],
+      "step": 241
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        12,
+        86
+      ],
+      "step": 242
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        86,
+        389
+      ],
+      "step": 243
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        12,
+        86,
+        389
+      ],
+      "step": 244
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        12,
+        86,
+        388
+      ],
+      "step": 245
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        12,
+        52,
+        388,
+        407,
+        410
+      ],
+      "step": 246
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        52,
+        140
+      ],
+      "step": 247
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        52,
+        385
+      ],
+      "step": 248
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        52,
+        140,
+        386
+      ],
+      "step": 249
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        52,
+        140,
+        386
+      ],
+      "step": 250
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        127,
+        144,
+        386,
+        388
+      ],
+      "step": 251
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        52,
+        127,
+        140,
+        144,
+        388
+      ],
+      "step": 252
+    },
+    {
+      "cost": 256,
+      "entries": 64,
+      "retained": [
+        12,
+        127,
+        140,
+        144,
+        407,
+        410
+      ],
+      "step": 253
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        31,
+        230,
+        231
+      ],
+      "step": 254
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        40,
+        74
+      ],
+      "step": 255
+    },
+    {
+      "cost": 8,
+      "entries": 2,
+      "retained": [
+        413
+      ],
+      "step": 256
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        59,
+        412
+      ],
+      "step": 257
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        411,
+        412
+      ],
+      "step": 258
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        59,
+        411
+      ],
+      "step": 259
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        31,
+        59,
+        410
+      ],
+      "step": 260
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        59,
+        230,
+        231,
+        410
+      ],
+      "step": 261
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        62,
+        231,
+        232
+      ],
+      "step": 262
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        59,
+        62,
+        230,
+        232,
+        410
+      ],
+      "step": 263
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        144,
+        234,
+        235
+      ],
+      "step": 264
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        236,
+        237
+      ],
+      "step": 265
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        235,
+        236
+      ],
+      "step": 266
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        235,
+        237
+      ],
+      "step": 267
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        144,
+        234,
+        237
+      ],
+      "step": 268
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        232,
+        233
+      ],
+      "step": 269
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        233,
+        234
+      ],
+      "step": 270
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        232,
+        234
+      ],
+      "step": 271
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        144,
+        232,
+        237
+      ],
+      "step": 272
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        238,
+        239
+      ],
+      "step": 273
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        240,
+        241
+      ],
+      "step": 274
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        239,
+        240
+      ],
+      "step": 275
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        239,
+        241
+      ],
+      "step": 276
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        241,
+        242
+      ],
+      "step": 277
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        239,
+        242
+      ],
+      "step": 278
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        238,
+        242
+      ],
+      "step": 279
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        127,
+        237,
+        242
+      ],
+      "step": 280
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        127,
+        144,
+        232,
+        242
+      ],
+      "step": 281
+    },
+    {
+      "cost": 256,
+      "entries": 128,
+      "retained": [
+        59,
+        62,
+        127,
+        144,
+        230,
+        242,
+        410
+      ],
+      "step": 282
+    },
+    {
+      "cost": 1024,
+      "entries": 256,
+      "retained": [
+        12,
+        59,
+        62,
+        127,
+        140,
+        230,
+        242,
+        407
+      ],
+      "step": 283
+    },
+    {
+      "cost": 4096,
+      "entries": 1024,
+      "retained": [
+        12,
+        53,
+        59,
+        62,
+        127,
+        135,
+        140,
+        228,
+        245,
+        407
+      ],
+      "step": 284
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        137,
+        353,
+        354
+      ],
+      "step": 285
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        124,
+        354,
+        355
+      ],
+      "step": 286
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        124,
+        137,
+        353,
+        355
+      ],
+      "step": 287
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        171,
+        172
+      ],
+      "step": 288
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        172,
+        173
+      ],
+      "step": 289
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        171,
+        173
+      ],
+      "step": 290
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        84,
+        171,
+        174
+      ],
+      "step": 291
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        59,
+        84,
+        170,
+        174
+      ],
+      "step": 292
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        83,
+        103,
+        168,
+        170
+      ],
+      "step": 293
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        59,
+        83,
+        84,
+        103,
+        168,
+        174
+      ],
+      "step": 294
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        103,
+        135
+      ],
+      "step": 295
+    },
+    {
+      "cost": 16,
+      "entries": 16,
+      "retained": [
+        103,
+        135,
+        358,
+        359
+      ],
+      "step": 296
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        103,
+        135,
+        357,
+        359
+      ],
+      "step": 297
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        83,
+        355,
+        356
+      ],
+      "step": 298
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        18,
+        83,
+        355,
+        357
+      ],
+      "step": 299
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        18,
+        83,
+        103,
+        135,
+        355,
+        359
+      ],
+      "step": 300
+    },
+    {
+      "cost": 1024,
+      "entries": 512,
+      "retained": [
+        18,
+        59,
+        83,
+        84,
+        135,
+        168,
+        174,
+        355,
+        359
+      ],
+      "step": 301
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        83,
+        135,
+        292,
+        294
+      ],
+      "step": 302
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        62,
+        83,
+        135,
+        292,
+        295
+      ],
+      "step": 303
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        6,
+        359,
+        360
+      ],
+      "step": 304
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        59,
+        62,
+        360,
+        362
+      ],
+      "step": 305
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        6,
+        59,
+        62,
+        359,
+        362
+      ],
+      "step": 306
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        59,
+        295,
+        296
+      ],
+      "step": 307
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        6,
+        59,
+        295,
+        297
+      ],
+      "step": 308
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        262,
+        263
+      ],
+      "step": 309
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        261,
+        262
+      ],
+      "step": 310
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        261,
+        263
+      ],
+      "step": 311
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        263,
+        264
+      ],
+      "step": 312
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        264,
+        265
+      ],
+      "step": 313
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        263,
+        265
+      ],
+      "step": 314
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        265,
+        266
+      ],
+      "step": 315
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        263,
+        266
+      ],
+      "step": 316
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        261,
+        266
+      ],
+      "step": 317
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        114,
+        266
+      ],
+      "step": 318
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        114,
+        266
+      ],
+      "step": 319
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        114,
+        261
+      ],
+      "step": 320
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        97,
+        114,
+        300,
+        302
+      ],
+      "step": 321
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        0,
+        114,
+        366,
+        368
+      ],
+      "step": 322
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        61,
+        71,
+        202,
+        204
+      ],
+      "step": 323
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        61,
+        71
+      ],
+      "step": 324
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        61,
+        71,
+        368
+      ],
+      "step": 325
+    },
+    {
+      "cost": 16,
+      "entries": 16,
+      "retained": [
+        61,
+        71,
+        303,
+        368
+      ],
+      "step": 326
+    },
+    {
+      "cost": 64,
+      "entries": 16,
+      "retained": [
+        202,
+        204,
+        303,
+        368
+      ],
+      "step": 327
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        0,
+        201,
+        202
+      ],
+      "step": 328
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        0,
+        201,
+        204,
+        303,
+        368
+      ],
+      "step": 329
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        0,
+        201,
+        204,
+        302,
+        368
+      ],
+      "step": 330
+    },
+    {
+      "cost": 128,
+      "entries": 32,
+      "retained": [
+        114,
+        201,
+        204,
+        302,
+        366
+      ],
+      "step": 331
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        97,
+        200,
+        201
+      ],
+      "step": 332
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        97,
+        114,
+        200,
+        204,
+        302,
+        366
+      ],
+      "step": 333
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        97,
+        114,
+        200,
+        204,
+        302,
+        365
+      ],
+      "step": 334
+    },
+    {
+      "cost": 128,
+      "entries": 32,
+      "retained": [
+        114,
+        200,
+        204,
+        300,
+        365
+      ],
+      "step": 335
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        200,
+        204,
+        261,
+        300,
+        365
+      ],
+      "step": 336
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        84,
+        200,
+        204,
+        261,
+        299,
+        365
+      ],
+      "step": 337
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        84,
+        364,
+        365
+      ],
+      "step": 338
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        24,
+        100,
+        297,
+        299
+      ],
+      "step": 339
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        24,
+        199,
+        200
+      ],
+      "step": 340
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        197,
+        198
+      ],
+      "step": 341
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        100,
+        197,
+        198
+      ],
+      "step": 342
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        100,
+        197,
+        199
+      ],
+      "step": 343
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        24,
+        100,
+        197,
+        200
+      ],
+      "step": 344
+    },
+    {
+      "cost": 64,
+      "entries": 64,
+      "retained": [
+        24,
+        100,
+        197,
+        200,
+        297,
+        299
+      ],
+      "step": 345
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        24,
+        100,
+        362,
+        364
+      ],
+      "step": 346
+    },
+    {
+      "cost": 256,
+      "entries": 64,
+      "retained": [
+        197,
+        200,
+        297,
+        299,
+        362,
+        364
+      ],
+      "step": 347
+    },
+    {
+      "cost": 256,
+      "entries": 128,
+      "retained": [
+        84,
+        197,
+        200,
+        297,
+        299,
+        362,
+        365
+      ],
+      "step": 348
+    },
+    {
+      "cost": 512,
+      "entries": 64,
+      "retained": [
+        84,
+        197,
+        204,
+        261,
+        297,
+        362
+      ],
+      "step": 349
+    },
+    {
+      "cost": 256,
+      "entries": 128,
+      "retained": [
+        6,
+        84,
+        196,
+        204,
+        261,
+        297,
+        362
+      ],
+      "step": 350
+    },
+    {
+      "cost": 512,
+      "entries": 256,
+      "retained": [
+        6,
+        59,
+        84,
+        196,
+        204,
+        261,
+        295,
+        362
+      ],
+      "step": 351
+    },
+    {
+      "cost": 1024,
+      "entries": 256,
+      "retained": [
+        59,
+        62,
+        84,
+        196,
+        204,
+        261,
+        295,
+        359
+      ],
+      "step": 352
+    },
+    {
+      "cost": 2048,
+      "entries": 1024,
+      "retained": [
+        59,
+        62,
+        83,
+        84,
+        135,
+        196,
+        204,
+        261,
+        292,
+        359
+      ],
+      "step": 353
+    },
+    {
+      "cost": 16384,
+      "entries": 2048,
+      "retained": [
+        18,
+        59,
+        62,
+        135,
+        168,
+        174,
+        196,
+        204,
+        261,
+        292,
+        355
+      ],
+      "step": 354
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        18,
+        194,
+        195
+      ],
+      "step": 355
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        18,
+        140,
+        194,
+        196
+      ],
+      "step": 356
+    },
+    {
+      "cost": 8192,
+      "entries": 2048,
+      "retained": [
+        59,
+        62,
+        135,
+        140,
+        168,
+        174,
+        194,
+        204,
+        261,
+        292,
+        355
+      ],
+      "step": 357
+    },
+    {
+      "cost": 8192,
+      "entries": 4096,
+      "retained": [
+        59,
+        62,
+        135,
+        137,
+        140,
+        168,
+        174,
+        194,
+        204,
+        260,
+        292,
+        355
+      ],
+      "step": 358
+    },
+    {
+      "cost": 8192,
+      "entries": 4096,
+      "retained": [
+        59,
+        62,
+        135,
+        137,
+        140,
+        168,
+        174,
+        194,
+        204,
+        260,
+        291,
+        355
+      ],
+      "step": 359
+    },
+    {
+      "cost": 16384,
+      "entries": 4096,
+      "retained": [
+        59,
+        62,
+        124,
+        135,
+        140,
+        168,
+        174,
+        194,
+        204,
+        260,
+        291,
+        353
+      ],
+      "step": 360
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        5,
+        124,
+        192,
+        194
+      ],
+      "step": 361
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        5,
+        124,
+        139,
+        191,
+        194
+      ],
+      "step": 362
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        5,
+        351,
+        352
+      ],
+      "step": 363
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        5,
+        139,
+        351,
+        353
+      ],
+      "step": 364
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        5,
+        139,
+        289,
+        291
+      ],
+      "step": 365
+    },
+    {
+      "cost": 64,
+      "entries": 64,
+      "retained": [
+        5,
+        139,
+        289,
+        291,
+        351,
+        353
+      ],
+      "step": 366
+    },
+    {
+      "cost": 512,
+      "entries": 256,
+      "retained": [
+        124,
+        139,
+        191,
+        194,
+        289,
+        291,
+        351,
+        353
+      ],
+      "step": 367
+    },
+    {
+      "cost": 65536,
+      "entries": 8192,
+      "retained": [
+        59,
+        62,
+        124,
+        135,
+        139,
+        140,
+        168,
+        174,
+        191,
+        204,
+        260,
+        289,
+        351
+      ],
+      "step": 368
+    },
+    {
+      "cost": 32768,
+      "entries": 16384,
+      "retained": [
+        12,
+        59,
+        62,
+        124,
+        135,
+        139,
+        140,
+        167,
+        174,
+        191,
+        204,
+        260,
+        289,
+        351
+      ],
+      "step": 369
+    },
+    {
+      "cost": 524288,
+      "entries": 65536,
+      "retained": [
+        12,
+        53,
+        59,
+        124,
+        127,
+        139,
+        167,
+        174,
+        191,
+        204,
+        228,
+        245,
+        260,
+        289,
+        351,
+        407
+      ],
+      "step": 370
+    },
+    {
+      "cost": 262144,
+      "entries": 131072,
+      "retained": [
+        12,
+        43,
+        53,
+        59,
+        124,
+        127,
+        139,
+        167,
+        174,
+        191,
+        204,
+        228,
+        245,
+        260,
+        289,
+        350,
+        407
+      ],
+      "step": 371
+    },
+    {
+      "cost": 262144,
+      "entries": 131072,
+      "retained": [
+        12,
+        43,
+        53,
+        59,
+        67,
+        124,
+        127,
+        139,
+        167,
+        174,
+        191,
+        204,
+        228,
+        245,
+        260,
+        289,
+        350
+      ],
+      "step": 372
+    },
+    {
+      "cost": 8388608,
+      "entries": 65536,
+      "retained": [
+        3,
+        38,
+        53,
+        66,
+        67,
+        91,
+        102,
+        167,
+        174,
+        191,
+        204,
+        210,
+        245,
+        260,
+        289,
+        350
+      ],
+      "step": 373
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        209,
+        210
+      ],
+      "step": 374
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        208,
+        209
+      ],
+      "step": 375
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        208,
+        210
+      ],
+      "step": 376
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        67,
+        207,
+        210
+      ],
+      "step": 377
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        205,
+        206
+      ],
+      "step": 378
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        116,
+        204,
+        206
+      ],
+      "step": 379
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        66,
+        116,
+        204,
+        207
+      ],
+      "step": 380
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        66,
+        67,
+        116,
+        204,
+        210
+      ],
+      "step": 381
+    },
+    {
+      "cost": 131072,
+      "entries": 32768,
+      "retained": [
+        3,
+        38,
+        53,
+        66,
+        67,
+        91,
+        102,
+        116,
+        167,
+        174,
+        191,
+        245,
+        260,
+        289,
+        350
+      ],
+      "step": 382
+    },
+    {
+      "cost": 524288,
+      "entries": 8192,
+      "retained": [
+        38,
+        91,
+        102,
+        163,
+        167,
+        183,
+        191,
+        245,
+        260,
+        279,
+        289,
+        336,
+        350
+      ],
+      "step": 383
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        188,
+        189
+      ],
+      "step": 384
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        11,
+        187,
+        189
+      ],
+      "step": 385
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        185,
+        186
+      ],
+      "step": 386
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        184,
+        185
+      ],
+      "step": 387
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        184,
+        186
+      ],
+      "step": 388
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        186,
+        187
+      ],
+      "step": 389
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        184,
+        187
+      ],
+      "step": 390
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        183,
+        184
+      ],
+      "step": 391
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        183,
+        187
+      ],
+      "step": 392
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        11,
+        183,
+        189
+      ],
+      "step": 393
+    },
+    {
+      "cost": 8,
+      "entries": 8,
+      "retained": [
+        56,
+        189,
+        190
+      ],
+      "step": 394
+    },
+    {
+      "cost": 32,
+      "entries": 16,
+      "retained": [
+        11,
+        56,
+        183,
+        190
+      ],
+      "step": 395
+    },
+    {
+      "cost": 64,
+      "entries": 32,
+      "retained": [
+        11,
+        56,
+        91,
+        183,
+        191
+      ],
+      "step": 396
+    },
+    {
+      "cost": 32768,
+      "entries": 8192,
+      "retained": [
+        11,
+        38,
+        56,
+        91,
+        102,
+        163,
+        167,
+        245,
+        260,
+        279,
+        289,
+        336,
+        350
+      ],
+      "step": 397
+    },
+    {
+      "cost": 16384,
+      "entries": 4096,
+      "retained": [
+        11,
+        38,
+        56,
+        102,
+        163,
+        167,
+        245,
+        260,
+        279,
+        289,
+        336,
+        348
+      ],
+      "step": 398
+    },
+    {
+      "cost": 8192,
+      "entries": 2048,
+      "retained": [
+        11,
+        38,
+        102,
+        163,
+        167,
+        245,
+        260,
+        279,
+        288,
+        336,
+        348
+      ],
+      "step": 399
+    },
+    {
+      "cost": 16384,
+      "entries": 256,
+      "retained": [
+        11,
+        102,
+        245,
+        258,
+        279,
+        285,
+        336,
+        344
+      ],
+      "step": 400
+    },
+    {
+      "cost": 2048,
+      "entries": 64,
+      "retained": [
+        245,
+        251,
+        279,
+        281,
+        336,
+        340
+      ],
+      "step": 401
+    },
+    {
+      "cost": 256,
+      "entries": 64,
+      "retained": [
+        105,
+        119,
+        245,
+        251,
+        336,
+        340
+      ],
+      "step": 402
+    },
+    {
+      "cost": 128,
+      "entries": 64,
+      "retained": [
+        105,
+        119,
+        245,
+        251,
+        336,
+        338
+      ],
+      "step": 403
+    },
+    {
+      "cost": 128,
+      "entries": 16,
+      "retained": [
+        245,
+        249,
+        336,
+        338
+      ],
+      "step": 404
+    },
+    {
+      "cost": 64,
+      "entries": 16,
+      "retained": [
+        77,
+        132,
+        245,
+        249
+      ],
+      "step": 405
+    },
+    {
+      "cost": 32,
+      "entries": 8,
+      "retained": [
+        132,
+        245,
+        248
+      ],
+      "step": 406
+    },
+    {
+      "cost": 16,
+      "entries": 8,
+      "retained": [
+        132,
+        245,
+        247
+      ],
+      "step": 407
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        245,
+        247
+      ],
+      "step": 408
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        246,
+        247
+      ],
+      "step": 409
+    },
+    {
+      "cost": 8,
+      "entries": 2,
+      "retained": [
+        125
+      ],
+      "step": 410
+    },
+    {
+      "cost": 2,
+      "entries": 1,
+      "retained": [],
+      "step": 411
+    }
+  ],
+  "work": 10515090
+}

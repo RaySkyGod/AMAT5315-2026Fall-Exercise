@@ -1,0 +1,89 @@
+{
+  "largest_tensor": 8,
+  "method": "greedy",
+  "runtime_seconds": 0.00040528,
+  "seed": null,
+  "settings": {
+    "method": "greedy"
+  },
+  "source": "greedy",
+  "steps": [
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        4,
+        5
+      ],
+      "step": 0
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        2,
+        3
+      ],
+      "step": 1
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        3,
+        4
+      ],
+      "step": 2
+    },
+    {
+      "cost": 4,
+      "entries": 2,
+      "retained": [
+        5
+      ],
+      "step": 3
+    },
+    {
+      "cost": 4,
+      "entries": 2,
+      "retained": [
+        1
+      ],
+      "step": 4
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        3,
+        5
+      ],
+      "step": 5
+    },
+    {
+      "cost": 4,
+      "entries": 4,
+      "retained": [
+        3,
+        5
+      ],
+      "step": 6
+    },
+    {
+      "cost": 8,
+      "entries": 4,
+      "retained": [
+        4,
+        5
+      ],
+      "step": 7
+    },
+    {
+      "cost": 4,
+      "entries": 1,
+      "retained": [],
+      "step": 8
+    }
+  ],
+  "work": 52
+}

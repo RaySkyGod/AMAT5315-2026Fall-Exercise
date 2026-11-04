@@ -74,7 +74,7 @@
   },
   "evidence_label": "AD",
   "evidence_mass": {
-    "contraction": 0.004501375,
+    "contraction": 0.004501375000000001,
     "enumeration": 0.004501374999999999
   },
   "model": "asia.uai",
@@ -90,5 +90,5 @@
       "variable": "D"
     }
   ],
-  "rel_evidence_mass_error": 1.9268817594366247e-16
+  "rel_evidence_mass_error": 3.8537635188732494e-16
 }

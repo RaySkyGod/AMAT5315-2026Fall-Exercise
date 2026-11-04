@@ -98,6 +98,7 @@ fn matrix_chain_orders_cost() {
         ],
         cards: vec![10, 10, 10, 10],
         names: vec!["A".into(), "B".into(), "C".into()],
+        scalar_log10: 0.0,
     };
     // (A B) C
     let plan_ab_c = Plan {
@@ -107,13 +108,13 @@ fn matrix_chain_orders_cost() {
         steps: vec![
             crate::plan::Step {
                 a: 0,
-                b: 1,
+                b: Some(1),
                 in_labels: [vec![0, 1], vec![1, 2]],
                 out_labels: vec![0, 2],
             },
             crate::plan::Step {
                 a: 3,
-                b: 2,
+                b: Some(2),
                 in_labels: [vec![0, 2], vec![2, 3]],
                 out_labels: vec![0, 3],
             },
@@ -130,13 +131,13 @@ fn matrix_chain_orders_cost() {
         steps: vec![
             crate::plan::Step {
                 a: 0,
-                b: 2,
+                b: Some(2),
                 in_labels: [vec![0, 1], vec![2, 3]],
                 out_labels: vec![0, 1, 2, 3],
             },
             crate::plan::Step {
                 a: 3,
-                b: 1,
+                b: Some(1),
                 in_labels: [vec![0, 1, 2, 3], vec![1, 2]],
                 out_labels: vec![0, 3],
             },
@@ -192,4 +193,39 @@ fn greedy_ad_order_cost_near_reference() {
     assert_eq!(c.space, 8, "greedy space");
     assert!(c.work <= 64, "greedy work {} vs reference 54", c.work);
     assert!(c.work >= 44, "greedy work {} below exhaustive 44", c.work);
+}
+
+/// Reduced networks (evidence inserted into the factor tables, no caps)
+/// close through a final unary step and match enumeration; this is the
+/// Promedus formulation.
+#[test]
+fn reduced_network_matches_enumeration() {
+    let model = asia();
+    let ev = evidence_for("ADX");
+    // Closed: Z_E.
+    let net = crate::contract::build_network_reduced(&model, &ev, &[]);
+    assert_eq!(net.slots.len(), 7); // p(a) became a scalar constant
+    let plan = greedy_plan(&net, &[]).unwrap();
+    let mut engine = CpuEngine::serial();
+    let out = execute_plan(&net, &plan, &mut engine).unwrap();
+    let reference = crate::enumerate::enumerate_marginals(&model, &ev, None);
+    assert!(
+        ((out.scalar() - reference.evidence_mass) / reference.evidence_mass).abs() < 1e-10,
+        "{} vs {}",
+        out.scalar(),
+        reference.evidence_mass
+    );
+    // Open: p(T = s, E) with the scalar constant applied.
+    for &v in &[1usize, 3] {
+        let net = crate::contract::build_network_reduced(&model, &ev, &[v as Label]);
+        let plan = greedy_plan(&net, &[v as Label]).unwrap();
+        let out = execute_plan(&net, &plan, &mut engine).unwrap();
+        let scale = 10f64.powf(out.log10_scale);
+        for s in 0..2 {
+            assert!(
+                ((out.values[s] * scale) - reference.marginals[v][s]).abs() < 1e-12,
+                "var {v} state {s}"
+            );
+        }
+    }
 }

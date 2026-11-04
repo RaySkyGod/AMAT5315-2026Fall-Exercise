@@ -44,3 +44,13 @@ Normalize every message proposal. Compute the maximum absolute undamped message
 change at the same state as the recorded beliefs, including the returned state.
 """
 stdout          = "BP sweep, undamped residual and cumulative update work"
+
+# Application block (UAI 2014 Promedus_14; extends the blocks above):
+#   --evidence <path.uai.evid>   observations from the downloaded evidence file
+#   --order treesa               omeco TreeSA, time-only score, seeded by the
+#                                trial index; search settings saved in order.json
+#   --query 59,102,139           variables whose marginals are contracted
+#   --pr <file.uai.PR>           compare log10 Z_E with the published PR (tol 1e-4)
+#   --mar <file.uai.MAR>         compare state-ordered marginals with MAR (tol 1e-5)
+# Large-graph BP traces record per-sweep residual/work plus the queried
+# variables' beliefs; runtime and update work are saved in run.json.

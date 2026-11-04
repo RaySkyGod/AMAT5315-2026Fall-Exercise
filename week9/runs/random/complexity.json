@@ -1,7 +1,12 @@
 {
   "largest_tensor": 32,
   "method": "random",
+  "runtime_seconds": 0.000591186,
   "seed": 42,
+  "settings": {
+    "method": "random",
+    "seed": 42
+  },
   "source": "random",
   "steps": [
     {

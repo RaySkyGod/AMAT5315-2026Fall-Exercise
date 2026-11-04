@@ -9,12 +9,14 @@ use crate::contract::{step_out_labels, Label, Network, Slot};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-/// One pairwise contraction: merge tensors `a` and `b`, summing their shared
-/// labels that are not in the plan's `open` set.
+/// One contraction step: merge tensors `a` and `b` (binary), summing their
+/// shared labels that are not kept; `b: None` marks a unary closing step
+/// that sums the labels of tensor `a` missing from the output.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Step {
     pub a: u64,
-    pub b: u64,
+    #[serde(default)]
+    pub b: Option<u64>,
     pub in_labels: [Vec<Label>; 2],
     pub out_labels: Vec<Label>,
 }
@@ -110,7 +112,23 @@ fn merge_live(live: &mut Live, ia: u64, ib: u64, keep: &[Label], next_id: u64) -
     live.push((next_id, out.clone()));
     Step {
         a: ia,
-        b: ib,
+        b: Some(ib),
+        in_labels,
+        out_labels: out,
+    }
+}
+
+/// Unary closing step: sum the labels of tensor `ia` that are missing from
+/// `out` (labels occurring in a single tensor cannot be summed pairwise).
+fn close_live(live: &mut Live, ia: u64, out: Vec<Label>, next_id: u64) -> Step {
+    let pa = live_pos(live, ia).expect("id live");
+    let in_labels = [live[pa].1.clone(), Vec::new()];
+    let (i, _) = (pa, ());
+    live.remove(i);
+    live.push((next_id, out.clone()));
+    Step {
+        a: ia,
+        b: None,
         in_labels,
         out_labels: out,
     }
@@ -118,7 +136,8 @@ fn merge_live(live: &mut Live, ia: u64, ib: u64, keep: &[Label], next_id: u64) -
 
 /// Random plan: any pair, chosen uniformly at random (sheet baseline). With
 /// the keep rule every pair is legal; shared labels are summed exactly when
-/// their last occurrences meet.
+/// their last occurrences meet. Labels surviving in only one tensor are
+/// summed by a final unary closing step.
 pub fn random_plan(net: &Network, open: &[Label], seed: u64) -> Plan {
     let mut rng = SplitMix64(seed);
     let mut live = initial_live(net);
@@ -135,6 +154,14 @@ pub fn random_plan(net: &Network, open: &[Label], seed: u64) -> Plan {
         let (ia, ib) = (live[pa].0, live[pb].0);
         let next_id = (n0 + steps.len()) as u64;
         steps.push(merge_live(&mut live, ia, ib, &keep, next_id));
+    }
+    let leftover = live[0].1.clone();
+    let root_id = live[0].0;
+    let mut out = open.to_vec();
+    out.sort_unstable();
+    if leftover != out {
+        let next_id = (n0 + steps.len()) as u64;
+        steps.push(close_live(&mut live, root_id, out, next_id));
     }
     Plan {
         method: "random".into(),
@@ -275,6 +302,23 @@ fn walk_tree(
                 steps.push(merge_live(live, acc, child_ids[j], &keep, next_id));
                 acc = next_id;
             }
+            // Labels the node's einsum sums even though they occur in a
+            // single child (OMEinsum n-ary semantics): close them here.
+            let got = live_pos(live, acc).map(|p| live[p].1.clone()).expect("acc live");
+            let mut iy_sorted = iy.clone();
+            iy_sorted.sort_unstable();
+            if got != iy_sorted {
+                for &l in &iy_sorted {
+                    if !got.contains(&l) {
+                        return Err(format!(
+                            "node output {iy_sorted:?} keeps label {l} missing from its inputs {got:?}"
+                        ));
+                    }
+                }
+                let next_id = (n0 + steps.len()) as u64;
+                steps.push(close_live(live, acc, iy_sorted, next_id));
+                acc = next_id;
+            }
             Ok(acc)
         }
     }
@@ -308,21 +352,33 @@ pub fn execute_plan(
         .enumerate()
         .map(|(i, s)| (i as u64, s.clone()))
         .collect();
+    use crate::contract::einsum_unary;
     let n0 = net.slots.len();
-    let mut log10_scale = 0.0f64;
+    // Fully-observed factors contribute a scalar constant (reduced networks).
+    let mut log10_scale = net.scalar_log10;
     for (k, step) in plan.steps.iter().enumerate() {
         let pa = live
             .iter()
             .position(|(x, _)| *x == step.a)
             .ok_or_else(|| format!("step {k}: tensor {} not live", step.a))?;
-        let pb = live
-            .iter()
-            .position(|(x, _)| *x == step.b)
-            .ok_or_else(|| format!("step {k}: tensor {} not live", step.b))?;
-        if live[pa].1.labels != step.in_labels[0] || live[pb].1.labels != step.in_labels[1] {
-            return Err(format!("step {k}: live labels disagree with the plan"));
-        }
-        let merged = einsum_pair(&live[pa].1, &live[pb].1, &step.out_labels, engine)?;
+        let merged = match step.b {
+            Some(sb) => {
+                let pb = live
+                    .iter()
+                    .position(|(x, _)| *x == sb)
+                    .ok_or_else(|| format!("step {k}: tensor {sb} not live"))?;
+                if live[pa].1.labels != step.in_labels[0] || live[pb].1.labels != step.in_labels[1] {
+                    return Err(format!("step {k}: live labels disagree with the plan"));
+                }
+                einsum_pair(&live[pa].1, &live[pb].1, &step.out_labels, engine)?
+            }
+            None => {
+                if live[pa].1.labels != step.in_labels[0] || !step.in_labels[1].is_empty() {
+                    return Err(format!("step {k}: live labels disagree with the plan"));
+                }
+                einsum_unary(&live[pa].1, &step.out_labels, engine)?
+            }
+        };
         // Rescale guard: keep intermediates inside a safe floating range.
         let maxabs = merged
             .data
@@ -335,9 +391,20 @@ pub fn execute_plan(
             }
             log10_scale += maxabs.log10();
         }
-        let (i, j) = (pa.min(pb), pa.max(pb));
-        live.remove(j);
-        live.remove(i);
+        let removed = if step.b.is_some() { 2 } else { 1 };
+        let mut positions = Vec::with_capacity(removed);
+        positions.push(pa);
+        if let Some(sb) = step.b {
+            let pb = live
+                .iter()
+                .position(|(x, _)| *x == sb)
+                .ok_or_else(|| format!("step {k}: tensor {sb} not live"))?;
+            positions.push(pb);
+        }
+        positions.sort_unstable();
+        for &p in positions.iter().rev() {
+            live.remove(p);
+        }
         live.push(((n0 + k) as u64, slot));
     }
     if live.len() != 1 {
@@ -382,11 +449,17 @@ pub fn analyze_plan(net: &Network, plan: &Plan) -> Result<Complexity, String> {
             .iter()
             .position(|(x, _)| *x == step.a)
             .ok_or_else(|| format!("step {k}: tensor {} not live", step.a))?;
-        let pb = live
-            .iter()
-            .position(|(x, _)| *x == step.b)
-            .ok_or_else(|| format!("step {k}: tensor {} not live", step.b))?;
-        if live[pa].1 != step.in_labels[0] || live[pb].1 != step.in_labels[1] {
+        let pb = step
+            .b
+            .and_then(|sb| live.iter().position(|(x, _)| *x == sb));
+        if pb.is_none() && step.b.is_some() {
+            return Err(format!("step {k}: tensor {:?} not live", step.b));
+        }
+        let pb = pb.unwrap_or(usize::MAX);
+        if live[pa].1 != step.in_labels[0]
+            || (step.b.is_some() && live[pb].1 != step.in_labels[1])
+            || (step.b.is_none() && !step.in_labels[1].is_empty())
+        {
             return Err(format!("step {k}: live labels disagree with the plan"));
         }
         // Work: product of dims over the union of the inputs' labels.
@@ -414,9 +487,14 @@ pub fn analyze_plan(net: &Network, plan: &Plan) -> Result<Complexity, String> {
             retained: step.out_labels.clone(),
             entries,
         });
-        let (i, j) = (pa.min(pb), pa.max(pb));
-        live.remove(j);
-        live.remove(i);
+        let mut positions = vec![pa];
+        if step.b.is_some() {
+            positions.push(pb);
+        }
+        positions.sort_unstable();
+        for &p in positions.iter().rev() {
+            live.remove(p);
+        }
         live.push(((net.slots.len() + k) as u64, step.out_labels.clone()));
     }
     Ok(Complexity {

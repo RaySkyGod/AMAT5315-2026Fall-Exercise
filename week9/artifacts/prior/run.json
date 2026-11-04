@@ -91,7 +91,9 @@
       0.9351719999999999
     ]
   },
-  "max_abs_marginal_error": 2.220446049250313e-16,
+  "log10_partition_sum": 0.0,
+  "mar_comparison": null,
+  "max_abs_marginal_error": 1.1102230246251565e-16,
   "model": "asia.uai",
   "node_marginals": {
     "contraction": [
@@ -133,15 +135,15 @@
       {
         "name": "E",
         "p": [
-          0.06482800000000001,
-          0.9351720000000001
+          0.064828,
+          0.935172
         ]
       },
       {
         "name": "X",
         "p": [
-          0.11029003999999999,
-          0.8897099599999999
+          0.11029004,
+          0.88970996
         ]
       },
       {
@@ -212,5 +214,12 @@
     ]
   },
   "observations": [],
-  "rel_evidence_mass_error": 0.0
+  "pr_comparison": null,
+  "rel_evidence_mass_error": 0.0,
+  "scalar_query": {
+    "largest_tensor": 8,
+    "method": "greedy",
+    "runtime_seconds": 0.00040528,
+    "work": 52
+  }
 }

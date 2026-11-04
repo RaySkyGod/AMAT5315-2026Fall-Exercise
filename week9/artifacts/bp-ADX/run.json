@@ -69,7 +69,7 @@
       "variable": "X"
     }
   ],
-  "runtime_seconds": 0.000425857,
+  "runtime_seconds": 0.000420874,
   "settings": {
     "damping": 0.5,
     "max_sweeps": 1000,

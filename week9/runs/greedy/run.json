@@ -74,7 +74,7 @@
   },
   "evidence_label": "AD",
   "evidence_mass": {
-    "contraction": 0.004501375,
+    "contraction": 0.004501375000000001,
     "enumeration": 0.004501374999999999
   },
   "joint_TL": {
@@ -91,14 +91,16 @@
       0.0036807750000000003
     ]
   },
-  "max_abs_marginal_error": 8.673617379884035e-19,
+  "log10_partition_sum": -2.3466548054026126,
+  "mar_comparison": null,
+  "max_abs_marginal_error": 1.734723475976807e-18,
   "model": "asia.uai",
   "node_marginals": {
     "contraction": [
       {
         "name": "A",
         "p": [
-          0.004501375,
+          0.004501375000000001,
           0.0
         ]
       },
@@ -113,7 +115,7 @@
         "name": "S",
         "p": [
           0.0028175,
-          0.0016838749999999998
+          0.001683875
         ]
       },
       {
@@ -127,7 +129,7 @@
         "name": "B",
         "p": [
           0.0036524250000000004,
-          0.0008489500000000001
+          0.0008489499999999999
         ]
       },
       {
@@ -147,7 +149,7 @@
       {
         "name": "D",
         "p": [
-          0.004501375,
+          0.004501375000000001,
           0.0
         ]
       }
@@ -223,10 +225,12 @@
       "variable": "D"
     }
   ],
-  "rel_evidence_mass_error": 1.9268817594366247e-16,
+  "pr_comparison": null,
+  "rel_evidence_mass_error": 3.8537635188732494e-16,
   "scalar_query": {
     "largest_tensor": 8,
     "method": "greedy",
+    "runtime_seconds": 0.000901291,
     "work": 52
   }
 }

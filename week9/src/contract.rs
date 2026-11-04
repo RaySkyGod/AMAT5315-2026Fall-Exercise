@@ -60,6 +60,9 @@ pub struct Network {
     pub cards: Vec<usize>,
     /// Name per slot (provenance, for plans and plots).
     pub names: Vec<String>,
+    /// log10 of the product of fully-observed (scalar) factors; folded into
+    /// every contraction of this network (zero for cap networks).
+    pub scalar_log10: f64,
 }
 
 impl Network {
@@ -121,8 +124,14 @@ pub fn build_network(model: &UaiModel, evidence: &[(usize, usize)], open: &[Labe
         names.push(format!("obs{v}"));
         occurrences[v] += 1;
     }
-    // A summed label occurring in a single factor needs an all-ones cap so
-    // that pairwise merges can close the network ("attach (1,1)").
+    // All-ones caps for summed labels that occur in a single factor, so that
+    // pairwise merges alone close the network ("attach (1,1)").
+    let mut occurrences = vec![0usize; model.nvars];
+    for s in &slots {
+        for &l in &s.labels {
+            occurrences[l as usize] += 1;
+        }
+    }
     for v in 0..model.nvars {
         if occurrences[v] == 1 && !is_open(v as Label) {
             slots.push(Slot::new(
@@ -137,7 +146,105 @@ pub fn build_network(model: &UaiModel, evidence: &[(usize, usize)], open: &[Labe
         slots,
         cards: model.cards.clone(),
         names,
+        scalar_log10: 0.0,
     }
+}
+
+/// Insert observed states into every factor (sheet eq. 7): observed axes are
+/// sliced away, fully-observed factors become scalar constants. Labels in
+/// `open` keep their axes; no caps are attached, so singly-occurring summed
+/// labels are closed by a unary plan step instead. Used for the
+/// Promedus-scale networks.
+pub fn build_network_reduced(
+    model: &UaiModel,
+    evidence: &[(usize, usize)],
+    _open: &[Label],
+) -> Network {
+    let mut ev = vec![None; model.nvars];
+    for &(v, s) in evidence {
+        ev[v] = Some(s);
+    }
+    let mut slots = Vec::new();
+    let mut names = Vec::new();
+    let mut scalar_log10 = 0.0f64;
+    for (fi, f) in model.factors.iter().enumerate() {
+        let (vars, dims, table) = reduce_factor(f, &model.cards, &ev);
+        if vars.is_empty() {
+            scalar_log10 += table[0].log10();
+            continue;
+        }
+        slots.push(Slot::new(
+            vars.iter().map(|&v| v as Label).collect(),
+            dims,
+            table,
+        ));
+        names.push(format!("f{fi}"));
+    }
+    // No caps: labels that occur in a single factor are summed by a final
+    // unary closing step of the plan ("abc->" style), which keeps omeco's
+    // view identical to the reduced factor set.
+    Network {
+        slots,
+        cards: model.cards.clone(),
+        names,
+        scalar_log10,
+    }
+}
+
+/// Slice a factor's table at the observed states: returns the surviving
+/// variables (in scope order), their dimensions and the reduced table
+/// (row-major, last axis fastest).
+pub fn reduce_factor(
+    f: &crate::uai::Factor,
+    cards: &[usize],
+    ev: &[Option<usize>],
+) -> (Vec<usize>, Vec<usize>, Vec<f64>) {
+    let n = f.scope.len();
+    let mut strides = vec![1usize; n];
+    for k in (0..n.saturating_sub(1)).rev() {
+        strides[k] = strides[k + 1] * cards[f.scope[k + 1]];
+    }
+    let mut vars = Vec::new();
+    let mut dims = Vec::new();
+    for &v in &f.scope {
+        if ev[v].is_none() {
+            vars.push(v);
+            dims.push(cards[v]);
+        }
+    }
+    let total: usize = dims.iter().product();
+    let rank = dims.len();
+    let mut table = Vec::with_capacity(total);
+    let mut idx = vec![0usize; rank];
+    for _ in 0..total.max(1) {
+        let mut offset = 0usize;
+        let mut free = 0usize;
+        for (k, &v) in f.scope.iter().enumerate() {
+            match ev[v] {
+                Some(s) => offset += s * strides[k],
+                None => {
+                    offset += idx[free] * strides[k];
+                    free += 1;
+                }
+            }
+        }
+        if total > 0 {
+            table.push(f.table[offset]);
+        }
+        let mut j = rank;
+        loop {
+            if j == 0 {
+                break;
+            }
+            j -= 1;
+            idx[j] += 1;
+            if idx[j] < dims[j] {
+                break;
+            }
+            idx[j] = 0;
+        }
+    }
+    (vars, dims, table)
 }
 
 /// Labels kept by merging slots `a` and `b`: every label of the union except
@@ -223,6 +330,44 @@ pub fn einsum_pair(
     let tb = Tensor::from_vec_row_major(sb.dims.clone(), sb.data.clone())
         .map_err(|e| format!("tensor build: {e}"))?;
     let inputs = [&ta, &tb];
+    let result = inputs
+        .einsum(&spec, engine)
+        .map_err(|e| format!("einsum `{spec}`: {e}"))?;
+    read_tensor(&result, out)
+        .ok_or_else(|| format!("einsum `{spec}`: cannot read result on host"))
+}
+
+/// Unary contraction: sum every label of `s` that is not in `out`
+/// (einsum "abc->c" style). Used to close networks whose summed labels occur
+/// in a single tensor.
+pub fn einsum_unary(s: &Slot, out: &[Label], engine: &mut CpuEngine) -> Result<Slot, String> {
+    let mut all = s.labels.clone();
+    all.extend(out.iter().copied());
+    all.sort_unstable();
+    all.dedup();
+    if all.len() > LETTERS.len() {
+        return Err(format!(
+            "step uses {} distinct labels; at most {} supported",
+            all.len(),
+            LETTERS.len()
+        ));
+    }
+    let letter = |l: &Label| -> char {
+        LETTERS[all.iter().position(|&x| x == *l).expect("label in set")] as char
+    };
+    for &l in out {
+        if !s.labels.contains(&l) {
+            return Err(format!("unary output label {l} absent from input"));
+        }
+    }
+    let spec = format!(
+        "{}->{}",
+        s.labels.iter().map(letter).collect::<String>(),
+        out.iter().map(letter).collect::<String>()
+    );
+    let t = Tensor::from_vec_row_major(s.dims.clone(), s.data.clone())
+        .map_err(|e| format!("tensor build: {e}"))?;
+    let inputs = [&t];
     let result = inputs
         .einsum(&spec, engine)
         .map_err(|e| format!("einsum `{spec}`: {e}"))?;

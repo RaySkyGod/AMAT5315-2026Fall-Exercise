@@ -1,7 +1,11 @@
 {
   "method": "random",
-  "seed": 42,
   "open": [],
+  "seed": 42,
+  "settings": {
+    "method": "random",
+    "seed": 42
+  },
   "steps": [
     {
       "a": 9,

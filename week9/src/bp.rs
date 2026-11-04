@@ -130,7 +130,14 @@ fn normalize(v: &mut [f64]) -> Option<f64> {
 }
 
 /// Run loopy BP. Errors when a message proposal cannot be normalized.
-pub fn run_bp(model: &UaiModel, evidence: &[(usize, usize)], cfg: BpConfig) -> Result<BpResult, String> {
+/// Per-sweep beliefs are recorded for all variables on small graphs and for
+/// `query` variables only on large ones (keeps traces manageable).
+pub fn run_bp(
+    model: &UaiModel,
+    evidence: &[(usize, usize)],
+    cfg: BpConfig,
+    query: &[usize],
+) -> Result<BpResult, String> {
     let mut ev = vec![None; model.nvars];
     for &(v, s) in evidence {
         ev[v] = Some(s);
@@ -204,6 +211,11 @@ pub fn run_bp(model: &UaiModel, evidence: &[(usize, usize)], cfg: BpConfig) -> R
         .sum();
     let work_per_sweep = work_fv + work_vf;
 
+    let record_all = nvar <= 32;
+    let query_idx: Vec<usize> = query
+        .iter()
+        .filter_map(|&q| variables.iter().position(|&v| v == q))
+        .collect();
     let mut traces = Vec::new();
     let mut converged = false;
     let mut final_beliefs: Vec<Vec<f64>> = Vec::new();
@@ -217,11 +229,16 @@ pub fn run_bp(model: &UaiModel, evidence: &[(usize, usize)], cfg: BpConfig) -> R
         sweeps_done = sweep;
         final_residual = residual;
         final_beliefs = beliefs.clone();
+        let traced_beliefs: Vec<Vec<f64>> = if record_all {
+            beliefs.clone()
+        } else {
+            query_idx.iter().map(|&vi| beliefs[vi].clone()).collect()
+        };
         traces.push(SweepTrace {
             sweep,
             residual,
             cumulative_work: work_per_sweep * sweep as u128,
-            beliefs: beliefs.clone(),
+            beliefs: traced_beliefs,
         });
         println!(
             "BP sweep {sweep:>4}  undamped residual {residual:.3e}  cumulative work {}",
@@ -407,7 +424,7 @@ mod tests {
         )
         .unwrap();
         let cfg = BpConfig { damping: 0.5, tolerance: 1e-12, max_sweeps: 50 };
-        let r = run_bp(&model, &[], cfg).unwrap();
+        let r = run_bp(&model, &[], cfg, &[]).unwrap();
         assert!(r.converged, "tree BP should converge, residual {}", r.final_residual);
         let reference = enumerate_marginals(&model, &[], Some([0, 1]));
         for (vi, &v) in r.variables.iter().enumerate() {
@@ -430,7 +447,7 @@ mod tests {
         )
         .unwrap();
         let cfg = BpConfig { damping: 0.5, tolerance: 1e-12, max_sweeps: 100 };
-        let r = run_bp(&model, &[(1, 0)], cfg).unwrap();
+        let r = run_bp(&model, &[(1, 0)], cfg, &[]).unwrap();
         assert!(r.converged);
         let exact0 = 0.3 * 0.9 / (0.3 * 0.9 + 0.7 * 0.2);
         assert!((r.final_beliefs[0][0] - exact0).abs() < 1e-10);
@@ -442,7 +459,7 @@ mod tests {
     fn asia_adx_bp_converges_but_inaccurate() {
         let model = parse_uai(include_str!("../asia.uai")).unwrap();
         let cfg = BpConfig { damping: 0.5, tolerance: 1e-10, max_sweeps: 1000 };
-        let r = run_bp(&model, &[(0, 0), (7, 0), (6, 0)], cfg).unwrap();
+        let r = run_bp(&model, &[(0, 0), (7, 0), (6, 0)], cfg, &[]).unwrap();
         assert!(r.converged, "residual {} after {} sweeps", r.final_residual, r.sweeps);
         let reference = enumerate_marginals(&model, &[(0, 0), (7, 0), (6, 0)], None);
         let mut max_err = 0.0f64;
