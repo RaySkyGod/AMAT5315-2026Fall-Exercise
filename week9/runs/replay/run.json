@@ -1,0 +1,94 @@
+{
+  "checks": {
+    "ab": [
+      [
+        4.0,
+        4.0
+      ],
+      [
+        10.0,
+        8.0
+      ]
+    ],
+    "ab_reference": [
+      [
+        4.0,
+        4.0
+      ],
+      [
+        10.0,
+        8.0
+      ]
+    ],
+    "checks": [
+      {
+        "abs_error": 0.0,
+        "contraction": 4.0,
+        "name": "AB[0][0]",
+        "reference": 4.0,
+        "tolerance": 1e-12
+      },
+      {
+        "abs_error": 0.0,
+        "contraction": 4.0,
+        "name": "AB[0][1]",
+        "reference": 4.0,
+        "tolerance": 1e-12
+      },
+      {
+        "abs_error": 0.0,
+        "contraction": 10.0,
+        "name": "AB[1][0]",
+        "reference": 10.0,
+        "tolerance": 1e-12
+      },
+      {
+        "abs_error": 0.0,
+        "contraction": 8.0,
+        "name": "AB[1][1]",
+        "reference": 8.0,
+        "tolerance": 1e-12
+      },
+      {
+        "abs_error": 0.0,
+        "contraction": 12.0,
+        "name": "tr(AB)",
+        "reference": 12.0,
+        "tolerance": 1e-12
+      },
+      {
+        "abs_error": 1.7763568394002505e-15,
+        "contraction": 12.602562098951932,
+        "name": "ising_ring_Z_contraction_vs_enumeration",
+        "reference": 12.60256209895193,
+        "tolerance": 1e-12
+      },
+      {
+        "abs_error": 1.7763568394002505e-15,
+        "contraction": 12.602562098951932,
+        "name": "ising_ring_Z_vs_closed_form",
+        "reference": 12.60256209895193,
+        "tolerance": 1e-12
+      }
+    ]
+  },
+  "evidence_label": "AD",
+  "evidence_mass": {
+    "contraction": 0.004501375,
+    "enumeration": 0.004501374999999999
+  },
+  "model": "asia.uai",
+  "observations": [
+    {
+      "id": 0,
+      "state": 0,
+      "variable": "A"
+    },
+    {
+      "id": 7,
+      "state": 0,
+      "variable": "D"
+    }
+  ],
+  "rel_evidence_mass_error": 1.9268817594366247e-16
+}
