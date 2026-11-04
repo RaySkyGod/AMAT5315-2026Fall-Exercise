@@ -93,7 +93,7 @@ def main():
     fig.suptitle("UAI 2014 Promedus_14 (414 binary variables, 9 observed): "
                  "exact cost and loopy-BP accuracy", y=1.03)
     fig.tight_layout()
-    out = ROOT / "evidence" / "promedus.png"
+    out = ROOT / "evidence" / "application" / "promedus.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print("wrote", out)
     print(f"greedy work {greedy['work']:,}, treeSA work {treesa['work']:,}")

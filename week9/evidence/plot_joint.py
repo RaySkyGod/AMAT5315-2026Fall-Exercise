@@ -54,7 +54,7 @@ def main():
             f"T,L joint vs independent product — ADX: p(T=0,L=0|E)={joint[0,0]:.6f} "
             f"vs product {prod[0,0]:.6f}", y=0.995)
     fig.tight_layout(rect=(0, 0, 1, 0.97))
-    out = ROOT / "evidence" / "joint.png"
+    out = ROOT / "evidence" / "part2" / "joint.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print("wrote", out)
 

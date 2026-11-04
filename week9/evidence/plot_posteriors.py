@@ -60,7 +60,7 @@ def main():
         ax.grid(axis="y", alpha=0.3)
     fig.suptitle("ASIA posteriors: tensor contraction (bars) vs enumeration (ticks)", y=1.02)
     fig.tight_layout()
-    out = ROOT / "evidence" / "posteriors.png"
+    out = ROOT / "evidence" / "part2" / "posteriors.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print("wrote", out)
 

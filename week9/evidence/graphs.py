@@ -98,7 +98,7 @@ def main():
             ha="center", va="center")
     ax.set_title("AD tuberculosis query: factor tables, caps (1,0)/(1,1), "
                  "shared indices joined; only T stays open", fontsize=11)
-    out = ROOT / "evidence" / "graphs.svg"
+    out = ROOT / "evidence" / "part2" / "graphs.svg"
     fig.savefig(out, bbox_inches="tight")
     print("wrote", out)
 

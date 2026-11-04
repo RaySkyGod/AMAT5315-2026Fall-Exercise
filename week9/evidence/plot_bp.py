@@ -55,7 +55,7 @@ def main():
     fig.suptitle("Loopy BP on ASIA (damping 0.5, tolerance 1e-10): "
                  "convergence is not accuracy", y=1.02)
     fig.tight_layout()
-    out = ROOT / "evidence" / "bp.png"
+    out = ROOT / "evidence" / "part4" / "bp.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print("wrote", out)
 

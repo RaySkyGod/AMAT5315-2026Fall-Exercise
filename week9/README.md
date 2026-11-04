@@ -20,7 +20,7 @@ appended as the tool grew).
 | `asia.uai`, `promedus/` | pinned model data (sources below) |
 | `artifacts/` | exact and BP runs for prior / AD / ADX |
 | `runs/` | ordering runs (`random`, `greedy`, `analysis`, `replay`) and Promedus runs |
-| `evidence/` | Python plotting/verification scripts and their figures |
+| `evidence/` | Python plotting/verification scripts (`*.py`) and figures by part: `part2/` (posteriors, joint, query diagram), `part3/` (orders), `part4/` (BP), `application/` (Promedus) |
 
 ## Environment
 
@@ -105,11 +105,11 @@ Tolerances required by the sheet: marginal error < 1e-10, relative evidence
 mass < 1e-10 — both are met by ~9 orders of magnitude. The X-ray raises
 tuberculosis and lung cancer while lowering bronchitis. For ADX,
 p(T=0,L=0|E) = 0.022214 against a product of marginals of 0.174026, so the
-joint-vs-product plot (`evidence/joint.png`) preserves the dependence.
+joint-vs-product plot (`evidence/part2/joint.png`) preserves the dependence.
 
-Figures: `evidence/posteriors.png` (contraction bars with enumeration ticks),
-`evidence/joint.png`, `evidence/graphs.svg` (the AD query diagram: eight
-factor boxes, (1,0) caps on A and D, (1,1) on x, only T open).
+Figures: `evidence/part2/posteriors.png` (contraction bars with enumeration
+ticks), `evidence/part2/joint.png`, `evidence/part2/graphs.svg` (the AD query
+diagram: eight factor boxes, (1,0) caps on A and D, (1,1) on x, only T open).
 
 ### Part 3 — contraction orders (`runs/`)
 
@@ -124,7 +124,7 @@ Both orders give p(A=0,D=0) = 0.004501375 within 1e-10 (in fact < 1e-15);
 the better order changes the cost, not the answer (4.5x less work, 4x smaller
 largest tensor). Reference values on the sheet (random 408/64) depend on the
 random generator; the judge is the saved trees and their recounted costs,
-drawn in `evidence/orders.png`.
+drawn in `evidence/part3/orders.png`.
 
 ### Part 4 — loopy BP (`artifacts/bp-*`)
 
@@ -141,7 +141,7 @@ ADX matches the sheet's reference (residual 8.23e-11 after 93 sweeps,
 marginal error ≈ 0.01061; sweep counts differ slightly because of update
 bookkeeping). The point stands: the messages stop changing to within 1e-10
 while the beliefs are wrong at the 1e-2 level — convergence is not accuracy.
-`evidence/bp.png` plots residual and error against sweeps for all cases.
+`evidence/part4/bp.png` plots residual and error against sweeps for all cases.
 
 ### Application — Promedus_14 (`runs/promedus-*`)
 
@@ -177,8 +177,8 @@ The converged beliefs reproduce the sheet's reference (≈0.000086, 0.000251,
 reports. Where the reference still had residual 2.12e-10 at 1000 sweeps, this
 implementation reaches 1e-10 at 536 sweeps (damping/residual bookkeeping
 differ); the 100-sweep run demonstrates the unconverged regime explicitly.
-Costs and traces: `evidence/promedus.png`; runtime and cumulative update work
-are recorded per run in `run.json`/`complexity.json`.
+Costs and traces: `evidence/application/promedus.png`; runtime and cumulative
+update work are recorded per run in `run.json`/`complexity.json`.
 
 ## Implementation notes
 

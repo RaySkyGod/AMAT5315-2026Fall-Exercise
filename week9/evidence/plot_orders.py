@@ -119,7 +119,7 @@ def main():
     ax3.legend()
     ax3.grid(axis="y", alpha=0.3)
     fig.tight_layout()
-    out = ROOT / "evidence" / "orders.png"
+    out = ROOT / "evidence" / "part3" / "orders.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print("wrote", out)
 
