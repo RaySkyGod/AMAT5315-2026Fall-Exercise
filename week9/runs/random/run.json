@@ -230,7 +230,7 @@
   "scalar_query": {
     "largest_tensor": 32,
     "method": "random",
-    "runtime_seconds": 0.000591186,
+    "runtime_seconds": 0.000692493,
     "work": 236
   }
 }
