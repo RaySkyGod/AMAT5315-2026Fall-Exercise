@@ -1,0 +1,25 @@
+[package]
+name = "infer"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.96"
+description = "Probabilistic inference by tensor contraction (AMAT5315 week 9)"
+
+[lib]
+name = "infer"
+path = "src/lib.rs"
+
+[[bin]]
+name = "infer"
+path = "src/main.rs"
+
+[dependencies]
+tenferro-tensor = "0.9"
+tenferro-cpu = "0.9"
+tenferro-einsum = "0.9"
+omeco = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+debug = false
