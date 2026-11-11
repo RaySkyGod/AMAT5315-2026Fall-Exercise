@@ -140,6 +140,9 @@ contraction independently (`log Z = Σ row scales + log v` or
   `artifacts/trg-critical.png` (c_V peaks and the 1/L extrapolation with both
   fits and the Onsager line).
 
-Generated data (`runs/`, `artifacts/`, `target/`) is kept out of Git; the
-committed tree holds source, tests, `thermo.design.toml`, the `evidence/`
-scripts and this README.
+Figures, summary tables, small-check results and compact g(K)/timing tables
+(`artifacts/*.png`, `*-summary.*`, `checks-small-*.md`, `gtables-*.csv`,
+`svd-check.txt`) are committed; the heavy per-run raw evidence
+(`runs/`, ≈0.9 GB of tensors, scales and split factors) and `target/` stay
+local and regenerate with the commands above
+(`evidence/export_tables.py` rewrites the CSVs from `runs/`).

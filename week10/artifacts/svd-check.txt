@@ -1,0 +1,7 @@
+svdstudy independent check (targets: |measured-predicted| < 1e-8, e_512 < 1e-8)
+chi=  16 measured=0.942526791675 predicted=0.942526791675 diff=2.442e-15 storage=16384 ratio=0.0625
+chi=  64 measured=0.790339760619 predicted=0.790339760619 diff=5.551e-15 storage=65536 ratio=0.2500
+chi= 128 measured=0.614503650370 predicted=0.614503650370 diff=4.885e-15 storage=131072 ratio=0.5000
+chi= 256 measured=0.326127860143 predicted=0.326127860143 diff=4.718e-15 storage=262144 ratio=1.0000
+chi= 512 measured=0.000000000000 predicted=0.000000000000 diff=6.699e-15 storage=524288 ratio=2.0000
+first_rank_at_or_below_10pct=395
