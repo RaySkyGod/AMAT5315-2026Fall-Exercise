@@ -131,6 +131,87 @@ fn run_boundary(args: &Args) -> Result<(), String> {
     Ok(())
 }
 
+fn run_trg(args: &Args) -> Result<(), String> {
+    let t0 = Instant::now();
+    let res = thermo::trg::trg_contract(args.l, args.k, args.chi);
+    let solve_s = t0.elapsed().as_secs_f64();
+
+    let writer = RunWriter::create(&args.out).map_err(|e| format!("create {}: {e}", args.out))?;
+
+    // Per design.toml [writes.trg]: each step's scale, split factors and
+    // singular values, plus the final tensor.
+    let mut steps_json = Vec::new();
+    for step in &res.steps {
+        let mut factor_entries = Vec::new();
+        for (idx, f) in step.factors.iter().enumerate() {
+            let name = format!("step{:02}_S{}.b64", step.j, idx + 1);
+            let entry = writer.write_tensor(&name, &f.dims, &f.data).map_err(|e| e.to_string())?;
+            factor_entries.push(json!({ "tensor": format!("S{}", idx + 1), "legs": leg_names(idx + 1), "data": entry }));
+        }
+        steps_json.push(json!({
+            "j": step.j,
+            "n_tensors": step.n_tensors,
+            "scale": step.scale,
+            "singular_values_split1": step.sv_split1,
+            "singular_values_split2": step.sv_split2,
+            "factors": factor_entries,
+        }));
+    }
+    let final_entry = writer
+        .write_tensor("final_tensor.b64", &res.final_tensor.dims, &res.final_tensor.data)
+        .map_err(|e| e.to_string())?;
+
+    let from_scales: f64 = res
+        .steps
+        .iter()
+        .map(|s| s.n_tensors as f64 * s.scale.ln())
+        .sum();
+    let meta = json!({
+        "tool": "thermo",
+        "version": env!("CARGO_PKG_VERSION"),
+        "model": MODEL,
+        "geometry": {"boundary": "periodic", "L": args.l, "sites": args.l * args.l},
+        "settings": {
+            "method": "trg",
+            "K": args.k,
+            "T": 1.0 / args.k.max(f64::MIN_POSITIVE),
+            "chi": args.chi,
+            "n_steps": 2 * usize::try_from(args.l.ilog2()).unwrap(),
+            "sv_tol_relative": 1e-12,
+            "solver": "TRG with two diagonal SVD splits and four-factor regrouping (Algorithm 5)",
+        },
+        "results": {
+            "log_z": res.log_z,
+            "g": res.g,
+            "solve_time_s": solve_s,
+        },
+        "normalization": {
+            "steps": steps_json,
+            "accumulated_log_scale": from_scales,
+            "closure_z": res.z_closure,
+            "closure": "z = sum_{i,j} A[i,j,i,j] (opposite legs joined)",
+            "note": "log Z = sum_j N_j log c_j + log z; c_j = max|A| per step",
+        },
+        "final_tensors": {"final_tensor": final_entry},
+    });
+    writer.write_json("meta.json", &meta).map_err(|e| e.to_string())?;
+
+    println!(
+        "trg L={} K={} chi={}: logZ={:.9} g={:.9} ({:.3}s) -> {}",
+        args.l, args.k, args.chi, res.log_z, res.g, solve_s, args.out
+    );
+    Ok(())
+}
+
+fn leg_names(i: usize) -> &'static str {
+    match i {
+        1 => "l, u, q",
+        2 => "d, l, q",
+        3 => "q, r, d",
+        _ => "q, u, r",
+    }
+}
+
 fn main() -> ExitCode {
     let args = match parse_args() {
         Ok(a) => a,
@@ -141,10 +222,7 @@ fn main() -> ExitCode {
     };
     let result = match args.method.as_str() {
         "boundary" => run_boundary(&args),
-        "trg" => {
-            eprintln!("thermo: method trg is added in part 3; rebuild after task 5");
-            Err("unimplemented".to_string())
-        }
+        "trg" => run_trg(&args),
         _ => unreachable!(),
     };
     match result {
