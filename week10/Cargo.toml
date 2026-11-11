@@ -1,0 +1,26 @@
+[package]
+name = "thermo"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.98"
+description = "Ising partition functions by boundary MPS and TRG (AMAT5315 week 10)"
+
+[lib]
+name = "thermo"
+path = "src/lib.rs"
+
+[[bin]]
+name = "thermo"
+path = "src/main.rs"
+
+[[bin]]
+name = "svdstudy"
+path = "src/bin/svdstudy.rs"
+
+[dependencies]
+faer = "0.24"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+debug = false
